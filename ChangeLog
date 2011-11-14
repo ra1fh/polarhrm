@@ -1,0 +1,65 @@
+
+History
+=============
+dd.mm.yyyy
+
+
+
+
+
+11.11.2011
+	* I recognized a bug with parsing the laps. the number_of_laps value is 
+bcd coded. (fixed this S625X)
+	* declared parseRawSessions and find_minimum as static class members to solve name conflicts.
+	* get raw data out of the rs800cx and store them in a nodelist, and write out raw file
+	* started parsing rs800cx session data and write a doc file
+	* rewrite the list of supported devices (polarhrm_config.h)
+	* adapted the selection function at polarhrm.cpp (enum switch )
+
+
+10.10.2011
+	* create the "orginal" hrm filename. YYMMDDxx.hrm (xx is the session day counter starting at 01)
+	* implemented an erase function (./polarhrm s625x -e) deletes ALL the sessions stored at the device. (experimental)
+	* adapted the bcd function and added unbcd function.
+	* copied s625x code to rs800cx code to start implementation (./polarhrm rs800cx) - runs getOverview (shows session number & used bytes) 
+	*  it figured out that there are some name conflicts, so I need to think to put redundat code into classes or do namespaces.
+	* started replaceing the selfwritten nodelist (used at c program) and use the STL list class instead. 
+	*  (created a Datanode class that holds an array with it's len)
+
+09.09.2011
+	* software does not need the DRIVER parameter any more. The driver is stored in class and gets cleated by constructor.
+	* uml model (http://bouml.free.fr)
+	* to get an idea of how it should work ;-)
+	* started writing limit levels to hrm file.
+	* fixed duration thenth of second
+
+
+09.08.2011
+	* started designing c++ class model
+
+07.08.2011
+	* fixed issue with parsing more sessions at once. reset global values lap_byte_size, and sample size for every session
+	* changed raw saving process. now data is saved with a tempname given in polarhrm.h before parsing the session, 
+	  after parsing it gets renamed. (in case the function crashes we have the raw data)
+	
+	* structured source code. each watch gets its own subdir (general fuctions are in src/)
+
+
+02.08.2011 
+	* first HRM files can be wirtten (yeppe!)
+
+27.07.2011
+	* added commandline options. (not all have an impact by now)
+	* fixed the speed calcualtion, display altitude values. 
+	* cleaned up code
+	* now can save raw data. 
+	* (cycling data raw and hrm would be fine)
+
+
+02.06.2011 
+	* parsing session information according S710 Information. 
+	* Many things are working like the same. some differences.
+
+
+24.05.2011
+	* get raw session data out of the watch
