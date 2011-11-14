@@ -1,0 +1,283 @@
+
+
+
+## get Overview ( 0x15 )
+
+Subtype 0x15: "Get overview" response: Length = xx  bytes (33 payload):
+------------------------------------------------------------------------------
+Payload byte	Meaning
+
+
+
+Byte	Meaning
+==============================================================================
+0
+1
+2
+3
+4	Number of Sessions	first session -> 0x01
+5
+6
+7
+8	used bytes MSB	for all sessions
+9	used bytes LSB
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+
+
+
+## get Session ( 0x6a xx 0x00 0x00 )
+
+replace xx with the session number (first session 0x00 !!)
+
+
+Subtype 0x6a: "Get Session" response: Length = 512  bytes (xx payload):
+------------------------------------------------------------------------------
+Payload byte	Meaning
+
+
+Byte	Meaning
+==============================================================================
+0
+1
+2
+3
+4	number of Packets waiting for transmission
+5
+6
+--------end of header?	actually I cut off here!!!
+			the question is if this is the end of the header 
+			this gets these bytes get subtracted form buffer
+	0
+7	1	used bytes MSB	for the current sessions
+8	2	used bytes LSB
+9	3
+10	4
+----|----if we set end of header here the length of the received data
+	|	would match the size given at byte 7 & 8
+	5
+   6
+  7
+ 8
+9
+10 
+11 .	session encoded name?
+12 .	session encoded name?
+13 .	session encoded name?
+14 .	session encoded name?
+15 .	session encoded name?
+16 .	session encoded name?
+17 .	session encoded name?
+18	X ?? has altitude, speed, gps, power ...?? 
+19	Record Interval (0=1sec, 1=2sec, 2=5sec, 3=15sec, 4=60sec)
+20	X	displayed
+21	Startdate timestamp
+22	Startdate timestamp
+23	Starttime Second BCD
+24	Starttime Minute BCD
+25	Starttime Hour BCD
+26	duration seconds & tenth
+27	duration minute & tenth
+28	duration hour
+29	HR AVG
+30	HR MAX
+31	HR MIN
+32	Calorins
+33	Calorins
+34	X displayed
+35	USR HR MAX
+36	USR HR REST
+37	USR VO2 MAX
+38	X	displayed
+39	X	displayed
+40	X	displayed
+41	X	displayed
+42	X	displayed
+43	X	displayed
+44	X	displayed (comes up at some sessions with bit 0 set 1)
+45	X	displayed
+46	Number of Laps
+47	Number of automated laps (if not used value is 99) ?? is this correct ??
+48	X	displayed
+49	X	displayed
+50	X	displayed
+51	best Lap
+52	pace MAX
+53		pace MAX (part 2)
+54	pace AVG
+55		pace AVG (part 2)
+56	X	displayed (allways 0xFF ?? )
+57	X	displayed 0x23 or 0x7 what is the purpose?
+58	X	displayed 0x86 or 0x80 	if toshort value 34339 or 32775 could be a buffer size
+59	X	displayed
+60	X	displayed
+61
+62
+63
+64
+65	form 61 to 79 all 0x00 
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80	X	displayed  all sessions trained? or free memory space left 
+81	X	displayed  time format?
+82	X	displayed  time format?
+83
+84
+85
+86
+87
+88
+89	83 to 96 all 0x00
+90
+91
+92
+93
+94
+95
+96
+97	X	displayed	toshort number of samples?? 
+98	X	displayed	part 2
+99	duration seconds & tenth (why this stored once agian??)
+100	duration minute & tenth (why this stored once agian??)
+101	duration hour (why this stored once agian??)
+102	X	displayed
+103	X	displayed
+104	X	displayed allways 0x06 ??
+105	X	displayed
+106	X	displayed
+107	X	displayed
+108	X	displayed
+109	X	displayed
+110	X	displayed
+111	X	displayed
+112	X	displayed
+113	X	displayed
+114	X	displayed
+115	X	displayed	0xe8	toshort result 1000
+116	X	displayed	0x03
+117	X	displayed
+118	X	displayed
+119	X	displayed
+120	X	displayed
+121	X	displayed
+122	X	displayed si_unit? allways 0x01
+123	number of sportzones
+124	Sportzone 1
+125	Sportzone 2
+126	Sportzone 3
+127	Sportzone 4
+128	Sportzone 5
+129	Sportzone LAST one (=100%)
+130 ...
+131 ...reserved space for maximum Sportzones??
+132
+133
+134
+135	on SportZone 1 sec BCD
+136	on SportZone 1 min BCD
+137	on SportZone 1 hour BCD
+138	on SportZone 2 sec BCD
+139	on SportZone 2 min BCD
+140	on SportZone 2 hour BCD
+141	on SportZone 3 sec BCD
+142	on SportZone 3 min BCD
+143	on SportZone 3 hour BCD
+144	on SportZone 4 sec BCD
+145	on SportZone 4 min BCD
+146	on SportZone 4 hour BCD
+147	on SportZone 5 sec BCD
+147	on SportZone 5 min BCD
+148	on SportZone 5 hour BCD
+149		6
+150		6
+151		6
+152		7
+153		7
+154		7
+155		8
+156		8
+157		8
+158		9
+159		9
+160		9
+161		10
+162		10
+163		10
+164
+165	X	displayed
+166
+167
+168
+169
+170
+		I assume the length of 170 Bytes is the baselength
+		after that HR data, and finally lap data are stored
+
+
+	... see session parsing function of rs400 and rs800cx
+
+
+
+
+
+
+
+
+
+## get Session continue command ( 0x16 xx )
+
+replace xx with the session number (first session 0x00 !!)
+
+
+Subtype 0x16: "Get Session" response: Length = variabel  bytes (xx payload):
+------------------------------------------------------------------------------
+Payload byte	Meaning
+
+
+Byte	Meaning
+==============================================================================
+0
+1
+2
+3
+4	number of Packets waiting for transmission
+--------end of header?
+			the question is if this is the end of the header 
+			this gets these bytes get subtracted form buffer
+5
+6
+	... see session parsing function of rs400 and rs800cx
+
