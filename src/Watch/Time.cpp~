@@ -1,0 +1,15 @@
+
+#include "Time.h"
+
+string Time::toString() {
+}
+
+double Time::toDouble() {
+}
+
+Time::Time(unsigned char hour, unsigned char minute, unsigned char sec, unsigned char thenth){
+
+
+
+
+}
