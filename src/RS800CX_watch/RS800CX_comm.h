@@ -37,7 +37,10 @@
 #define RS800CX_ZERO_INDEX_FIX 1
 
 #define RS800CX_FIRST_PACKET_CORRECTION_HEAD 7
-#define RS800CX_FIRST_PACKET_CORRECTION_TAIL 1
+#define RS800CX_FIRST_PACKET_CORRECTION_TAIL 0 //looks like there is no tail to 
+												// cut off!! 
+												// it figured out during 
+												// testing the lap byte offset
 
 #define RS800CX_ALL_OTHER_PACKETS_CORRECTION_HEAD 5
 #define RS800CX_ALL_OTHER_PACKETS_CORRECTION_TAIL 0
