@@ -80,8 +80,8 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 	int j=0; // count printed samples
     
 	// FIXME get values form parse calling parse function
-	int lap_byte_size = 7;
-	int sample_size = 1;
+	int lap_byte_size = w_session->lap_byte_size;
+	int sample_size = 15;
 	
 	// set up a memory for storing the samples
 	w_session->samples =(Sample**) new Sample[w_session->getNumberOfSamples()];
@@ -117,32 +117,25 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 
 		printf("i%d\t%d",i+3,w_session->samples[j]->getHR());
 	
-/*		if (runspeed){
+		if (w_session->getHasSpeedData()){
 
-			// byte c [Upper 3 bits]: Speed (MSB)
-			// byte c+1: Speed (LSB); speed (km/h) = Speed / 16.0
-		
-			speed_val = 0;
-			
-			if (altitude) speed_val = (buf[i+2]<<3)+buf[i+3];
+			printf("\t%d\t",i);
 
-			else speed_val = (buf[i+1]<<3)+buf[i+2];
-			
-			speed_val = (speed_val/16)*10;
-			speed_val = round(speed_val);
-			w_session->samples[j]->setSpeed((unsigned int) speed_val);
+			for (int k=0; k<=sample_size; k++) {
+				printf("%.2x ",buf[i+k]);
+			}
 
-			printf("\t%d",w_session->samples[j]->getSpeed());
 		}
 
-
-		if (altitude) {
+/*
+		if (w_session->getHasAltitudeData()) {
 
 			alt=0;
 
-			if (runspeed) alt = buf[i+1] + ((buf[i+2] & 0x1F)<<8)-512;
+			if (w_session->getHasSpeedData()) 
+				alt = buf[i+1] + ((buf[i+2] & 0x1F)<<8)-512;
 	
-			w_session->samples[j]->setAlt(alt);   
+			w_session->samples[j]->setAlt(alt);
 			printf("\t%d",w_session->samples[j]->getAlt());
 		}
 */
@@ -190,21 +183,15 @@ void RS800CXparse::parse_laps(Session *w_session, RawSession *raw_sess){
 
 		i=sesslen-lap_byte_size-(lap_byte_size*j);
 
-		unsigned char hours = buf[i+2] & 0x7f;
-		unsigned char minutes = buf[i+1] & 0x3f;
-		unsigned char seconds = buf[i+0] & 0x3f;
-		/* We can just fit the tents in the extra bits */
-		unsigned char tenths = ((buf[i+1] & 0xc0) >> 4) | ((buf[i+0] & 0xc0) >> 6);
-		printf("time %d:%d:%d.%d\n", hours, minutes, seconds, tenths);
 
 		wTime *laptime = new wTime();
 		laptime->setHour(buf[i+2] & 0x7F);
-		laptime->setMinute(buf[i+1]&0x3F);
-		laptime->setSecond(buf[i]&0x3F);
-		laptime->setThenth(unib(  (buf[i+1]&0xC0) | ((buf[i]&0xC0) >>2)  ));
+		laptime->setMinute(buf[i+1] & 0x3F);
+		laptime->setSecond(buf[i] & 0x3F);
+		laptime->setThenth(((buf[i+1] & 0xc0) >> 4) | ((buf[i+0] & 0xc0) >> 6)) ;
 
 		w_session->laps[j]->lap_end_time = laptime;
-		printf("%d byte hours %s\n",i, w_session->laps[j]->lap_end_time->toString().c_str() );
+		printf("%d time %s\n",i, w_session->laps[j]->lap_end_time->toString().c_str() );
 
 		printf("w_session->lap[j]->lap_end_time=%f\n",w_session->laps[j]->lap_end_time->toDouble());
 
@@ -235,17 +222,16 @@ void RS800CXparse::parse_laps(Session *w_session, RawSession *raw_sess){
 		printf("avg HR = %d\n",w_session->laps[j]->hr_avg);
 		printf("max HR = %d\n",w_session->laps[j]->hr_max);
 
-		/*
-		if (altitude){
+		
+		if (w_session->getHasAltitudeData()){
+			printf("ALT = %d\n",buf[i+18]);
+			w_session->laps[j]->alt = buf[i+20];
+			printf("Avg ALT of Lap = %d\n",w_session->laps[j]->alt);
 
-			buf[i+6];
-			buf[i+7];
-			buf[i+8];
-			buf[i+9];
-			buf[i+10];
 
+			printf("?? temperature = %d\n",(lnib(buf[i+30])<<4) + unib(buf[i+31]) );
 		}
-		*/
+		
 			// runspeed || bike1 || bike2
 		/* if (w_session->getHasSpeedData()) {
 			// byte 6
@@ -290,7 +276,6 @@ void RS800CXparse::parse_sportzones(Session *w_session, RawSession *raw_sess){
 		w_session->sportzones[i]->setZoneNumber(i+1);
 		w_session->sportzones[i]->setLowPercent(buf[124 + i]);
 		w_session->sportzones[i]->setHighPercent(buf[124 + 1 + i]);
-
 
 		wTime onzone;
 		int base_index = 135;
@@ -397,13 +382,16 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 							w_session->getStartDate()->getHour(),
 							w_session->getStartDate()->getMinute());
 
-	w_session->setDuration(new wTime(buf[28] & 0x7f, //hour
-									 buf[27] & 0x3f, // minutes
-									 buf[26] & 0x3f, // seconds
-									 ((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6))); //tenth
+	wTime *duration =new wTime();
+	duration->setHour(buf[28] & 0x7f);
+	duration->setMinute (buf[27] & 0x3f);
+	duration->setSecond (buf[26] & 0x3f);
+	duration->setThenth(((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)); //tenth
+	w_session->setDuration(duration);
+
 	printf("?? thenth %f\n", (double)(((buf[27] & 0xc0) >> 4) | ( (buf[26] & 0xc0) >> 6))    );
 	printf("OK w_session->duration=%f\n",w_session->getDuration()->toDouble());
-	printf("OK duration %s\n",w_session->getDuration()->toString().c_str());
+	printf("OK w_session->duration=%s\n",w_session->getDuration()->toString().c_str());
 
 	printf("?? duration at byte 99 ");
 	test(&buf[99]);
@@ -430,7 +418,7 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	SHOW(39);
 	SHOW(40);
 
-	
+
 	w_session->setNumberOfLaps(buf[46]);
 	printf("OK w_session->number_of_laps=%d\n",w_session->getNumberOfLaps());
 	printf("?? number_automated_laps=%d\n",buf[47]); //what is the difference?
@@ -442,47 +430,63 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	w_session->pace_avg = toshort(&buf[54]);;
 	printf("?? w_session->pace_avg=%d\n",w_session->pace_avg);
 
+
+
+/*
+(buf[28] & 0x7f, //hour
+buf[27] & 0x3f, // minutes
+buf[26] & 0x3f, // seconds
+((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)
+*/
+	wTime *best_laptime = new wTime();
+
+	//if (w_session->getNumberOfLaps() != 1) {
+		best_laptime->setHour   (buf[49] & 0x7F);
+		best_laptime->setMinute (buf[48] & 0x3F);
+		best_laptime->setSecond (buf[47] & 0x3F);
+		best_laptime->setThenth (((buf[48] & 0xc0) >> 4) | ((buf[47] & 0xc0) >> 6));
+	//}
+
+	//else {
+		//set end time
+		//best_laptime = duration;
+
+	//}
+	
+	w_session->setBestLapTime(best_laptime);
+
+	printf("?? w_session->best_laptime=%f\n",w_session->getBestLapTime()->toDouble());
+	printf("?? w_session->best_laptime=%s\n",w_session->getBestLapTime()->toString().c_str());
+
+
 	printf("?? 56 byte %X\t%d allways FF??\n",buf[56], buf[56]);
 
-
-
-	int lap_byte_size; //FIXME
-	int sample_size = 1; //HR only sounds correct ;-)
 
 	SHOW(18);
 
 	// figure out what data is recorded
-	printf("?? 18 bit 7 UNKNOWN %d\n",(buf[18]&0x80));
-	printf("?? 18 bit 6 UNKNOWN %d\n",(buf[18]&0x40));
-	printf("?? 18 bit 5 UNKNOWN %d\n",(buf[18]&0x20));
-	printf("?? 18 bit 4 GPS %d\n",(buf[18]&0x10));
-	printf("?? 18 bit 3 Speed footpod or gps %d\n",(buf[18]&0x08));
-	printf("?? 18 bit 2 Cadence %d\n",(buf[18]&0x04));
-	printf("?? 18 bit 1 UNKNOWN %d\n",(buf[18]&0x02));
+	printf("?? 18 bit 7 UNKNOWN %d\n",(buf[18]&0x80) >> 7);
+	printf("?? 18 bit 6 UNKNOWN %d\n",(buf[18]&0x40) >> 6);
+	printf("?? 18 bit 5 UNKNOWN %d\n",(buf[18]&0x20) >> 5);
+	printf("?? 18 bit 4 GPS on %d\n",(buf[18]&0x10) >> 4);
+	printf("?? 18 bit 3 has Speed/pace data %d\n",(buf[18]&0x08) >> 3);
+	printf("?? 18 bit 2 Cadence %d\n",(buf[18]&0x04) >> 2);
+	printf("?? 18 bit 1 UNKNOWN %d\n",(buf[18]&0x02) >> 1);
 	printf("?? 18 bit 0 Altitude %d\n",buf[18]&0x01);
 
-	
+
 	bool bike2 = ((buf[18]&0x20) && (buf[18]&0x10)) ? true:false;    //bit 5
 	bool bike1 =  (buf[18]&0x20) ? true:false; 
 	bool runspeed = (buf[18]&0x10) ? true:false;     //bit 4
 	bool power = (buf[18]&0x08) ? true:false;      //bit 3
 	bool cadence = (buf[18]&0x04) ? true:false;    //bit 2
-	bool altitude = (buf[18]&0x02) ? true:false;   //bit 1
+	bool altitude = (buf[18]&0x01) ? true:false;   //bit 1
 
 	// lets try this
 	bool gps = ((buf[18]&0x10) && (buf[18]&0x08)) ? true:false;
 
-/* need to find this values
-	 bike 1- 3
-	 * speed sensor
-	 * cadence
-	 shoe 1- 3
-	 gps G3 on - off byte 18 -> 0x18
-	 altitude on - off
-*/
+
 	SHOW(20);
-	printf("bytes of interest\n");
-	printf("it's the same content, isn t it?\n");
 
 	SHOW(41);
 	SHOW(42);
@@ -503,45 +507,82 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	printf("\n\n");
 
 
+/* need to find this values
+	 bike 1- 3
+	 * speed sensor
+	 * cadence
+	 shoe 1- 3
+	 gps G3 on - off byte 18 -> 0x18
+	 altitude on - off
+*/
+
+	/* the rs800cx manual tells the impact of switching on or of various settings
+
+	 *	RR-Data (messures heartbeat variations)
+		 don t handle this setting 
+
+	 *	Speed
+	 *	Cadence
+	 *	S3
+	 *	GPS
+ 		if gps on lap_byte_size = 25
+
+	 *	Altitude
+		if ALT on byte 18 bit 0 is true
+		if ALT lap_byte_size = 14
+
+
+	 *	Recordrate (this we allready got)
+
+	 */
+
+
 	// lap_byte_size
 	// standard size is 7 (HR Only) but sometimes 6
-	// if gps on = 25
-	// if ALT = 14
 
 	// speed could be 
 	// runspeed foodpod S3
 	// runspeed GPS
 	// cs bike 
+
+	int lap_byte_size = 7; // base length
+	int sample_size = 1;   //HR only sounds correct ;-)
+
 	if (altitude) {
-
-
+		sample_size = 2; //FIXME
+		lap_byte_size = 7; //need to be checked
 	}
-	else if (gps){
-		sample_size=1; // I guess this need to be higher value 
-		lap_byte_size = 25;
+	if (gps){
+		sample_size=15; // FIXME I guess this need to be higher value 
+		lap_byte_size = 26; 
+	}
+	if (altitude && gps) {
+		sample_size=15; // FIXME higher value!
+		lap_byte_size =  34;
 	}
 
-	else {
-		lap_byte_size = 7;
-	}
+	w_session->lap_byte_size = lap_byte_size;
 
-	// FIXME dynamic calculation of correct session length!!! 
-	// problem -> which parameters have impact on session length??
-	w_session->lap_byte_size = 7;
 
-	// FIXME get this working!!!
-	/*
-	w_session->setHasSpeedData((runspeed || (bike1 || bike2)) ? true:false );
-	w_session->setHasHRandCCData ((runspeed || (bike1 || bike2)) ? true:false);
 
 	w_session->setHasAltitudeData(altitude);
+	printf("?? w_session->has_altitude_data %d\n",w_session->getHasAltitudeData());
+
+	w_session->setHasSpeedData((runspeed || gps) ? true:false );
+	printf("?? w_session->has_speed_data %d\n",w_session->getHasSpeedData() );
+
+
+
+	// FIXME get this working therefore cycling data is needed
+	/*
+	w_session->setHasHRandCCData ((runspeed || (bike1 || bike2)) ? true:false);
+
 	w_session->setHasCadenceData (cadence);
 	w_session->setHasPowerData (power);
 
-	printf("?? w_session->has_speed_data %d\n",w_session->getHasSpeedData() );
 	printf("?? w_session->has_cadence_data %d\n",w_session->getHasCadenceData());
-	printf("?? w_session->has_altitude_data %d\n",w_session->getHasAltitudeData());
 	*/
+
 	// looks like some similar value
 	test(&buf[38]);
 	printf("?? left time to save sessions? ");
@@ -552,22 +593,7 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	//SHOW(82);
 
 
-	SHOW(97);
-
-	// looks like different than rs400
-	wTime *best_laptime = new wTime();
-	//best_laptime->setHour (unbcd(buf[]));
-	//best_laptime->setMinute (unbcd(buf[]));
-	//best_laptime->setSecond (unbcd(buf[]));
-	//best_laptime->setThenth ((unsigned char)0);
-
-	w_session->setBestLapTime(best_laptime);
-
-	printf("?? w_session->best_laptime=%f\n",w_session->getBestLapTime()->toDouble());
-	printf("?? best_laptime %s\n",w_session->getBestLapTime()->toString().c_str());
-
-
-		switch (buf[19]) {
+	switch (buf[19]) {
 		case 0:
 			w_session->setRecordingInterval(1);
 			break;
@@ -583,18 +609,25 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 		case 4:
 			w_session->setRecordingInterval(60);
 			break;
-		}
+	}
 
 	printf("OK w_session->recording_interval=%d\n",w_session->getRecordingInterval());
 
 
 	// RS800CX protocoll size is at least 170 
 	//calculating hr sample data length
+	// e.g.:
+	// 2046 samples
+	// 175 first hr value
+	// 2220 hr
+	// 2227 end length there is only one lap stored
+
+
 	w_session->setNumberOfSamples((sesslen-(174+w_session->getNumberOfLaps()*lap_byte_size)-sample_size)/sample_size);
 
-	printf("?? w_session->number_of_samples %d\n",w_session->getNumberOfSamples());
+	printf("?? w_session->number_of_samples looks correct%d\n",w_session->getNumberOfSamples());
 	printf("?? proof of calculation: duration / record interval = %d\n", (int)ceil(w_session->getDuration()->toDouble() / w_session->getRecordingInterval()));
-	printf ("?? byte 97 number_of_samples %d\n",toshort(&buf[97]));
+	printf ("?? byte 97 number_of_samples seems to be something different %d\n",toshort(&buf[97]));
 
 
 	SHOW(97);
@@ -617,7 +650,6 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	SHOW(114);
 	SHOW(115);
 
-
 	SHOW(116);
 	SHOW(117);
 	SHOW(118);
@@ -629,15 +661,54 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 
 
 	SHOW(165);
-
-
+	//SHOW(170);
+	SHOW(171);
+	SHOW(172);
+	SHOW(173);
+	SHOW(174);
+	SHOW(175);
 	//XXX disabled for shorter output
-	//parse_samples(w_session, raw_sess);
-
+	parse_samples(w_session, raw_sess);
 	//parse_sportzones (w_session, raw_sess);
 
-	parse_laps(w_session, raw_sess);
 
+	//parse_laps(w_session, raw_sess);
+/*
+	int base= 422;
+	test(&buf[base + 0]);
+	test(&buf[base + 1]);
+	test(&buf[base + 2]);
+	test(&buf[base + 3]);
+	test(&buf[base + 4]);
+	test(&buf[base + 5]);
+	test(&buf[base + 6]);
+	test(&buf[base + 7]);
+	test(&buf[base + 8]);
+	test(&buf[base + 9]);
+	test(&buf[base + 10]);
+	printf("\n");
+	//632 ALT @620
+	// -34
+	test(&buf[599]);
+	// -34
+	test(&buf[565]);
+	// -34
+	test(&buf[531]);
+	// -33
+	test(&buf[498]);
+	// -34
+	test(&buf[464]);
+	// -34
+	test(&buf[430]);
+//514
+
+test(&buf[47]);
+
+174
+
+430
+
+*/
 
 	return w_session;
 }

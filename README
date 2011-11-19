@@ -1,7 +1,4 @@
-
-
-
-before testing the software be sure that you have a porpper configured 
+before using the software be sure that you have a porpper configured 
 Irda device.
 You can test this by running 
 	# irdadump 
@@ -14,7 +11,6 @@ first go to src/polarhrm_config.h and edit the
 MYPATH value to a writable directory
 
 then run
-
 	./configure
 	make
 	cd src
@@ -29,11 +25,11 @@ command.
 however, check the src dir if the binaries are built.
 
 
-process this will have the following result:
+processing this will have the following result:
 
 *)connect the watch (s625X / rs800cx)
 *)transfer all sessions to the computer (s625X / rs800cx)
-*)dump raw data to a files (s625X / rs800cx)
+*)dump raw data to files (s625X / rs800cx)
 *)parse all knowen data, and print them to screen (s625X / rs800cx)
 *)write HRM file (s625X)
 
@@ -46,28 +42,39 @@ or
 ./polarhrm rs800cx -r /path/to/dumpfile.dump
 
 
+current issues
 ==================
 
+	section moved to TODO.tasks file
+	
+	since I moved to anjuta 3.2.0 I don t have the convinient edit plug in
+	so I am thinking of putting my tasks back here.
+
+
+	MORE SAMPLE DATA is needed!
+
+	cycling with power
+	and interval tranining for s625x is needed
+
+
+
+
+
 testprogram:
+==================
+
 	just for testing objects & code snippets
 
 
 
 
-MORE SAMPLE DATA is needed!
-
-cycling with power
-and interval tranining for s625x is needed
-
-
-==================
 
 
 Development
+==================
 
 your watch is not soppurted by now and you want to implement it?
 here I wirte some ideas of the concept to add a new device:
-
 
 	connection type:
 		the watch uses some transfare method to get data out ouf the watch.
@@ -81,6 +88,8 @@ here I wirte some ideas of the concept to add a new device:
 		polarhrm gives the opportunity to add other application drivers.
 
 		see the apstract driver class
+		on the wiki I have put a list of devices that use IRDA, if you got one
+		of this devices it takes not long to add an implemantation
 
 
 	devices:
@@ -102,17 +111,23 @@ here I wirte some ideas of the concept to add a new device:
 		parsing data
 			once you have a dump of raw data you can go stating the parsing
 			the best is to do step by step.
+			try to find if some of the allready knowen parsing funcitons work.
+			orientate at bcd coded values. 
 			make small sessions that have only minor changes. 
-			only one setting. 
+			edit only one setting at a setting. 
 			then the hard time comes.
-			compare them with tools, and write the session parsing function
-			tools:	meld (gnome),
+			compare them with tools, and write the session parsing function.
+
+			tools I use:	meld (gnome),
 					vbindiff (command line), 
 
-==================
-current issues:
-	section moved to TODO.tasks file
-	
-	since I moved to anjuta 3.2.0 I don t have the convinient edit plug in
-	so I am thinking of putting my tasks back here.
-	
+			simple helping script to show changes across serveral sessions files.
+
+		#!/bin/sh
+		./polarhrm rs800cx -r /home/thomas/praw/rs800_session01.dump > output.txt
+		./polarhrm rs800cx -r /home/thomas/praw/rs800_session02.dump >> output.txt 
+		./polarhrm rs800cx -r /home/thomas/praw/rs800_session03.dump >> output.txt 
+		cat output.txt
+
+		and then call it ./myscript.sh|grep "?? byte 50"
+		

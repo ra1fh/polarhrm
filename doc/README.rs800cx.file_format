@@ -91,7 +91,7 @@ Byte	Meaning
 17 .	session encoded name?
 18	X ?? has altitude, speed, gps, power ...?? 
 19	Record Interval (0=1sec, 1=2sec, 2=5sec, 3=15sec, 4=60sec)
-20	X	displayed
+20	X	displayed	if more than one lap eg. 12 laps value is 0x02 ??
 21	Startdate timestamp
 22	Startdate timestamp
 23	Starttime Second BCD
@@ -118,11 +118,11 @@ Byte	Meaning
 44	X	displayed (comes up at some sessions with bit 0 set 1)
 45	X	displayed
 46	Number of Laps
-47	Number of automated laps (if not used value is 99) ?? is this correct ??
+47	 best lap time ??
 48	X	displayed
 49	X	displayed
 50	X	displayed
-51	best Lap
+51	best Lap (number)
 52	pace MAX
 53		pace MAX (part 2)
 54	pace AVG
@@ -237,12 +237,21 @@ Byte	Meaning
 162		10
 163		10
 164
-165	X	displayed
+165	X	displayed	0x00 when GPS is on?
+					0x01
+					0x04
+					0x05
+					0x08
 166
 167
 168
 169
-170
+170	allways 0x00
+171	X	displayed
+172	 0xFF or 0x06 most of the time 0xFF
+173	allways 0xFF 
+174	0x00 (after that HR data appear??) at one session 0x82
+175	first HR value (or last one) ???
 		I assume the length of 170 Bytes is the baselength
 		after that HR data, and finally lap data are stored
 
