@@ -65,6 +65,10 @@ void test_delete_single_session(void);
 /* test my datanode object to replace the raw_data node structure and stl list instead */
 std::list<Datanode> test_my_datanode_obj(void);
 
+
+/* test a the unencoding of gps data */
+void test_gps_uncode(void);
+
 /* inplementation here */
 
 
@@ -291,6 +295,114 @@ std::list<Datanode> test_my_datanode_obj(void){
 }
 
 
+void test_gps_uncode(void) {
+
+	// Minutes / 60
+	// Seconds / 3600
+
+	// 1666 for a bit
+	
+	//  0.000001666		 /60	/3600
+	// 16.344346667	 16° 20' 39.6486"
+/* 
+	
+	http://transition.fcc.gov/mb/audio/bickel/DDDMMSS-decimal.html
+	https://groups.google.com/forum/?hl=de#!searchin/comp.lang.c/gps/comp.lang.c/nidxKt7khQA/ll6xED_MavwJ
+	http://transition.fcc.gov/mb/audio/bickel/DDDMMSS-decimal.html
+	http://objectmix.com/java/72734-convert-hex-decimal-latitude-longitude.html
+
+Prater Standing
+<trkpt lat="48.217256667" lon="16.395040000">
+00 00 00 E3 9D 73 10 2E FD 41 30 lat 48.217256667 48° 13' 2.1246"
+00 00 00 E0 9D 73 10 32 FD 41 30 
+00 00 00 E2 9D 83 10 37 FD 41 30 
+00 00 00 E8 9D 83 10 35 FD 41 30 
+00 00 00 EA 9D 73 10 34 FD 41 30 
+00 00 00 EB 9D 73 10 32 FD 41 30 
+00 00 00 EC 9D 73 10 31 FD 41 30 
+00 00 00 F7 9D 73 10 31 FD 41 30 
+00 00 00 F6 9D 73 10 2D FD 41 30 
+00 00 00 F8 9D 73 10 29 FD 41 30 
+00 00 00 F5 9D 73 10 24 FD 41 30 
+00 00 00 EC 9D 73 10 1E FD 41 30 
+
+
+*/
+
+	unsigned char a[]={0x00, 0x00, 0x00, 0xE3, 0x9D, 0x73, 0x10, 0x2E, 0xFD, 0x41, 0x30 };
+	int lon, lat;
+	lat = a[10];
+	lon = a[6];
+	printf("lat %d.%d \n",lat, lnib(a[9]));
+	printf("lon %d.%d \n",lon, lnib(a[5]) );
+
+
+
+	// 48.177835000  48° 10' 40.206"
+	unsigned char code[] = {0x30, 0x41, 0xfd, 0x35};
+	unsigned int c1,c2;
+    c1 = code[ 0 ] << 24 |
+         code[ 1 ] << 16 |
+         code[ 2 ] <<  8 |
+         code[ 3 ];
+
+    c2 = code[ 0 ] << 21 |
+         code[ 1 ] << 14 |
+         code[ 2 ] <<  7 |
+         code[ 3 ];
+    float degrees1 = c1 / 600000.0;
+    float degrees2 = c2 / 600000.0;
+
+	//48.177835000  48° 10' 40.206"
+	printf("48.177835000  48° 10' 40.206\" \n" );
+	printf("myhex1 %X %d %f\n",c1, c1, degrees1);
+	printf("myhex2 %X %d %f\n",c2, c2, degrees2);
+
+
+// http://www.cplusplus.com/forum/beginner/18566/
+union UStuff
+{
+	float   f;
+	unsigned char c[0];
+	unsigned int i;
+};
+	UStuff vala, b;
+
+ // 2E FD 41 30 lat 48.217256667
+//	float xx = 2.1246;
+
+	vala.c[0] = 0x41;
+	vala.c[1] = 0xfd;
+	vala.c[2] = 0x2e;
+	vala.c[3] = 0x00;
+
+	vala.f = 217256667;
+//	vala.i = 177835000;
+	for (size_t i = 0; i < sizeof(UStuff); ++i){
+		std::cout << "byte " << i << ": "
+		<< hex << (unsigned int)(vala.c[i])
+		<< std::endl; 
+		b.c[i] = vala.c[i];
+	}
+
+	printf("float %.9f int %d\n",b.f, b.i);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int main(void) {
 
@@ -307,27 +419,9 @@ int main(void) {
 
 //	test_my_datanode_obj();
 
-unsigned char* myarr;
-int mylen = 30;
+	test_gps_uncode ();
 
-	myarr = new unsigned char[mylen];
 
-for (int i=0; i<= mylen; i++) {
-	myarr[i]=i;
-	printf("%d ", myarr[i]);
-}
-
-printf("\n");
-
-	printf("bfore %d\n", myarr[24]);
-
-	myarr = &myarr[3];
-
-	printf("after %d\n", myarr[24]);
-
-for (int i=0; i<= mylen; i++) {
-	printf("%d ", myarr[i]);
-}
 
 return 0;
 }

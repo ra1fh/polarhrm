@@ -81,15 +81,16 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
     
 	// FIXME get values form parse calling parse function
 	int lap_byte_size = w_session->lap_byte_size;
-	int sample_size = 15;
+	int sample_size = w_session->sample_size;
 	
 	// set up a memory for storing the samples
 	w_session->samples =(Sample**) new Sample[w_session->getNumberOfSamples()];
 
 	// goto all samples [HRData] at hrm file and store them in the structure
-	for (int i = raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size);
-	     i >= 170; i = i - sample_size){
-	
+	//for (int i = raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size);
+	//     i >= 172; i = i - sample_size){
+
+	for (int i = 175; i<= raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size); i = i +sample_size ) {
 		w_session->samples[j]= new Sample;
 
 		w_session->samples[j]->setHR(0);
@@ -115,17 +116,36 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 		}
 		#endif
 
-		printf("i%d\t%d",i+3,w_session->samples[j]->getHR());
-	
+		//printf("i%d\t%d",i+3,w_session->samples[j]->getHR());
+
+		// FIXME when we have gps data
+		// for footpot data might look differnent 
+		// however for now, getHasSpeedData is equal to GPS data
 		if (w_session->getHasSpeedData()){
 
-			printf("\t%d\t",i);
-
-			for (int k=0; k<=sample_size; k++) {
-				printf("%.2x ",buf[i+k]);
+			int alt_offset = 0;
+			if(w_session->getHasAltitudeData ()) {
+				alt_offset = 2;
 			}
+			double longitude; 
+			double latitude;
+
+		// try to parse gps data out of the buffer
+		// I have made a test function -> test.cpp file
+		//  lat  : 2 Words [4 bytes];
+		//  long : 2 Words [4 bytes];
+
+			//printf("\t%d\t",i);
+			for (int k=1; k<sample_size; k++) {
+				printf("%.2X ",buf[i+k]);
+			}
+			//  (hour) + (minute) / 60 + (second) / 3600;
+			longitude =  buf[i+5+alt_offset] ;
+			latitude = buf[i+8+alt_offset];
+
 
 		}
+
 
 /*
 		if (w_session->getHasAltitudeData()) {
@@ -553,16 +573,22 @@ buf[26] & 0x3f, // seconds
 		lap_byte_size = 7; //need to be checked
 	}
 	if (gps){
-		sample_size=15; // FIXME I guess this need to be higher value 
+		sample_size=12; 
+		// HR = 1 byte
+		// special purpose 3 bytes, satellite connections, pace
+		// longitude = 4 byte
+		// latitude = 4 byte
 		lap_byte_size = 26; 
 	}
 	if (altitude && gps) {
-		sample_size=15; // FIXME higher value!
+		sample_size=14; // FIXME higher value!
 		lap_byte_size =  34;
 	}
 
 	w_session->lap_byte_size = lap_byte_size;
+	w_session->sample_size = sample_size;
 
+	printf("?? w_session->sample_size = %d\n",w_session->sample_size);
 
 
 	w_session->setHasAltitudeData(altitude);
