@@ -23,6 +23,6 @@ class Lap {
 	int speed_end;
 	int speed_avg;
 	int distance;
-
+	int alt;
 };
 #endif
