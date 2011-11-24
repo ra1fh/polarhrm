@@ -42,6 +42,7 @@ class Session {
 	unsigned int best_lap;
 
 	int lap_byte_size;
+	int sample_size;
 
 	bool activelimit;
 	Limit limiterzone[3];
