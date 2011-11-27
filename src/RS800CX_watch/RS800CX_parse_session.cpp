@@ -90,6 +90,7 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 	//for (int i = raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size);
 	//     i >= 172; i = i - sample_size){
 
+
 	for (int i = 175; i<= raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size); i = i +sample_size ) {
 		w_session->samples[j]= new Sample;
 
@@ -116,7 +117,7 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 		}
 		#endif
 
-		//printf("i%d\t%d",i+3,w_session->samples[j]->getHR());
+		printf("i%d\t%d\t",i,w_session->samples[j]->getHR());
 
 		// FIXME when we have gps data
 		// for footpot data might look differnent 
@@ -161,7 +162,8 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 */
 		printf("\r\n");
 		j++;
-	} 
+	}
+	printf("sample_size %i\n",sample_size);
 	printf("printed samples %d\n",j-1);
 
 }
@@ -374,6 +376,8 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	w_session->limit_type;
 */
 
+	// FIXME dont know where this is stored
+	w_session->setSiUnit(true);
 
 	unsigned short timestamp = ((buf[22] << 8) | buf[21]);
 
@@ -698,7 +702,7 @@ buf[26] & 0x3f, // seconds
 	//parse_sportzones (w_session, raw_sess);
 
 
-	//parse_laps(w_session, raw_sess);
+	parse_laps(w_session, raw_sess);
 /*
 	int base= 422;
 	test(&buf[base + 0]);

@@ -3,6 +3,8 @@ History
 =============
 dd.mm.yyyy
 
+24.11.2011
+	* added gps sample data (was not sucsessful parsing data)
 
 14.11.2011
 	* setup git source code management

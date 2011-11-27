@@ -251,9 +251,30 @@ Byte	Meaning
 172	 0xFF or 0x06 most of the time 0xFF
 173	allways 0xFF 
 174	0x00 (after that HR data appear??) at one session 0x82
-175	first HR value (or last one) ???
-		I assume the length of 170 Bytes is the baselength
-		after that HR data, and finally lap data are stored
+175	 first HR value (or last one) ???
+
+	calculating the correct sample size
+
+	sample size = duration / recodord interval
+
+
+1	HR
+2
+3
+4
+5	Longitude	// dont know how this is encoded!!!!!
+6	Longitude
+7	Longitude
+8	Longitude
+9	Latitude
+10	Latitude
+11	Latitude
+12	Latitude
+
+	after sampledata some "quality data" are stored
+
+	finally lap data are stored.
+	
 
 
 	... see session parsing function of rs400 and rs800cx

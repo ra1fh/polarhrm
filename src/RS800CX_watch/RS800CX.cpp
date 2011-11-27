@@ -80,8 +80,8 @@ void RS800CX::saveHRM(void){
 		RawSession *raw_session;
 
 		if (0 < w_overview->getSessionNumber()) {
-			// get session raw data including protocoll data and store them in a node list
 
+			// get session raw data including protocoll data and store them in a node list
 			for (int sess_no=1; sess_no <= w_overview->getSessionNumber(); sess_no++) {
 
 				nodelist = this->watchcomm->getSession(sess_no);
@@ -108,7 +108,6 @@ void RS800CX::saveHRM(void){
 			// note! we start counting at 1
 			// it is importend to know that shifting the index from watch orignal to 
 			// array-index 0 for storing data does not get messed up!
-			// getRawSession() gets i-1
 			for (int i=1; i<=w_overview->getSessionNumber(); i++ ) {
 
 				RawSession *raw_session;
@@ -170,6 +169,7 @@ void RS800CX::eraseSessions(void) {
 	unsigned char buf[BUF_SIZE];
 	int len;
 
+	printf("not implemented!\n");
 /*
 	this->watchcomm->setDriver(driver);
 	this->watchcomm->initDriver();
@@ -203,11 +203,11 @@ void RS800CX::openRaw(std::string rawfilepath){
 
 		HrmFile *hrmfile = new HrmFile(monitor,version);
 
-		/*
+		//overwrite existing file
 		std::string path;
 		path.assign(MYPATH);path.append(session->id);path.append(HRM_EXTENTION);
 
 		hrmfile->setPath(path);
 		hrmfile->save(session);
-		*/
+
 }

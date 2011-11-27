@@ -11,6 +11,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <bitset>
 
 #include "Watch/wTime.h"
 #include "Watch/wDate.h"
@@ -313,8 +314,8 @@ void test_gps_uncode(void) {
 
 Prater Standing
 <trkpt lat="48.217256667" lon="16.395040000">
-00 00 00 E3 9D 73 10 2E FD 41 30 lat 48.217256667 48° 13' 2.1246"
-00 00 00 E0 9D 73 10 32 FD 41 30 
+00 00 00 E3 9D 73 10 2E FD 41 30 lat 48.217256667 48° 13' 2.1246" 
+00 00 00 E0 9D 73 10 32 FD 41 30  diff to citycenter -0.008191667
 00 00 00 E2 9D 83 10 37 FD 41 30 
 00 00 00 E8 9D 83 10 35 FD 41 30 
 00 00 00 EA 9D 73 10 34 FD 41 30 
@@ -325,6 +326,31 @@ Prater Standing
 00 00 00 F8 9D 73 10 29 FD 41 30 
 00 00 00 F5 9D 73 10 24 FD 41 30 
 00 00 00 EC 9D 73 10 1E FD 41 30 
+	 * FD 253
+	 * 1E  30
+	 * 41  65
+	 * 30  48
+	      396
+
+	      597
+	 * 30  48
+	 * 41  65				2E FD 41 30
+	 * FB 251
+	 * E9 233
+citycenter standing
+	<trkpt lat="48.209065000" lon="16.372276667">
+00 00 00 90 68 83 10 FB E9 41 30 48.209065000	48° 12' 32.634"
+00 00 00 86 68 83 10 FF E9 41 30 48.209061667	48° 12' 32.6232"	0.0141	x2
+00 00 00 88 68 83 10 FD E9 41 30 48.209070000	48° 12' 32.6514"	0.0282
+00 00 00 7E 68 83 10 02 EA 41 30 48.209068333	48° 12' 32.6448"
+00 00 00 6F 68 83 10 01 EA 41 30 48.209041667	48° 12' 32.547"
+00 00 00 32 68 83 10 F1 E9 41 30 48.209001667	48° 12' 32.4066"
+04 00 00 DF 67 83 10 D9 E9 41 30 
+07 00 00 C2 67 73 10 D0 E9 41 30 
+00 00 00 BE 67 83 10 CF E9 41 30 
+00 00 00 B0 67 83 10 CD E9 41 30 
+00 00 00 BF 67 73 10 D0 E9 41 30 
+00 00 00 D8 67 83 10 D6 E9 41 30 
 
 
 */
@@ -337,26 +363,25 @@ Prater Standing
 	printf("lon %d.%d \n",lon, lnib(a[5]) );
 
 
-
 	// 48.177835000  48° 10' 40.206"
 	unsigned char code[] = {0x30, 0x41, 0xfd, 0x35};
-	unsigned int c1,c2;
+	unsigned int c1;
     c1 = code[ 0 ] << 24 |
          code[ 1 ] << 16 |
          code[ 2 ] <<  8 |
          code[ 3 ];
 
-    c2 = code[ 0 ] << 21 |
-         code[ 1 ] << 14 |
-         code[ 2 ] <<  7 |
-         code[ 3 ];
     float degrees1 = c1 / 600000.0;
-    float degrees2 = c2 / 600000.0;
-
+ 
 	//48.177835000  48° 10' 40.206"
 	printf("48.177835000  48° 10' 40.206\" \n" );
 	printf("myhex1 %X %d %f\n",c1, c1, degrees1);
-	printf("myhex2 %X %d %f\n",c2, c2, degrees2);
+
+	float fltest = 48.177835000;
+	int degr = (int)fltest ;
+	float minutes = (fltest-degr) * 60;
+	float sec = (minutes - (int)minutes) * 60;
+	printf("fltest %f %d %d %f\n",fltest, degr, (int)minutes, sec);
 
 
 // http://www.cplusplus.com/forum/beginner/18566/
@@ -364,29 +389,28 @@ union UStuff
 {
 	float   f;
 	unsigned char c[0];
-	unsigned int i;
+	signed int i;
 };
 	UStuff vala, b;
 
- // 2E FD 41 30 lat 48.217256667
+// FF E9 41 30 48.209061667	48° 12' 32.6232"
 //	float xx = 2.1246;
-
-	vala.c[0] = 0x41;
-	vala.c[1] = 0xfd;
-	vala.c[2] = 0x2e;
-	vala.c[3] = 0x00;
-
-	vala.f = 217256667;
-//	vala.i = 177835000;
+/*
+	vala.c[3] = 0x30;
+	vala.c[2] = 0xe9;
+	vala.c[1] = 0x41;
+	vala.c[0] = 0xff;
+*/
+	vala.f = 32.6232;
+	//vala.i = 12;
 	for (size_t i = 0; i < sizeof(UStuff); ++i){
 		std::cout << "byte " << i << ": "
-		<< hex << (unsigned int)(vala.c[i])
-		<< std::endl; 
+		<< hex << (unsigned int)(vala.c[i]) << " "<< std::bitset<8>(vala.c[i]) 
+		<< std::endl;
 		b.c[i] = vala.c[i];
 	}
 
 	printf("float %.9f int %d\n",b.f, b.i);
-
 
 
 }

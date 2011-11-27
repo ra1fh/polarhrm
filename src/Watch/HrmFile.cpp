@@ -30,8 +30,8 @@ void HrmFile::save(Session *session) {
         "[Params]\r\n"
         "Version=%d\r\n"
         "Monitor=%d\r\n",
-         this->getVersion(), //106
-         this->getMonitor()  //22
+         this->getVersion(), //e.g. 106
+         this->getMonitor()  //e.g. 22
     );
 
 
@@ -240,17 +240,17 @@ void HrmFile::save(Session *session) {
     ); 
     /* [HRData] */
     fprintf(fd, "\r\n[HRData]\r\n");
-    /* For some reason the first sample is duplicated 
 
-	    At s625x it seem more complex. when printing speed data it is not duplicated but
-	    when just HR is printed it looks like printed twice  (thomas)
-	 */    
-//    fprintf(fd, "%d", session->sample[0]->hr);
-//    if (session->has_pace_data) {
-        /* Need to output in multiples of 1/10 km/h */
-//        fprintf(fd, "\t%d", (int) round(session->sample[0]->speed / 25.6)); 
-//    }
-//    fprintf(fd, "\r\n");
+	// print the first sample twice
+	if (this->getMonitor () == DEVICE_RS800CX) {
+		fprintf(fd, "%d", session->samples[0]->getHR());
+
+		if (session->getHasSpeedData()) {
+			/* Need to output in multiples of 1/10 km/h */
+			fprintf(fd, "\t%d", (int) session->samples[0]->getSpeed()); 
+		}
+		fprintf(fd, "\r\n");
+	}
 
 	for(int i = 0; i <= session->getNumberOfSamples(); i++) {
 		
