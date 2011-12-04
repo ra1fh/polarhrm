@@ -259,9 +259,9 @@ Byte	Meaning
 
 
 1	HR
-2
-3
-4
+2	0x00
+3	SPEED? e.g. 0x1A 0x03 -> 39
+4	SPEED?
 5	Longitude	// dont know how this is encoded!!!!!
 6	Longitude
 7	Longitude
@@ -272,9 +272,44 @@ Byte	Meaning
 12	Latitude
 
 	after sampledata some "quality data" are stored
+	data I have recodnized:
+	A7 A8 A5 A2 .... data like that
 
-	finally lap data are stored.
-	
+	I guess that it holds the connected sattalites but the strange thing is
+	that the number of data is larger than the HR samples stored in session.
+
+	calculating the quality area 
+	starting form 174+(number of samples)*sample size
+	ending at sessionlen - (number of laps * lap size)
+
+	finally lap data are stored. Lap data look like this
+
+1	timestamp
+2	timestamp
+3	timestamp
+4	Start HR
+5	AVG HR
+6	MAX HR
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19	Longitude
+20	Longitude
+21	Longitude
+22	Longitude
+23	Latitude
+24	Latitude
+25	Latitude
+26	Latitude
 
 
 	... see session parsing function of rs400 and rs800cx
