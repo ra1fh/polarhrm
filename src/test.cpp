@@ -298,13 +298,6 @@ std::list<Datanode> test_my_datanode_obj(void){
 
 void test_gps_uncode(void) {
 
-	// Minutes / 60
-	// Seconds / 3600
-
-	// 1666 for a bit
-	
-	//  0.000001666		 /60	/3600
-	// 16.344346667	 16° 20' 39.6486"
 /* 
 	
 	http://transition.fcc.gov/mb/audio/bickel/DDDMMSS-decimal.html
@@ -326,22 +319,12 @@ Prater Standing
 00 00 00 F8 9D 73 10 29 FD 41 30 
 00 00 00 F5 9D 73 10 24 FD 41 30 
 00 00 00 EC 9D 73 10 1E FD 41 30 
-	 * FD 253
-	 * 1E  30
-	 * 41  65
-	 * 30  48
-	      396
 
-	      597
-	 * 30  48
-	 * 41  65				2E FD 41 30
-	 * FB 251
-	 * E9 233
 citycenter standing
 	<trkpt lat="48.209065000" lon="16.372276667">
 00 00 00 90 68 83 10 FB E9 41 30 48.209065000	48° 12' 32.634"
-00 00 00 86 68 83 10 FF E9 41 30 48.209061667	48° 12' 32.6232"	0.0141	x2
-00 00 00 88 68 83 10 FD E9 41 30 48.209070000	48° 12' 32.6514"	0.0282
+00 00 00 86 68 83 10 FF E9 41 30 48.209061667	48° 12' 32.6232"
+00 00 00 88 68 83 10 FD E9 41 30 48.209070000	48° 12' 32.6514"
 00 00 00 7E 68 83 10 02 EA 41 30 48.209068333	48° 12' 32.6448"
 00 00 00 6F 68 83 10 01 EA 41 30 48.209041667	48° 12' 32.547"
 00 00 00 32 68 83 10 F1 E9 41 30 48.209001667	48° 12' 32.4066"
@@ -352,36 +335,35 @@ citycenter standing
 00 00 00 BF 67 73 10 D0 E9 41 30 
 00 00 00 D8 67 83 10 D6 E9 41 30 
 
-
 */
 
-	unsigned char a[]={0x00, 0x00, 0x00, 0xE3, 0x9D, 0x73, 0x10, 0x2E, 0xFD, 0x41, 0x30 };
-	int lon, lat;
-	lat = a[10];
-	lon = a[6];
-	printf("lat %d.%d \n",lat, lnib(a[9]));
-	printf("lon %d.%d \n",lon, lnib(a[5]) );
+
+//4adaee12 = 74°26.3003' = 74.438338 = 74° 26' 18.0168"
+//	unsigned char lat[]={ 0x12, 0xee, 0xda, 0x4a};
+
+	//unsigned char lat[]={ 0x2E, 0xFD, 0x41, 0x30};
+	unsigned char lon[]={ 0xE3, 0x9D, 0x73, 0x10};
+
+	// 48,216830000
+	unsigned char lat[] = {0x32,0xFC,0x41,0x30};
+	double lon_final, lat_final;
+
+	lat_final += lnib(lat[2])*0x10000;
+	lat_final += lat[1]*0x100;
+	lat_final += lat[0]*0x1;
+	lat_final  = lat_final / 600000;
+	lat_final += lat[3];
+
+	lon_final += lnib(lon[2])*0x10000;
+	lon_final += lon[1]*0x100;
+	lon_final += lon[0]*0x1;
+	lon_final  = lon_final / 600000;
+	lon_final += lon[3];
+
+	printf("lat final %.9f \n",lat_final);
+	printf("lon final %.9f \n",lon_final);
 
 
-	// 48.177835000  48° 10' 40.206"
-	unsigned char code[] = {0x30, 0x41, 0xfd, 0x35};
-	unsigned int c1;
-    c1 = code[ 0 ] << 24 |
-         code[ 1 ] << 16 |
-         code[ 2 ] <<  8 |
-         code[ 3 ];
-
-    float degrees1 = c1 / 600000.0;
- 
-	//48.177835000  48° 10' 40.206"
-	printf("48.177835000  48° 10' 40.206\" \n" );
-	printf("myhex1 %X %d %f\n",c1, c1, degrees1);
-
-	float fltest = 48.177835000;
-	int degr = (int)fltest ;
-	float minutes = (fltest-degr) * 60;
-	float sec = (minutes - (int)minutes) * 60;
-	printf("fltest %f %d %d %f\n",fltest, degr, (int)minutes, sec);
 
 
 // http://www.cplusplus.com/forum/beginner/18566/
@@ -396,13 +378,11 @@ union UStuff
 // FF E9 41 30 48.209061667	48° 12' 32.6232"
 //	float xx = 2.1246;
 /*
-	vala.c[3] = 0x30;
-	vala.c[2] = 0xe9;
+	vala.c[3] = 0xFF;
+	vala.c[2] = 0xE9;
 	vala.c[1] = 0x41;
-	vala.c[0] = 0xff;
-*/
-	vala.f = 32.6232;
-	//vala.i = 12;
+	vala.c[0] = 0x30;
+
 	for (size_t i = 0; i < sizeof(UStuff); ++i){
 		std::cout << "byte " << i << ": "
 		<< hex << (unsigned int)(vala.c[i]) << " "<< std::bitset<8>(vala.c[i]) 
@@ -411,7 +391,7 @@ union UStuff
 	}
 
 	printf("float %.9f int %d\n",b.f, b.i);
-
+*/
 
 }
 
