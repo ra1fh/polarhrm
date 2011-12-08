@@ -170,7 +170,7 @@ void RS800CX::eraseSessions(void) {
 	int len;
 
 	printf("not implemented!\n");
-/*
+
 	this->watchcomm->setDriver(driver);
 	this->watchcomm->initDriver();
 
@@ -180,13 +180,14 @@ void RS800CX::eraseSessions(void) {
 	//std::cout<< "Sessions "<< w_overview->getSessionNumber() << " Bytes " << w_overview->getUsedBytes() << std::endl;
 
 	//this is working
-	this->watchcomm->deleteAllFiles();
+	//this->watchcomm->deleteAllFiles();
 
+	this->watchcomm->testsomething();
 
 	// once all data is transfered just close the connection to the watch 
 	this->watchcomm->disconnect();
 	this->watchcomm->closeDriver();
-*/
+
 
 }
 

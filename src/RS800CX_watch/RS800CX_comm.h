@@ -65,6 +65,7 @@ class RS800CXcomm {
 	void deleteFile(unsigned char year,unsigned char month,unsigned char day,unsigned char hour,unsigned char minute,unsigned char second);
 	void deleteAllFiles(void);
 
+	void testsomething(void);
 	void getUser(unsigned char &raw_user_data, int &len);
 
 	int getReminder(unsigned char data[], unsigned char rem_num);	

@@ -295,3 +295,35 @@ void RS800CXcomm::deleteAllFiles(void){
 
 	this->driver->sendbytes(query, sizeof(query));
 }
+
+
+
+/*
+ test some thing
+ * 5A 0 5A 1 0 0 21 0 
+ * 6A 0 0 32 
+
+*/
+void RS800CXcomm::testsomething(void){
+
+	unsigned char *raw_buffer;
+	int len;
+
+	raw_buffer = new unsigned char[BUF_SIZE];
+
+	//unsigned char query[] = { 0x5A, 0x00, 0x5A, 0x01, 0x0, 0x0, 0x21, 0x0 };
+	
+	//unsigned char query[] = { 0x5A, 0x00, 0x42, 0x04, 0x00, 0x00, 0x57, 0x0}; 
+	//unsigned char query[] = {0x6A, 0x00, 0x00, 0x32 };
+	unsigned char query[] = {0x6A, 0x0, 0x0, 0x0};
+
+	this->driver->sendbytes(query, sizeof(query));
+
+	// return the length
+	len =  driver->recvbytes(raw_buffer);
+
+	for (int i=0; i<len; i++){
+		printf("0x%X, ",raw_buffer[i]);
+	}
+	printf("\n");
+}
