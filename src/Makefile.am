@@ -7,6 +7,8 @@ bin_PROGRAMS =  \
 simulate_SOURCES =  \
 	cli/simulate_watch.cpp
 
+simulate_LDADD = libpolarhrm.la 
+
 test_SOURCES =  \
 	cli/test.cpp
 

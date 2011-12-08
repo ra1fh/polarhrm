@@ -88,7 +88,7 @@ polarhrm_OBJECTS = $(am_polarhrm_OBJECTS)
 polarhrm_DEPENDENCIES = libpolarhrm.la
 am_simulate_OBJECTS = simulate_watch.$(OBJEXT)
 simulate_OBJECTS = $(am_simulate_OBJECTS)
-simulate_LDADD = $(LDADD)
+simulate_DEPENDENCIES = libpolarhrm.la
 am_test_OBJECTS = test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
@@ -268,6 +268,7 @@ top_srcdir = ..
 simulate_SOURCES = \
 	cli/simulate_watch.cpp
 
+simulate_LDADD = libpolarhrm.la 
 test_SOURCES = \
 	cli/test.cpp
 
