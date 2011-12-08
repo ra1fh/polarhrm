@@ -3,6 +3,9 @@ History
 =============
 dd.mm.yyyy
 
+12.12.2011
+	* started building a shared lib & seperating the cli
+
 24.11.2011
 	* added gps sample data (was not sucsessful parsing data)
 

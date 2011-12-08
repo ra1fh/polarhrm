@@ -31,5 +31,4 @@ Makefile
 doc/Makefile
 src/Makefile
 samples/Makefile
-src/RS400_watch/Makefile
 ])
