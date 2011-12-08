@@ -4,7 +4,7 @@
 
 #include <string>
 #include "wTime.h"
-#include "../../cli/polarhrm_config.h"
+#include "../libpolarhrm.h"
 
 using namespace std;
 

@@ -77,7 +77,7 @@ am_libpolarhrm_la_OBJECTS = file_operations.lo driver.lo \
 	RS800CX_parse_session.lo RS800CX_parse.lo Overview.lo \
 	RawSessionFile.lo RawSessions.lo wDate.lo HrmFile.lo Lap.lo \
 	Limit.lo Sample.lo Session.lo sportZone.lo wTime.lo Watch.lo \
-	util_functions.lo Datanode.lo
+	util_functions.lo Datanode.lo libpolarhrm.lo
 libpolarhrm_la_OBJECTS = $(am_libpolarhrm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -334,7 +334,10 @@ libpolarhrm_la_SOURCES = \
 	libpolarhrm/util_functions.cpp   \
 	libpolarhrm/util_functions.h   \
 	libpolarhrm/Datanode.cpp   \
-	libpolarhrm/Datanode.h
+	libpolarhrm/Datanode.h   \
+	libpolarhrm/libpolarhrm.cpp   \
+	libpolarhrm/libpolarhrm.h   \
+	libpolarhrm/supported_devices.h
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
@@ -494,6 +497,7 @@ include ./$(DEPDIR)/Watch.Plo
 include ./$(DEPDIR)/driver.Plo
 include ./$(DEPDIR)/file_operations.Plo
 include ./$(DEPDIR)/irda_driver.Plo
+include ./$(DEPDIR)/libpolarhrm.Plo
 include ./$(DEPDIR)/polarhrm.Po
 include ./$(DEPDIR)/simulate_watch.Po
 include ./$(DEPDIR)/sportZone.Plo
@@ -741,6 +745,14 @@ Datanode.lo: libpolarhrm/Datanode.cpp
 #	source='libpolarhrm/Datanode.cpp' object='Datanode.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Datanode.lo `test -f 'libpolarhrm/Datanode.cpp' || echo '$(srcdir)/'`libpolarhrm/Datanode.cpp
+
+libpolarhrm.lo: libpolarhrm/libpolarhrm.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm.lo -MD -MP -MF $(DEPDIR)/libpolarhrm.Tpo -c -o libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm.Tpo $(DEPDIR)/libpolarhrm.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/libpolarhrm.cpp' object='libpolarhrm.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
 
 polarhrm.o: cli/polarhrm.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT polarhrm.o -MD -MP -MF $(DEPDIR)/polarhrm.Tpo -c -o polarhrm.o `test -f 'cli/polarhrm.cpp' || echo '$(srcdir)/'`cli/polarhrm.cpp

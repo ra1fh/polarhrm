@@ -36,7 +36,7 @@
 #include "driver.h"
 #include "irda_driver.h"
 
-#include "../../cli/polarhrm_config.h"
+#include "../libpolarhrm.h"
 
 
 

@@ -76,7 +76,10 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/util_functions.cpp   \
 	libpolarhrm/util_functions.h   \
 	libpolarhrm/Datanode.cpp   \
-	libpolarhrm/Datanode.h
+	libpolarhrm/Datanode.h   \
+	libpolarhrm/libpolarhrm.cpp   \
+	libpolarhrm/libpolarhrm.h   \
+	libpolarhrm/supported_devices.h
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta

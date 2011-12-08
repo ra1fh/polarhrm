@@ -28,7 +28,7 @@
 #include "RS800CX_comm.h"
 #include "RS800CX_parse.h"
 #include "../Driver/driver.h"
-#include "../../cli/polarhrm_config.h"
+#include "../supported_devices.h"
 
 
 

@@ -3,10 +3,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../../cli/polarhrm_config.h"
+#include "../supported_devices.h"
 #include "Session.h"
-
-
+// FIXME remove dependency on polarhrm_config
+#include "cli/polarhrm_config.h"
 #include "HrmFile.h"
 
 

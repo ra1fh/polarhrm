@@ -3,7 +3,7 @@
  * polarhrm
  * Copyright (C) Thomas Foyth 2011 <thomas.foyth@gmail.com>
  * 
- * polarhrm is free software: you can redistribute it and/or modify it
+polarhrm is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -17,14 +17,28 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _POLARHRM_H_
-#define _POLARHRM_H_
-
-#include "polarhrm_config.h"
-#include "libpolarhrm/supported_devices.h"
-
-void printSupportedDevices(void);
-dev createEnumDeviceNum(char*);
+#ifndef _LIBPOLARHRM_H_
+#define _LIBPOLARHRM_H_
 
 
-#endif // _POLARHRM_H_
+
+
+
+/*
+ *
+ * SYSTEM SETTINGS
+ * there should be no need to change them from this point.
+ *
+ */
+
+
+
+/* Buffer size for many buffers used in the application */
+#define BUF_SIZE 1024
+
+/* Year is used for various calculations 
+   sometimes only the last two digits are given */
+#define BASE_YEAR 2000
+
+
+#endif // _LIBPOLARHRM_H_

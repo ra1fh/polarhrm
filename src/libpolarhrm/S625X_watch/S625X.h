@@ -10,7 +10,7 @@
 #include "S625X_comm.h"
 
 #include "../Driver/driver.h"
-#include "../../cli/polarhrm_config.h"
+#include "../supported_devices.h"
 
 //class Watch;
 
