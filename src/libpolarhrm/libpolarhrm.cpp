@@ -19,4 +19,25 @@ polarhrm is free software: you can redistribute it and/or modify it
 
 #include "libpolarhrm.h"
 
+void setWorkingDir(const char* path) {
+	workingDir = path;
+}
 
+const char*getWorkingDir(void) {
+	return workingDir;
+}
+
+
+void setDumpExtention(const char* ext) {
+	dumpExtention = ext;
+}
+const char* getDumpExtention(void){
+	return dumpExtention;
+}
+
+void  setHRMExtention(const char* ext){
+	hrmExtention = ext;
+}
+const char* getHRMExtention(void){
+	return hrmExtention;
+}

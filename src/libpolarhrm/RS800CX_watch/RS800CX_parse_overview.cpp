@@ -20,7 +20,7 @@
 #include "RS800CX_parse.h"
 
 
-#include "../../cli/polarhrm_config.h"
+
 #include "../util_functions.h"
 #include "../Watch/Overview.h"
 

@@ -30,7 +30,7 @@
 #include "libpolarhrm/file_operations.h"
 #include "libpolarhrm/util_functions.h"
 
-
+#include "libpolarhrm/libpolarhrm.h"
 #include "libpolarhrm/Datanode.h"
 
 using namespace std;
@@ -69,6 +69,9 @@ std::list<Datanode> test_my_datanode_obj(void);
 
 /* test a the unencoding of gps data */
 void test_gps_uncode(void);
+
+/* test the init setup for the libpolarhrm */
+void test_libpolarhrm_global_settings(void);
 
 /* inplementation here */
 
@@ -134,7 +137,7 @@ void test_run_two_sess_parsing (void){
 			//raw_session->print();
 
 			std::string path;
-			path.assign(MYPATH);path.append(TEMP_FILENAME);path.append(DUMP_EXTENTION);
+			path.assign(workingDir);path.append(tempFilename);path.append(dumpExtention);
 
 			raw_session->saveRaw(path);
 
@@ -142,19 +145,19 @@ void test_run_two_sess_parsing (void){
 			session = parser->parseSession(raw_session);
 
 			//create the filename string for the session
-			session->setFileExtention(HRM_EXTENTION);
-			session->createFilename(MYPATH);
+			session->setFileExtention(hrmExtention);
+			session->createFilename(workingDir);
 
 			std::string newpath;
-			newpath.assign(MYPATH);
+			newpath.assign(workingDir);
 			newpath.append(session->getFilename());
-			newpath.append(DUMP_EXTENTION);
+			newpath.append(dumpExtention);
 			rename(path.c_str(), newpath.c_str());
 
 
-			path.assign(MYPATH);
+			path.assign(workingDir);
 			path.append(session->getFilename());
-			path.append(HRM_EXTENTION);
+			path.append(hrmExtention);
 
 			HrmFile *hrmfile = new HrmFile(22,106);
 			hrmfile->setPath(path);
@@ -194,8 +197,8 @@ void test_session_obj(void){
 
 	ses->setStartDate(start_date);
 
-	ses->setFileExtention(HRM_EXTENTION);
-	ses->createFilename(MYPATH);
+	ses->setFileExtention(hrmExtention);
+	ses->createFilename(workingDir);
 
 	cout << ses->getFilename()<< endl;
 
@@ -399,7 +402,15 @@ union UStuff
 
 
 
+void test_libpolarhrm_global_settings(void){
 
+//setWorkingDir("/usr/x");
+printf("getWorkingDir %s\n", getWorkingDir());
+printf("getDumpExtention %s\n", getDumpExtention());
+printf("getHRMExtention %s\n", getHRMExtention());
+
+
+}
 
 
 
@@ -424,6 +435,8 @@ int main(void) {
 //	test_my_datanode_obj();
 
 	test_gps_uncode ();
+
+	test_libpolarhrm_global_settings();
 
 
 

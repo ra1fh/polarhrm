@@ -4,7 +4,7 @@
 #include "S625X_parse.h"
 
 
-#include "../../cli/polarhrm_config.h"
+
 #include "../util_functions.h"
 #include "../Watch/Overview.h"
 

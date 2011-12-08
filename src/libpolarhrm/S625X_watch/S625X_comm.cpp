@@ -10,7 +10,7 @@
 #include "S625X_comm.h"
 #include "S625X_commands.h"
 
-#include "../../cli/polarhrm_config.h"
+
 #include "../util_functions.h"
 
 

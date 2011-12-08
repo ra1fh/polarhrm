@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
-
+//FIXME remove dependency
 #include "../../cli/polarhrm_config.h"
 #include "../util_functions.h"
 

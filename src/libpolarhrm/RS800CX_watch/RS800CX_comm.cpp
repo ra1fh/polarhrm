@@ -29,7 +29,7 @@
 #include "RS800CX_comm.h"
 #include "RS800CX_commands.h"
 
-#include "../../cli/polarhrm_config.h"
+
 #include "../util_functions.h"
 
 

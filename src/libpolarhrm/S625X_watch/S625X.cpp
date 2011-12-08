@@ -19,7 +19,7 @@
 #include "../Watch/RawSessionFile.h"
 #include "../Watch/HrmFile.h"
 #include "../file_operations.h"
-#include "../../cli/polarhrm_config.h"
+#include "../libpolarhrm.h"
 
 #include <list>
 #include "../Datanode.h"
@@ -95,7 +95,7 @@ void S625X::saveHRM(void){
 
 				#ifdef DUMP_RAW
 				std::string raw_path;
-				raw_path = create_filepath(MYPATH,TEMP_FILENAME,DUMP_EXTENTION);
+				raw_path = create_filepath(workingDir,tempFilename,dumpExtention);
 				raw_session->saveRaw(raw_path);
 				#endif
 
@@ -103,20 +103,20 @@ void S625X::saveHRM(void){
 				session = this->parser->parseSession(raw_session);
 
 				//create the filename string for the session
-				session->setFileExtention(HRM_EXTENTION);
+				session->setFileExtention(hrmExtention);
 				/*TODO set a parameter to overwirte an existing file */
-				session->createFilename(MYPATH);
+				session->createFilename(dumpExtention);
 
 
 				#ifdef DUMP_RAW
 				std::string dump_path;
-				dump_path = create_filepath(MYPATH,session->getFilename().c_str(),DUMP_EXTENTION);
+				dump_path = create_filepath(workingDir,session->getFilename().c_str(),dumpExtention);
 				rename(raw_path.c_str(), dump_path.c_str());
 				#endif
 
 
 				std::string hrmpath;
-				hrmpath = create_filepath(MYPATH,session->getFilename().c_str(),HRM_EXTENTION);
+				hrmpath = create_filepath(workingDir,session->getFilename().c_str(),hrmExtention);
 
 				HrmFile *hrmfile = new HrmFile(this->monitor,this->version);
 				hrmfile->setPath(hrmpath);
@@ -174,9 +174,9 @@ void S625X::eraseSessions(void) {
 		HrmFile *hrmfile = new HrmFile(monitor,version);
 
 		std::string savepath;
-		savepath.assign(MYPATH);
+		savepath.assign(workingDir);
 		savepath.append(session->id);
-		savepath.append(HRM_EXTENTION);
+		savepath.append(hrmExtention);
 
 		hrmfile->setPath(savepath);
 		hrmfile->save(session);

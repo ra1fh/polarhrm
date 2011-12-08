@@ -36,7 +36,7 @@
 #include "../Watch/RawSessionFile.h"
 #include "../Watch/HrmFile.h"
 #include "../file_operations.h"
-#include "../../cli/polarhrm_config.h"
+#include "../libpolarhrm.h"
 
 #include <list>
 #include "../Datanode.h"
@@ -120,7 +120,7 @@ void RS800CX::saveHRM(void){
 				std::string raw_path;
 				char filename[40];
 				sprintf(filename, "rs800_session%02d", i);
-				raw_path = create_filepath(MYPATH,filename,DUMP_EXTENTION);
+				raw_path = create_filepath(workingDir,filename,dumpExtention);
 
 				raw_session->saveRaw(raw_path);
 				//#endif
@@ -206,7 +206,7 @@ void RS800CX::openRaw(std::string rawfilepath){
 
 		//overwrite existing file
 		std::string path;
-		path.assign(MYPATH);path.append(session->id);path.append(HRM_EXTENTION);
+		path.assign(workingDir);path.append(session->id);path.append(hrmExtention);
 
 		hrmfile->setPath(path);
 		hrmfile->save(session);

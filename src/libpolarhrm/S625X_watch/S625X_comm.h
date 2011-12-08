@@ -5,7 +5,7 @@
 #include "S625X_commands.h"
 
 #include "../Watch/Overview.h"
-#include "../../cli/polarhrm_config.h"
+
 
 #include <list>
 #include "../Datanode.h"

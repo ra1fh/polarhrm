@@ -10,6 +10,16 @@
  *
  */
 
+/* set up a wirtable dir to store files. 
+   raw data and hrm are stored in this dir
+   don t forget the last slash!!! 
+   software does not check if dir exists or is wirtable
+   (usabillity comes later)  */  
+static const char *MYPATH = "/home/thomas/praw/";
+
+
+
+
 /* the data are stored in PPP software and are used to wirte the HRM file */
 static unsigned char USER_HR_MAX = 195;
 static unsigned char USER_HR_REST = 86;
@@ -35,35 +45,9 @@ static unsigned char USER_WEIGHT = 77;
  */
 #define USER_NUMBER_OF_SPORTZONES 11
 static unsigned char user_sportzones[USER_NUMBER_OF_SPORTZONES] =
-					{USER_HR_MAX,176,156,137,117,USER_HR_REST,0,0,0,0,0 };
+	{USER_HR_MAX,176,156,137,117,USER_HR_REST,0,0,0,0,0 };
 
 
-/* set up a wirtable dir to store files. 
-   raw data and hrm are stored in this dir
-   don t forget the last slash!!! 
-   software does not check if dir exists or is wirtable
-   (usabillity comes later)  */  
-static const char *MYPATH = "/home/thomas/praw/";
-
-/* comment this is you don t want a raw file 
-   at this point of develompment please leave it as it is, and send 
-   your raw data and original HRM processed by PPP 
-   especially when you have cycling data by s625X */
-#define DUMP_RAW 
-
-/* temp filename
-   is used to store session data before sessioninformation is parsed 
-   after parsing the file will be renamed to corrct name */
-static const char *TEMP_FILENAME = "temp";
-
-/* extentions */
-static const char *DUMP_EXTENTION = ".dump";
-static const char *HRM_EXTENTION = ".hrm";
-
-
-/* just prepared to get a more silent output
-   but maybe I will do this with a command line switch */
-#define DEBUGPRINT
 
 
 /* HR Data are corrected during the parsing process 

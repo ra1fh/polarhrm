@@ -28,6 +28,7 @@
 #include "polarhrm_config.h"
 #include <argp.h>
 
+#include "libpolarhrm/libpolarhrm.h"
 #include "libpolarhrm/S625X_watch/S625X.h"
 #include "libpolarhrm/RS800CX_watch/RS800CX.h"
 
@@ -179,7 +180,15 @@ int main (int argc, char **argv){
 		std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
 		std::cout<< "verbose printing = " << arguments.verbose << std::endl;
 		std::cout<< "interface = " << arguments.interface << std::endl;
-	
+
+		/* show parameters of libpolarhrm */
+		setWorkingDir(MYPATH);
+		std::cout << "getWorkingDir = " << getWorkingDir() << std::endl;
+		std::cout << "getDumpExtention = " << getDumpExtention() << std::endl;
+		std::cout << "getHRMExtention = " << getHRMExtention() << std::endl;
+
+
+
 		/* If in verbose mode, print some more details */
 		if (true == arguments.verbose) {//FIXME think on verbose printing and debug printing
 			std::cout<< "some verbose text\nnot implemented\n" << std::endl;

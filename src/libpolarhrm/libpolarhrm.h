@@ -20,17 +20,41 @@ polarhrm is free software: you can redistribute it and/or modify it
 #ifndef _LIBPOLARHRM_H_
 #define _LIBPOLARHRM_H_
 
+/* set up a wirtable dir to store files. 
+   raw data and hrm are stored in this dir
+   don t forget the last slash!!! 
+   software does not check if dir exists or is wirtable
+   (usabillity comes later)  */  
+static const char *workingDir = "/home/thomas/praw/";
+
+
+/* temp filename
+   is used to store session data before sessioninformation is parsed 
+   after parsing the file will be renamed to corrct name */
+static const char *tempFilename = "temp";
+
+/* extentions */
+static const char *dumpExtention = ".dump";
+static const char *hrmExtention = ".hrm";
+
+void setWorkingDir(const char*);
+const char*getWorkingDir(void);
+void setDumpExtention(const char* ext);
+const char* getDumpExtention(void);
+void setHRMExtention(const char* ext);
+const char* getHRMExtention(void);
+
+/* comment this is you don t want a raw file 
+   at this point of develompment please leave it as it is, and send 
+   your raw data and original HRM processed by PPP 
+   especially when you have cycling data by s625X */
+#define DUMP_RAW 
 
 
 
-
-/*
- *
- * SYSTEM SETTINGS
- * there should be no need to change them from this point.
- *
- */
-
+/* just prepared to get a more silent output
+   but maybe I will do this with a command line switch */
+#define DEBUGPRINT
 
 
 /* Buffer size for many buffers used in the application */
