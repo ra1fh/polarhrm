@@ -1,0 +1,279 @@
+// simulate_watch.cpp
+//
+// Copyright (C) 2011 - thomas
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+#include <iostream>
+#include "Watch/RawSessionFile.h"
+
+
+/*
+ * Read an Ir socket and display it on stdout
+ * Use stream
+ */
+
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <fcntl.h>
+#include <errno.h>
+
+#include <linux/irda.h>
+
+#ifndef AF_IRDA
+#define AF_IRDA 23
+#endif /* AF_IRDA */
+
+unsigned char buf[4098];
+
+
+
+// read raw
+void read_my_raw(void);
+
+// listen for commands
+// as we want to simulate a watch we have to listen
+// for commdands sent by the software (host)
+// e.g. waiting for 0x15 overview command
+void listen_for_commands(void);
+
+// handle received data
+void parse_data(unsigned char *, int);
+
+
+
+
+	RawSession *rawsession;
+	unsigned char *buf1;
+	int len1;
+
+
+// this program trys to simulate a device.
+// it aims to send a manipulated session to the pp software to get
+// more samle data
+int main () {
+
+	// load raw file
+	read_my_raw();
+
+        sockaddr_irda peer, self;
+        socklen_t  addrlen;
+        int fd, conn_fd, buflen;
+        FILE *stream;
+
+        printf("IrDA HRM server starting ...\n");
+
+        /* Create socket */
+        fd = socket(AF_IRDA, SOCK_STREAM, 0);
+        if (fd < 0) {
+                perror("socket");
+                exit(-1);
+        }
+
+        /* Init self */
+        self.sir_family = AF_IRDA;
+        strncpy(self.sir_name, "HRM", 25);
+
+        self.sir_lsap_sel = LSAP_ANY;
+        
+        if (bind(fd, (sockaddr*) &self, sizeof(sockaddr_irda))) {
+                perror("bind");
+                return -1;
+        }
+
+        if (listen(fd, 8)) {
+                perror("listen");
+                return -1;
+        }
+
+     //   for (;;) {
+                addrlen = sizeof(sockaddr_irda);
+
+                printf("Waiting for connection!\n");
+                conn_fd = accept(fd, (sockaddr *) &peer, &addrlen);
+                if (conn_fd < 0) {
+                        perror("accept");
+                        return -1;
+                }
+                printf("Connected!\n");
+                
+                do {
+
+			buflen = read(conn_fd,buf, 4000);
+			int i;
+			for (i=0; i<buflen; i++) {
+				printf("%X ",buf[i]);
+			}
+			printf("\n");
+
+			if (buf[0] == 0x15) {
+				//OK 1
+					// at 1 session
+					unsigned char overviewq[] = {0x15, 0xae, 0x0, 0x20, 0x1, 0x0, 0x0, 0x0, 0x11, 0xc3, 0x0, 0x87, 0x1a, 0x0, 0x85, 0x2, 0xea, 0x1, 0x42, 0x4, 0xb1, 0x1, 0xd5, 0x1, 0xbf, 0x1, 0xc8, 0x1, 0xab, 0x4, 0xe9, 0x2 };
+					//unsigned char overviewq[] = {0x15, 0xae, 0x0, 0x20, 0x1, 0x0, 0x0, 0x0, 0x11, 0x1f, 0x0, 0x87, 0x1a, 0x0, 0x85, 0x2, 0xea, 0x1, 0x42, 0x4, 0xb1, 0x1, 0xd5, 0x1, 0xbf, 0x1, 0xc8, 0x1, 0xab, 0x4, 0xe9, 0x2 };
+				write(conn_fd, overviewq, sizeof(overviewq));
+				printf("sent 1 overview\n");
+			}
+			else if(buf[0] == 0x5A && buf[2] == 0x5A ) {
+				// OK 2
+				// does not change values at different session numbers
+				unsigned char q1[] = {0x5A, 0x0, 0x5A, 0x1, 0x0, 0x0, 0x6C, 0xF8, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xEC, 0xDF, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+				write(conn_fd, q1, sizeof(q1));
+				printf("sent 2 0x5A, 0x0, 0x5A, 0x1 ...\n");
+			}
+			else if (buf[0] == 0x6A && buf[3] == 0x32) {
+				//OK 3
+				//unsigned char q2[] = {0x6A, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4, 0xB0, 0xAE, 0x0, 0x2, 0x10, 0x36, 0x29, 0x2D, 0x29, 0xB7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,   0x2, 0x0, 0x67, 0x17, 0x18, 0x9, 0x11, 0x70, 0x14, 0x1, 0xA5, 0xB8, 0x6D, 0xAD, 0x3, 0x45, 0xBC, 0x46, 0x2A, 0x4, 0x4, 0x60, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x63, 0xE3, 0x63, 0xFF, 0x1, 0x0, 0x63, 0xE3};
+                unsigned char q2[] = {0x6A, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0xC3, 0xAE, 0x0, 0x2, 0x10, 0x36, 0x29, 0x2D, 0x29, 0xB7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x80, 0x18, 0x2, 0x0, 0x76, 0x17, 0x44, 0x25, 0x16, 0x81, 0x41, 0x0, 0x5F, 0x71, 0x5A, 0x2, 0x0, 0x45, 0xBC, 0x46, 0x2A, 0x4, 0x4, 0x5D, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x63, 0xE3, 0x63, 0xFF, 0x1, 0x0, 0x63, 0xE3}; 
+				write(conn_fd, q2, sizeof(q2));
+				printf("sent 3 0x6A, 0x80,...\n");
+			}
+			else if(buf[0] == 0x5A && buf[2] == 0x42) {
+				// does not change values at different session numbers
+				unsigned char q3[] = {0x5A, 0x0, 0x42, 0x4, 0x0, 0x0, 0x39, 0x45, 0x49, 0x0, 0xB2, 0x16, 0x76, 0x30, 0x3, 0x0, 0xB2, 0x16, 0x61, 0x0, 0xB2, 0x16, 0x66, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x66, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x0, 0x0, 0x0, 0xB2, 0x16, 0x66, 0x0, 0x0, 0x0, 0xB2, 0x16};
+				write(conn_fd, q3, sizeof(q3));
+				printf("sent 4 0x5A, 0x00, 0x42...\n");
+			}
+			else if (buf[0] == 0x6A && buf[3] == 0x00) {
+				unsigned char *query;
+				query = new unsigned char[512];
+				query[0] = 0x6A;// 80 00 00 01 00 00 04
+				query[1] = 0x80;
+				query[2] = 0x00;
+				query[3] = 0x00;
+				query[4] = 0x00; // one packet left to follow
+				query[5] = 0x00;
+				query[6] = 0x00;
+
+				memcpy(&query[7],buf1,len1);
+				
+				write(conn_fd, query, len1+6);
+				printf("sent session! \n");
+
+			}
+			else {
+				//unsigned char q[] = {0x20};
+				//write(conn_fd,q, sizeof(q));
+
+			}
+
+                } while (buf[0] != 0x0A);
+
+                close(conn_fd);
+                printf("Disconnected!\n");
+       // }
+
+
+
+
+	return 0;
+}
+
+
+
+
+void read_my_raw(void){
+	rawsession = new RawSession();
+	//rawsession->readRaw("/home/thomas/praw/gps/rs800_session_prater_standing.dump");
+	rawsession->readRaw("/home/thomas/praw/gps/rs800_session_prater_standingHACKED_GPS99.dump");
+	len1 = rawsession->getRawBufferlen();
+	buf1 = rawsession->getRawBuffer();
+	unsigned char *query;
+				query = new unsigned char[512];
+				query[0] = 0x6A;// 80 00 00 01 00 00 04
+				query[1] = 0x80;
+				query[2] = 0x00;
+				query[3] = 0x00;
+				query[4] = 0x00; // one packet left to follow
+				query[5] = 0x00;
+				query[6] = 0x00;
+			
+				memcpy(&query[7],buf1,len1);
+
+	for (int i=0; i<=len1+6; i++) {
+		printf("%X ",query[i]);
+	}
+
+	printf("\n");
+
+
+
+}
+
+void listen_for_commands(void){
+
+	bool myexit = false;
+	unsigned char buf[1024];
+	int len;
+
+	while(false == myexit){
+
+	
+
+		for (int i=0; i<= len; i++){
+			std::cout << buf[i] << " ";
+		}
+		std::cout << std::endl;
+
+
+		//parse_data(buf, len);
+
+	}
+}
+
+void parse_data(unsigned char *buf, int len){
+	unsigned char overviewq[] = {0x15, 0xae, 0x0, 0x20, 0x1, 0x0, 0x0, 0x0, 0x11, 0x1f, 0x0, 0x87, 0x1a, 0x0, 0x85, 0x2, 0xea, 0x1, 0x42, 0x4, 0xb1, 0x1, 0xd5, 0x1, 0xbf, 0x1, 0xc8, 0x1, 0xab, 0x4, 0xe9, 0x2, 0x0 };
+
+	unsigned char *query;
+	int size;
+
+
+	switch (buf[0]){
+
+		case 0x15:
+			// overview
+			query = new unsigned char[32];
+			memcpy(query, overviewq, 32);
+			break;
+
+		case 0x6a:
+			// get sessions
+			break;
+
+		case 0x16:
+			// continue transfare
+			break;
+
+		case 0x0a:
+			// close connction
+			break;
+
+		default:
+			// dont understand command 
+			break;
+	}
+
+
+}

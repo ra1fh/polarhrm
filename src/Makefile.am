@@ -12,7 +12,8 @@ AM_CFLAGS =\
 	 -g
 
 bin_PROGRAMS = polarhrm \
-	test
+	test \
+	simulate
 
 test_SOURCES = \
 	file_operations.cpp   \
@@ -69,6 +70,15 @@ test_SOURCES = \
 	util_functions.h   \
 	Datanode.cpp   \
 	Datanode.h
+
+simulate_SOURCES =  \
+	simulate_watch.cpp \
+	Driver/irda_driver.cpp \
+	Driver/irda_driver.h \
+	Watch/RawSessionFile.cpp \
+	Watch/RawSessionFile.h \
+	file_operations.cpp \
+	file_operations.h
 
 polarhrm_SOURCES = \
 	polarhrm.h   \

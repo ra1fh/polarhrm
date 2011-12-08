@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
-bin_PROGRAMS = polarhrm$(EXEEXT) test$(EXEEXT)
+bin_PROGRAMS = polarhrm$(EXEEXT) test$(EXEEXT) simulate$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in texinfo.tex
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -67,6 +67,10 @@ am__v_lt_0 = --silent
 polarhrm_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(polarhrm_LDFLAGS) $(LDFLAGS) -o $@
+am_simulate_OBJECTS = simulate_watch.$(OBJEXT) irda_driver.$(OBJEXT) \
+	RawSessionFile.$(OBJEXT) file_operations.$(OBJEXT)
+simulate_OBJECTS = $(am_simulate_OBJECTS)
+simulate_LDADD = $(LDADD)
 am_test_OBJECTS = file_operations.$(OBJEXT) driver.$(OBJEXT) \
 	irda_driver.$(OBJEXT) S625X.$(OBJEXT) S625X_comm.$(OBJEXT) \
 	S625X_parse_overview.$(OBJEXT) S625X_parse_session.$(OBJEXT) \
@@ -123,8 +127,8 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(polarhrm_SOURCES) $(test_SOURCES)
-DIST_SOURCES = $(polarhrm_SOURCES) $(test_SOURCES)
+SOURCES = $(polarhrm_SOURCES) $(simulate_SOURCES) $(test_SOURCES)
+DIST_SOURCES = $(polarhrm_SOURCES) $(simulate_SOURCES) $(test_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -352,6 +356,15 @@ test_SOURCES = \
 	Datanode.cpp   \
 	Datanode.h
 
+simulate_SOURCES = \
+	simulate_watch.cpp \
+	Driver/irda_driver.cpp \
+	Driver/irda_driver.h \
+	Watch/RawSessionFile.cpp \
+	Watch/RawSessionFile.h \
+	file_operations.cpp \
+	file_operations.h
+
 polarhrm_SOURCES = \
 	polarhrm.h   \
 	polarhrm.cpp   \
@@ -494,6 +507,9 @@ clean-binPROGRAMS:
 polarhrm$(EXEEXT): $(polarhrm_OBJECTS) $(polarhrm_DEPENDENCIES) 
 	@rm -f polarhrm$(EXEEXT)
 	$(AM_V_CXXLD)$(polarhrm_LINK) $(polarhrm_OBJECTS) $(polarhrm_LDADD) $(LIBS)
+simulate$(EXEEXT): $(simulate_OBJECTS) $(simulate_DEPENDENCIES) 
+	@rm -f simulate$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(simulate_OBJECTS) $(simulate_LDADD) $(LIBS)
 test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) 
 	@rm -f test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
@@ -528,6 +544,7 @@ include ./$(DEPDIR)/driver.Po
 include ./$(DEPDIR)/file_operations.Po
 include ./$(DEPDIR)/irda_driver.Po
 include ./$(DEPDIR)/polarhrm.Po
+include ./$(DEPDIR)/simulate_watch.Po
 include ./$(DEPDIR)/sportZone.Po
 include ./$(DEPDIR)/test.Po
 include ./$(DEPDIR)/util_functions.Po
