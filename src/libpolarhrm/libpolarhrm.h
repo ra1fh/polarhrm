@@ -37,6 +37,8 @@ static const char *tempFilename = "temp";
 static const char *dumpExtention = ".dump";
 static const char *hrmExtention = ".hrm";
 
+/* set of functions to manipulate global values 
+  use them to configure the library */
 void setWorkingDir(const char*);
 const char*getWorkingDir(void);
 void setDumpExtention(const char* ext);
@@ -46,8 +48,7 @@ const char* getHRMExtention(void);
 
 /* comment this is you don t want a raw file 
    at this point of develompment please leave it as it is, and send 
-   your raw data and original HRM processed by PPP 
-   especially when you have cycling data by s625X */
+   your raw data and original HRM processed by PPP */
 #define DUMP_RAW 
 
 

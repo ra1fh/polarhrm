@@ -1,4 +1,7 @@
 
+SUBDIRS = \
+	libpolarhrm
+
 bin_PROGRAMS =  \
 	simulate \
 	test \
@@ -92,7 +95,3 @@ AM_CPPFLAGS = \
 AM_CFLAGS =\
 	 -Wall\
 	 -g
-
-
-
-

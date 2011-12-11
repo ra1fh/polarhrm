@@ -31,4 +31,6 @@ Makefile
 doc/Makefile
 src/Makefile
 samples/Makefile
+src/libpolarhrm/Makefile
+src/libpolarhrm/RS400_watch/Makefile
 ])

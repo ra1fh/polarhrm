@@ -363,8 +363,8 @@ citycenter standing
 	lon_final  = lon_final / 600000;
 	lon_final += lon[3];
 
-	printf("lat final %.9f \n",lat_final);
-	printf("lon final %.9f \n",lon_final);
+	printf("lat final %.9f %x\n",lat_final, unib(lat[2]));
+	printf("lon final %.9f %x\n",lon_final, unib(lon[2]));
 
 
 

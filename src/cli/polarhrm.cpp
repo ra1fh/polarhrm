@@ -49,10 +49,10 @@ const char *argp_program_bug_address =
 
 /* This structure is used by main to communicate with parse_opt. */
 struct appoptions {
-	char *args[1];			/* WATCH_MODEL*/
+	char *args[1];			/* WATCH_MODEL */
 	bool verbose;			/* the -v flag */
 	bool interface;			/* the -i flag */
-	bool deleteSession;		/* the -x flag */
+	bool deleteSession;		/* the -e flag */
 	bool overwriteHrmFiles; /* the -o flag */
 	bool listDevices;	    /* the -l flag */
 	std::string debuglevel;
@@ -181,7 +181,7 @@ int main (int argc, char **argv){
 		std::cout<< "verbose printing = " << arguments.verbose << std::endl;
 		std::cout<< "interface = " << arguments.interface << std::endl;
 
-		/* show parameters of libpolarhrm */
+		/* setup parameters of libpolarhrm */
 		setWorkingDir(MYPATH);
 		std::cout << "getWorkingDir = " << getWorkingDir() << std::endl;
 		std::cout << "getDumpExtention = " << getDumpExtention() << std::endl;
