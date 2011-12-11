@@ -125,26 +125,26 @@ void RS800CX::saveHRM(void){
 				raw_session->saveRaw(raw_path);
 				//#endif
 
-/* FIXME leave this commented till parsing shows more data.
+// FIXME leave this commented till parsing shows more data.
 
 				Session *session;
 //				session = this->parser->parseSession(raw_session);
 
 				//create the filename string for the session
-				session->setFileExtention(HRM_EXTENTION);
+				session->setFileExtention(hrmExtention);
 				//FIXME set a parameter to overwirte an existing file 
-				session->createFilename(MYPATH);
+				session->createFilename(workingDir);
 
 
 				//#ifdef DUMP_RAW
 				std::string dump_path;
-				dump_path = create_filepath(MYPATH,session->getFilename().c_str(),DUMP_EXTENTION);
+				dump_path = create_filepath(workingDir,session->getFilename().c_str(),dumpExtention);
 				rename(raw_path.c_str(), dump_path.c_str());
 				//#endif
 
 
 				std::string hrmpath;
-				hrmpath = create_filepath(MYPATH,session->getFilename().c_str(),HRM_EXTENTION);
+				hrmpath = create_filepath(workingDir,session->getFilename().c_str(),hrmExtention);
 
 				HrmFile *hrmfile = new HrmFile(this->monitor,this->version);
 				hrmfile->setPath(hrmpath);
@@ -157,7 +157,7 @@ void RS800CX::saveHRM(void){
 
 				// emty memory
 				delete raw_session;
-				delete session; */
+				delete session; 
 			} // end for 
 		} //end if 
 
@@ -182,7 +182,7 @@ void RS800CX::eraseSessions(void) {
 	//this is working
 	//this->watchcomm->deleteAllFiles();
 
-	this->watchcomm->testsomething();
+	//this->watchcomm->testsomething();
 
 	// once all data is transfered just close the connection to the watch 
 	this->watchcomm->disconnect();
