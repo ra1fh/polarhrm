@@ -1,13 +1,27 @@
+
+getting started
+==================
+
 before using the software be sure that you have a porpper configured 
 Irda device.
 You can test this by running 
 	# irdadump 
 and place your polar watch to the transceiver.
 
+more information avaible 
+http://code.google.com/p/polarhrm/wiki/IRDA_Information
+
 
 do not install the software, just compile and execute it.
+(I din't have expirience with uninstalling sections in makefile, so please don t 
+call make install or make unistall for now)
 
-first go to src/polarhrm_config.h and edit the 
+
+
+configure the command line interface (cli)
+==================
+
+first go to src/cli/polarhrm_config.h and edit the 
 MYPATH value to a writable directory
 
 then run
@@ -42,25 +56,55 @@ or
 ./polarhrm rs800cx -r /path/to/dumpfile.dump
 
 
-current issues
+todos
 ==================
 
-	section moved to TODO.tasks file
-	
-	since I moved to anjuta 3.2.0 I don t have the convinient edit plug in
-	so I am thinking of putting my tasks back here.
+*overwrite existing files
+setup a switch to overwrite existing files. snap in at the file creation
+ function and force overwirte without creating a new session file number.
+it might be a bit difficult to identify that a session at a day is gets 
+overwritten exactly.
+
+*make hrm dynamic
+make the hrm file dynamic and remove static values.
+
+*what is calculated by PPP software?
+it figured out that some values are stored in ppp software and calculated by 
+ppp software such as hr minimum.
+
+*delete single sessions(s625X)
+deleting single sessions does not work for now.
+(it is a bit more complex communication watch and ppp software)
+see the s625x comm
+
+*limit zones and Sportzones(s625X)
+handle limit zones and sportzones correct.
+limit zones: there are 3 zones, accourding to polar hrm spec the 3rd limit zone
+ gets used as summery. the question is, how does the exercise number and the 
+ exercise type have impact on the 3rd setting.
+at the watch settings it is possible to set up all 3 limits but the hrm 
+shows 1 and 2 and 3 theresold summery so what?
+
+*create an Interface
+create an interface for external programms. thinking on sockets AF_UNIX, or pipes
+found a good tutorial http://www.gidforums.com/t-3369.html
+not much to do, just set up a switch -i --interface for XML and don t do any 
+additional pinting. language for communication could be xml
+GUI(java, gtk++, wx, python ...) pytrainer, sportstracker, goldencheetah
+gui windows can be found at polar4linux
+-> acctually have split the code to a libary and a cli so that other apps could
+ use the lib functions.
 
 
-	MORE SAMPLE DATA is needed!
+*MORE SAMPLE DATA is needed!
+cycling with power raw format(s625X)
+interval tranining (s625x)
 
-	cycling with power
-	and interval tranining for s625x is needed
-
-
-
+rs800cx sessions with s3 footpod
 
 
-testprogram:
+
+test.cpp:
 ==================
 
 	just for testing objects & code snippets
@@ -68,12 +112,10 @@ testprogram:
 
 
 
-
-
 Development
 ==================
 
-your watch is not soppurted by now and you want to implement it?
+your watch is not supported by now and you want to implement it?
 here I wirte some ideas of the concept to add a new device:
 
 	connection type:

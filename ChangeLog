@@ -4,14 +4,15 @@ History
 dd.mm.yyyy
 
 12.12.2011
-	* started building a shared lib & seperating the cli
+	* started building a shared lib & seperating the cli(command line interface)
+	* wrote a application to simulate an HRM device.
+	* hacked the gps encoding (need to review)
 
 24.11.2011
 	* added gps sample data (was not sucsessful parsing data)
 
 14.11.2011
 	* setup git source code management
-
 
 11.11.2011
 	* I recognized a bug with parsing the laps. the number_of_laps value is 

@@ -265,9 +265,6 @@ polarhrmdoc_DATA = \
 	INSTALL\
 	NEWS
 
-EXTRA_DIST = $(polarhrmdoc_DATA) \
-	TODO.tasks
-
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
