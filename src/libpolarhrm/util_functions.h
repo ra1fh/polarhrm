@@ -30,5 +30,6 @@
 
 	char * toUpperCase (char *s);
 
+	double toGpsDec(unsigned char pos[]);
 
 #endif

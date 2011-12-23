@@ -169,7 +169,7 @@ int main (int argc, char **argv){
 		//print out a list
 		if (true == arguments.listDevices) {
 				printSupportedDevices();
-				exit(0); // exit after printing
+				return EXIT_SUCCESS;
 			}
 
 
@@ -214,8 +214,7 @@ int main (int argc, char **argv){
 				break;
 			case DEVICE_NOT_SUPPORTED:
 				printf("device is not supported so far. :-(\nif it has an irda interface you can help supporting this device.\n");
-				exit(0);
-				break;
+				return EXIT_SUCCESS;
 		}
 
 
@@ -240,7 +239,7 @@ int main (int argc, char **argv){
 		}
 		else {
 			printf("file does not exist: %s\n",arguments.rawfilepath.c_str());
-			exit(0);
+			return EXIT_SUCCESS;
 		}
 	}
 
@@ -253,7 +252,7 @@ int main (int argc, char **argv){
 	}
 
 
-return 0;
+return EXIT_SUCCESS;
 }
 
 

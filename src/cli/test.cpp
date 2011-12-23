@@ -351,20 +351,20 @@ citycenter standing
 	unsigned char lat[] = {0x32,0xFC,0x41,0x30};
 	double lon_final, lat_final;
 
+	/* // just for testing -> implementation
+	   // can be seen in util_functions.cpp
+	
 	lat_final += lnib(lat[2])*0x10000;
 	lat_final += lat[1]*0x100;
 	lat_final += lat[0]*0x1;
 	lat_final  = lat_final / 600000;
 	lat_final += lat[3];
 
-	lon_final += lnib(lon[2])*0x10000;
-	lon_final += lon[1]*0x100;
-	lon_final += lon[0]*0x1;
-	lon_final  = lon_final / 600000;
-	lon_final += lon[3];
+	*/
 
-	printf("lat final %.9f %x\n",lat_final, unib(lat[2]));
-	printf("lon final %.9f %x\n",lon_final, unib(lon[2]));
+
+	printf("lat final %.9f %x\n", toGpsDec(lat), unib(lat[2]));
+	printf("lon final %.9f %x\n", toGpsDec(lon), unib(lon[2]));
 
 
 
@@ -393,7 +393,7 @@ union UStuff
 		b.c[i] = vala.c[i];
 	}
 
-	printf("float %.9f int %d\n",b.f, b.i);
+
 */
 
 }
@@ -436,7 +436,7 @@ int main(void) {
 
 	test_gps_uncode ();
 
-	test_libpolarhrm_global_settings();
+//	test_libpolarhrm_global_settings();
 
 
 

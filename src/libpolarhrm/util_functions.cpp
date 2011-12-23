@@ -56,3 +56,20 @@ char * toUpperCase (char *s){
 	}
 	return s;
 }
+
+
+// make decimal gps value out of 4 bytes
+double toGpsDec(unsigned char pos[]){
+
+	double coordinate;
+
+	//FIXME not handling all data
+	// what is the purpose of the upper nibble at pos[2]
+	coordinate += lnib(pos[2])*0x10000;
+	coordinate += pos[1]*0x100;
+	coordinate += pos[0]*0x1;
+	coordinate  = coordinate / 600000;
+	coordinate += pos[3];
+
+	return coordinate;
+}

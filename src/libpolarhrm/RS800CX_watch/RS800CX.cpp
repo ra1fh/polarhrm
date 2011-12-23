@@ -125,10 +125,10 @@ void RS800CX::saveHRM(void){
 				raw_session->saveRaw(raw_path);
 				//#endif
 
-// FIXME leave this commented till parsing shows more data.
+
 
 				Session *session;
-//				session = this->parser->parseSession(raw_session);
+				session = this->parser->parseSession(raw_session);
 
 				//create the filename string for the session
 				session->setFileExtention(hrmExtention);

@@ -262,7 +262,7 @@ Byte	Meaning
 2	0x00
 3	SPEED? e.g. 0x1A 0x03 -> 39
 4	SPEED?
-5	Longitude	// dont know how this is encoded!!!!!
+5	Longitude	// encoding function at util_functions.cpp
 6	Longitude
 7	Longitude
 8	Longitude
@@ -279,7 +279,7 @@ Byte	Meaning
 	that the number of data is larger than the HR samples stored in session.
 
 	calculating the quality area 
-	starting form 174+(number of samples)*sample size
+	starting form 175+(number of samples)*sample size
 	ending at sessionlen - (number of laps * lap size)
 
 	finally lap data are stored. Lap data look like this

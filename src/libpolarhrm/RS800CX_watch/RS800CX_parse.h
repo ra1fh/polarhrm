@@ -52,6 +52,7 @@ class RS800CXparse {
 	void parse_samples(Session *w_session, RawSession *raw_sess);
 	void parse_laps(Session *w_session, RawSession *raw_sess);
 	void parse_sportzones(Session *w_session, RawSession *raw_sess);
+	void parse_gpsdata(Session *w_session, RawSession *raw_sess);
 	void test(unsigned char pos[]);
 	void show(int, unsigned char *pos);
 };

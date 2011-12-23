@@ -38,7 +38,7 @@
 
 
 
-//#include "../../cli/polarhrm_config.h"
+
 #include "../util_functions.h"
 
 #include "RS800CX_comm.h"
@@ -74,7 +74,8 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 
 	unsigned char *buf;
 	buf = raw_sess->getRawBuffer();
-	
+	buf = &buf[175];
+
 	float speed_val;
 	int alt;
 	int j=0; // count printed samples
@@ -86,23 +87,21 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 	// set up a memory for storing the samples
 	w_session->samples =(Sample**) new Sample[w_session->getNumberOfSamples()];
 
-	// goto all samples [HRData] at hrm file and store them in the structure
-	//for (int i = raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size);
-	//     i >= 172; i = i - sample_size){
 
 
-	for (int i = 175; i<= raw_sess->getRawBufferlen() - (w_session->getNumberOfLaps() * lap_byte_size); i = i +sample_size ) {
+	for (int i = 0; i<=(w_session->getNumberOfSamples()*sample_size); i += sample_size ) {
+	
 		w_session->samples[j]= new Sample;
 
 		w_session->samples[j]->setHR(0);
 		w_session->samples[j]->setSpeed(0);
 		w_session->samples[j]->setAlt(0);
-	
+
 
 		// HR data is allways set
 		w_session->samples[j]->setHR(buf[i]);
 
-		#ifdef ENABLE_HR_FIXING	
+		#ifdef ENABLE_HR_FIXING
 		// it seems that not all data are printed to hrm file. 
 		// when data are out of range they are droped but what is the range?
 		// here are my assumptions
@@ -131,20 +130,9 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 			double longitude; 
 			double latitude;
 
-		// try to parse gps data out of the buffer
-		// I have made a test function -> test.cpp file
-		//  lat  : 2 Words [4 bytes];
-		//  long : 2 Words [4 bytes];
-
-			//printf("\t%d\t",i);
-			for (int k=1; k<sample_size; k++) {
-				printf("%.2X ",buf[i+k]);
-			}
-			//  (hour) + (minute) / 60 + (second) / 3600;
-			longitude =  buf[i+5+alt_offset] ;
-			latitude = buf[i+8+alt_offset];
-
-
+			latitude  = toGpsDec(&buf[i+8+alt_offset]);
+			longitude = toGpsDec(&buf[i+4+alt_offset]);
+			printf("lat %.9f lon %.9f",latitude, longitude);
 		}
 
 
@@ -164,7 +152,7 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 		j++;
 	}
 	printf("sample_size %i\n",sample_size);
-	printf("printed samples %d\n",j-1);
+	printf("printed samples %d\n",j);
 
 }
 
@@ -230,10 +218,7 @@ void RS800CXparse::parse_laps(Session *w_session, RawSession *raw_sess){
 		/* shift to next */
 		//prev_index = prev_index-hr_index; 
 
-		//Lap byte 3 is the lap HR
-		//Lap byte 4 is the avg HR for the lap
-		//Lap byte 5 is the max HR for the lap
-	
+
 		printf("start lap HR %d\n",buf[i+3]);
 		
 		w_session->laps[j]->hr_end = (unsigned int) buf[i+3];
@@ -244,38 +229,26 @@ void RS800CXparse::parse_laps(Session *w_session, RawSession *raw_sess){
 		printf("avg HR = %d\n",w_session->laps[j]->hr_avg);
 		printf("max HR = %d\n",w_session->laps[j]->hr_max);
 
-		
+
 		if (w_session->getHasAltitudeData()){
 			printf("ALT = %d\n",buf[i+18]);
 			w_session->laps[j]->alt = buf[i+20];
 			printf("Avg ALT of Lap = %d\n",w_session->laps[j]->alt);
 
-
 			printf("?? temperature = %d\n",(lnib(buf[i+30])<<4) + unib(buf[i+31]) );
 		}
 		
-			// runspeed || bike1 || bike2
-		/* if (w_session->getHasSpeedData()) {
-			// byte 6
-			printf("distance %d\n",buf[i+6]);
-			// byte 7
-			printf("byte 7 %d\n",buf[i+7]);
-			// byte 8
-			printf("start HR %d\n",buf[i+8]);
-			// byte 9
-			printf("byte 9 %d\n",buf[i+9]);
-	
-			//high_nibble(c+3) * 4 + high_nibble(c+2) determine the integer portion
-			//low_nibble(c+2)/16 is the fractional portion. 
+			// just gps for now
+		if (w_session->getHasSpeedData()) {
 
-			//speed
-			i=136+(lap_byte_size*j);
-			printf("speed %d\n",(unib(buf[i+3])*4+unib(buf[i+2]))*10+(lnib(buf[i+2])/16));
+			double longitude; 
+			double latitude;
 
-			w_session->laps[j]->speed_end = (unsigned int)(unib(buf[i+3])*4+unib(buf[i+2])*10+(lnib(buf[i+2])/16));
-			printf("w_session->lap[j]->speed_end=%i\n",w_session->laps[j]->speed_end);
-		
-		} */
+			latitude  = toGpsDec(&buf[i+22]);
+			longitude = toGpsDec(&buf[i+18]);
+			printf("lat %.9f lon %.9f\n",latitude, longitude);
+
+		}
 	}
 
 }
@@ -325,8 +298,17 @@ void RS800CXparse::parse_sportzones(Session *w_session, RawSession *raw_sess){
 }
 
 
+void RS800CXparse::parse_gpsdata(Session *w_session, RawSession *raw_sess){
 
 
+
+}
+
+
+
+
+
+// main session parsing function
 Session* RS800CXparse::parseSession(RawSession *raw_sess){
 
 	unsigned char *buf;
@@ -349,8 +331,6 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 		       "It looks like there is 4 byte discrepance\n"
 		       "I guess the first 4 bytes count as part of\n"
 		       " the protocol head but I am not sure\n\n");
-		//exit(1);
-	
 	}
 
 	printf("lines printed with OK seem to be correct parsed\n"
@@ -400,7 +380,8 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 
 	//  create a fileneame for later saving
 	//  the extention is added on demand .hrm .dump or what ever 
-	snprintf(w_session->id,31,"%d-%d-%d_%d_%d",w_session->getStartDate()->getYear(),
+	snprintf(w_session->id,31,"%d-%d-%d_%d_%d",
+							w_session->getStartDate()->getYear(),
 							w_session->getStartDate()->getMonth(),
 							w_session->getStartDate()->getDay(),
 							w_session->getStartDate()->getHour(),
@@ -532,12 +513,12 @@ buf[26] & 0x3f, // seconds
 
 
 /* need to find this values
-	 bike 1- 3
+	 * bike 1- 3
 	 * speed sensor
 	 * cadence
-	 shoe 1- 3
-	 gps G3 on - off byte 18 -> 0x18
-	 altitude on - off
+	 * shoe 1- 3
+	 * gps G3 on - off byte 18 -> 0x18
+	 * altitude on - off
 */
 
 	/* the rs800cx manual tells the impact of switching on or of various settings
@@ -555,8 +536,6 @@ buf[26] & 0x3f, // seconds
 		if ALT on byte 18 bit 0 is true
 		if ALT lap_byte_size = 14
 
-
-	 *	Recordrate (this we allready got)
 
 	 */
 
@@ -653,10 +632,11 @@ buf[26] & 0x3f, // seconds
 	// 2227 end length there is only one lap stored
 
 
-	w_session->setNumberOfSamples((sesslen-(174+w_session->getNumberOfLaps()*lap_byte_size)-sample_size)/sample_size);
+	//w_session->setNumberOfSamples((sesslen-(174+w_session->getNumberOfLaps()*lap_byte_size)-sample_size)/sample_size);
+	w_session->setNumberOfSamples((int)floor(w_session->getDuration()->toDouble() / w_session->getRecordingInterval())-1);
 
-	printf("?? w_session->number_of_samples looks correct%d\n",w_session->getNumberOfSamples());
-	printf("?? proof of calculation: duration / record interval = %d\n", (int)ceil(w_session->getDuration()->toDouble() / w_session->getRecordingInterval()));
+	printf("?? w_session->number_of_samples looks correct %d\n",w_session->getNumberOfSamples());
+	printf("?? proof of calculation: duration / record interval = %d\n", (int)floor(w_session->getDuration()->toDouble() / w_session->getRecordingInterval()));
 	printf ("?? byte 97 number_of_samples seems to be something different %d\n",toshort(&buf[97]));
 
 
@@ -697,12 +677,13 @@ buf[26] & 0x3f, // seconds
 	SHOW(173);
 	SHOW(174);
 	SHOW(175);
+
 	//XXX disabled for shorter output
 	parse_samples(w_session, raw_sess);
-	//parse_sportzones (w_session, raw_sess);
-
+	parse_sportzones (w_session, raw_sess);
 
 	parse_laps(w_session, raw_sess);
+
 /*
 	int base= 422;
 	test(&buf[base + 0]);
