@@ -69,19 +69,33 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libpolarhrm_la_LIBADD =
-am_libpolarhrm_la_OBJECTS = file_operations.lo driver.lo \
-	irda_driver.lo S625X.lo S625X_comm.lo S625X_parse_overview.lo \
-	S625X_parse_session.lo S625X_parse.lo RS800CX.lo \
-	RS800CX_comm.lo RS800CX_parse_overview.lo \
-	RS800CX_parse_session.lo RS800CX_parse.lo Overview.lo \
-	RawSessionFile.lo RawSessions.lo wDate.lo HrmFile.lo Lap.lo \
-	Limit.lo Sample.lo Session.lo sportZone.lo wTime.lo Watch.lo \
-	util_functions.lo Datanode.lo libpolarhrm.lo
+libpolarhrm_la_DEPENDENCIES =
+am_libpolarhrm_la_OBJECTS = libpolarhrm_la-file_operations.lo \
+	libpolarhrm_la-driver.lo libpolarhrm_la-irda_driver.lo \
+	libpolarhrm_la-S625X.lo libpolarhrm_la-S625X_comm.lo \
+	libpolarhrm_la-S625X_parse_overview.lo \
+	libpolarhrm_la-S625X_parse_session.lo \
+	libpolarhrm_la-S625X_parse.lo libpolarhrm_la-RS800CX.lo \
+	libpolarhrm_la-RS800CX_comm.lo \
+	libpolarhrm_la-RS800CX_parse_overview.lo \
+	libpolarhrm_la-RS800CX_parse_session.lo \
+	libpolarhrm_la-RS800CX_parse.lo libpolarhrm_la-Overview.lo \
+	libpolarhrm_la-RawSessionFile.lo libpolarhrm_la-RawSessions.lo \
+	libpolarhrm_la-wDate.lo libpolarhrm_la-HrmFile.lo \
+	libpolarhrm_la-Lap.lo libpolarhrm_la-Limit.lo \
+	libpolarhrm_la-Sample.lo libpolarhrm_la-Session.lo \
+	libpolarhrm_la-sportZone.lo libpolarhrm_la-wTime.lo \
+	libpolarhrm_la-Watch.lo libpolarhrm_la-util_functions.lo \
+	libpolarhrm_la-Datanode.lo libpolarhrm_la-libpolarhrm.lo \
+	libpolarhrm_la-Gps.lo libpolarhrm_la-GpxFile.lo
 libpolarhrm_la_OBJECTS = $(am_libpolarhrm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
+libpolarhrm_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
 am_polarhrm_OBJECTS = polarhrm.$(OBJEXT)
 polarhrm_OBJECTS = $(am_polarhrm_OBJECTS)
@@ -89,11 +103,11 @@ polarhrm_DEPENDENCIES = libpolarhrm.la
 am_simulate_OBJECTS = simulate_watch.$(OBJEXT)
 simulate_OBJECTS = $(am_simulate_OBJECTS)
 simulate_DEPENDENCIES = libpolarhrm.la
-am_test_OBJECTS = test.$(OBJEXT)
+am_test_OBJECTS = test-test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
-test_LDADD = $(LDADD)
+test_DEPENDENCIES =
 test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(test_CXXFLAGS) \
 	$(CXXFLAGS) $(test_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -313,7 +327,11 @@ simulate_LDADD = libpolarhrm.la
 test_SOURCES = \
 	cli/test.cpp
 
+test_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
 test_LDFLAGS = libpolarhrm.la 
+test_LDADD = -lxml2 
 polarhrm_SOURCES = \
 	cli/polarhrm.cpp \
 	cli/polarhrm.h \
@@ -378,8 +396,16 @@ libpolarhrm_la_SOURCES = \
 	libpolarhrm/Datanode.h   \
 	libpolarhrm/libpolarhrm.cpp   \
 	libpolarhrm/libpolarhrm.h   \
-	libpolarhrm/supported_devices.h
+	libpolarhrm/supported_devices.h   \
+	libpolarhrm/Watch/Gps.cpp   \
+	libpolarhrm/Watch/Gps.h   \
+	libpolarhrm/Watch/GpxFile.cpp   \
+	libpolarhrm/Watch/GpxFile.h
 
+libpolarhrm_la_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
+libpolarhrm_la_LIBADD = -lxml2 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -455,7 +481,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libpolarhrm.la: $(libpolarhrm_la_OBJECTS) $(libpolarhrm_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libpolarhrm_la_OBJECTS) $(libpolarhrm_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(libpolarhrm_la_LINK) -rpath $(libdir) $(libpolarhrm_la_OBJECTS) $(libpolarhrm_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -515,37 +541,39 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/Datanode.Plo
-include ./$(DEPDIR)/HrmFile.Plo
-include ./$(DEPDIR)/Lap.Plo
-include ./$(DEPDIR)/Limit.Plo
-include ./$(DEPDIR)/Overview.Plo
-include ./$(DEPDIR)/RS800CX.Plo
-include ./$(DEPDIR)/RS800CX_comm.Plo
-include ./$(DEPDIR)/RS800CX_parse.Plo
-include ./$(DEPDIR)/RS800CX_parse_overview.Plo
-include ./$(DEPDIR)/RS800CX_parse_session.Plo
-include ./$(DEPDIR)/RawSessionFile.Plo
-include ./$(DEPDIR)/RawSessions.Plo
-include ./$(DEPDIR)/S625X.Plo
-include ./$(DEPDIR)/S625X_comm.Plo
-include ./$(DEPDIR)/S625X_parse.Plo
-include ./$(DEPDIR)/S625X_parse_overview.Plo
-include ./$(DEPDIR)/S625X_parse_session.Plo
-include ./$(DEPDIR)/Sample.Plo
-include ./$(DEPDIR)/Session.Plo
-include ./$(DEPDIR)/Watch.Plo
-include ./$(DEPDIR)/driver.Plo
-include ./$(DEPDIR)/file_operations.Plo
-include ./$(DEPDIR)/irda_driver.Plo
-include ./$(DEPDIR)/libpolarhrm.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Datanode.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Gps.Plo
+include ./$(DEPDIR)/libpolarhrm_la-GpxFile.Plo
+include ./$(DEPDIR)/libpolarhrm_la-HrmFile.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Lap.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Limit.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Overview.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RS800CX.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RS800CX_comm.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RS800CX_parse.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RS800CX_parse_overview.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RS800CX_parse_session.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RawSessionFile.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RawSessions.Plo
+include ./$(DEPDIR)/libpolarhrm_la-S625X.Plo
+include ./$(DEPDIR)/libpolarhrm_la-S625X_comm.Plo
+include ./$(DEPDIR)/libpolarhrm_la-S625X_parse.Plo
+include ./$(DEPDIR)/libpolarhrm_la-S625X_parse_overview.Plo
+include ./$(DEPDIR)/libpolarhrm_la-S625X_parse_session.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Sample.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Session.Plo
+include ./$(DEPDIR)/libpolarhrm_la-Watch.Plo
+include ./$(DEPDIR)/libpolarhrm_la-driver.Plo
+include ./$(DEPDIR)/libpolarhrm_la-file_operations.Plo
+include ./$(DEPDIR)/libpolarhrm_la-irda_driver.Plo
+include ./$(DEPDIR)/libpolarhrm_la-libpolarhrm.Plo
+include ./$(DEPDIR)/libpolarhrm_la-sportZone.Plo
+include ./$(DEPDIR)/libpolarhrm_la-util_functions.Plo
+include ./$(DEPDIR)/libpolarhrm_la-wDate.Plo
+include ./$(DEPDIR)/libpolarhrm_la-wTime.Plo
 include ./$(DEPDIR)/polarhrm.Po
 include ./$(DEPDIR)/simulate_watch.Po
-include ./$(DEPDIR)/sportZone.Plo
-include ./$(DEPDIR)/test.Po
-include ./$(DEPDIR)/util_functions.Plo
-include ./$(DEPDIR)/wDate.Plo
-include ./$(DEPDIR)/wTime.Plo
+include ./$(DEPDIR)/test-test.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -571,229 +599,245 @@ include ./$(DEPDIR)/wTime.Plo
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LTCXXCOMPILE) -c -o $@ $<
 
-file_operations.lo: libpolarhrm/file_operations.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT file_operations.lo -MD -MP -MF $(DEPDIR)/file_operations.Tpo -c -o file_operations.lo `test -f 'libpolarhrm/file_operations.cpp' || echo '$(srcdir)/'`libpolarhrm/file_operations.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/file_operations.Tpo $(DEPDIR)/file_operations.Plo
+libpolarhrm_la-file_operations.lo: libpolarhrm/file_operations.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-file_operations.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-file_operations.Tpo -c -o libpolarhrm_la-file_operations.lo `test -f 'libpolarhrm/file_operations.cpp' || echo '$(srcdir)/'`libpolarhrm/file_operations.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-file_operations.Tpo $(DEPDIR)/libpolarhrm_la-file_operations.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/file_operations.cpp' object='file_operations.lo' libtool=yes \
+#	source='libpolarhrm/file_operations.cpp' object='libpolarhrm_la-file_operations.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o file_operations.lo `test -f 'libpolarhrm/file_operations.cpp' || echo '$(srcdir)/'`libpolarhrm/file_operations.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-file_operations.lo `test -f 'libpolarhrm/file_operations.cpp' || echo '$(srcdir)/'`libpolarhrm/file_operations.cpp
 
-driver.lo: libpolarhrm/Driver/driver.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT driver.lo -MD -MP -MF $(DEPDIR)/driver.Tpo -c -o driver.lo `test -f 'libpolarhrm/Driver/driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/driver.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/driver.Tpo $(DEPDIR)/driver.Plo
+libpolarhrm_la-driver.lo: libpolarhrm/Driver/driver.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-driver.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-driver.Tpo -c -o libpolarhrm_la-driver.lo `test -f 'libpolarhrm/Driver/driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/driver.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-driver.Tpo $(DEPDIR)/libpolarhrm_la-driver.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Driver/driver.cpp' object='driver.lo' libtool=yes \
+#	source='libpolarhrm/Driver/driver.cpp' object='libpolarhrm_la-driver.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o driver.lo `test -f 'libpolarhrm/Driver/driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/driver.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-driver.lo `test -f 'libpolarhrm/Driver/driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/driver.cpp
 
-irda_driver.lo: libpolarhrm/Driver/irda_driver.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT irda_driver.lo -MD -MP -MF $(DEPDIR)/irda_driver.Tpo -c -o irda_driver.lo `test -f 'libpolarhrm/Driver/irda_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/irda_driver.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/irda_driver.Tpo $(DEPDIR)/irda_driver.Plo
+libpolarhrm_la-irda_driver.lo: libpolarhrm/Driver/irda_driver.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-irda_driver.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-irda_driver.Tpo -c -o libpolarhrm_la-irda_driver.lo `test -f 'libpolarhrm/Driver/irda_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/irda_driver.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-irda_driver.Tpo $(DEPDIR)/libpolarhrm_la-irda_driver.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Driver/irda_driver.cpp' object='irda_driver.lo' libtool=yes \
+#	source='libpolarhrm/Driver/irda_driver.cpp' object='libpolarhrm_la-irda_driver.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o irda_driver.lo `test -f 'libpolarhrm/Driver/irda_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/irda_driver.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-irda_driver.lo `test -f 'libpolarhrm/Driver/irda_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/irda_driver.cpp
 
-S625X.lo: libpolarhrm/S625X_watch/S625X.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT S625X.lo -MD -MP -MF $(DEPDIR)/S625X.Tpo -c -o S625X.lo `test -f 'libpolarhrm/S625X_watch/S625X.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/S625X.Tpo $(DEPDIR)/S625X.Plo
+libpolarhrm_la-S625X.lo: libpolarhrm/S625X_watch/S625X.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X.Tpo -c -o libpolarhrm_la-S625X.lo `test -f 'libpolarhrm/S625X_watch/S625X.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-S625X.Tpo $(DEPDIR)/libpolarhrm_la-S625X.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/S625X_watch/S625X.cpp' object='S625X.lo' libtool=yes \
+#	source='libpolarhrm/S625X_watch/S625X.cpp' object='libpolarhrm_la-S625X.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o S625X.lo `test -f 'libpolarhrm/S625X_watch/S625X.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-S625X.lo `test -f 'libpolarhrm/S625X_watch/S625X.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X.cpp
 
-S625X_comm.lo: libpolarhrm/S625X_watch/S625X_comm.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT S625X_comm.lo -MD -MP -MF $(DEPDIR)/S625X_comm.Tpo -c -o S625X_comm.lo `test -f 'libpolarhrm/S625X_watch/S625X_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_comm.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/S625X_comm.Tpo $(DEPDIR)/S625X_comm.Plo
+libpolarhrm_la-S625X_comm.lo: libpolarhrm/S625X_watch/S625X_comm.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X_comm.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X_comm.Tpo -c -o libpolarhrm_la-S625X_comm.lo `test -f 'libpolarhrm/S625X_watch/S625X_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_comm.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-S625X_comm.Tpo $(DEPDIR)/libpolarhrm_la-S625X_comm.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/S625X_watch/S625X_comm.cpp' object='S625X_comm.lo' libtool=yes \
+#	source='libpolarhrm/S625X_watch/S625X_comm.cpp' object='libpolarhrm_la-S625X_comm.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o S625X_comm.lo `test -f 'libpolarhrm/S625X_watch/S625X_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_comm.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-S625X_comm.lo `test -f 'libpolarhrm/S625X_watch/S625X_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_comm.cpp
 
-S625X_parse_overview.lo: libpolarhrm/S625X_watch/S625X_parse_overview.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT S625X_parse_overview.lo -MD -MP -MF $(DEPDIR)/S625X_parse_overview.Tpo -c -o S625X_parse_overview.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_overview.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/S625X_parse_overview.Tpo $(DEPDIR)/S625X_parse_overview.Plo
+libpolarhrm_la-S625X_parse_overview.lo: libpolarhrm/S625X_watch/S625X_parse_overview.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X_parse_overview.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X_parse_overview.Tpo -c -o libpolarhrm_la-S625X_parse_overview.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_overview.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-S625X_parse_overview.Tpo $(DEPDIR)/libpolarhrm_la-S625X_parse_overview.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/S625X_watch/S625X_parse_overview.cpp' object='S625X_parse_overview.lo' libtool=yes \
+#	source='libpolarhrm/S625X_watch/S625X_parse_overview.cpp' object='libpolarhrm_la-S625X_parse_overview.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o S625X_parse_overview.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_overview.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-S625X_parse_overview.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_overview.cpp
 
-S625X_parse_session.lo: libpolarhrm/S625X_watch/S625X_parse_session.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT S625X_parse_session.lo -MD -MP -MF $(DEPDIR)/S625X_parse_session.Tpo -c -o S625X_parse_session.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_session.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/S625X_parse_session.Tpo $(DEPDIR)/S625X_parse_session.Plo
+libpolarhrm_la-S625X_parse_session.lo: libpolarhrm/S625X_watch/S625X_parse_session.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X_parse_session.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X_parse_session.Tpo -c -o libpolarhrm_la-S625X_parse_session.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_session.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-S625X_parse_session.Tpo $(DEPDIR)/libpolarhrm_la-S625X_parse_session.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/S625X_watch/S625X_parse_session.cpp' object='S625X_parse_session.lo' libtool=yes \
+#	source='libpolarhrm/S625X_watch/S625X_parse_session.cpp' object='libpolarhrm_la-S625X_parse_session.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o S625X_parse_session.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_session.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-S625X_parse_session.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse_session.cpp
 
-S625X_parse.lo: libpolarhrm/S625X_watch/S625X_parse.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT S625X_parse.lo -MD -MP -MF $(DEPDIR)/S625X_parse.Tpo -c -o S625X_parse.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/S625X_parse.Tpo $(DEPDIR)/S625X_parse.Plo
+libpolarhrm_la-S625X_parse.lo: libpolarhrm/S625X_watch/S625X_parse.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X_parse.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X_parse.Tpo -c -o libpolarhrm_la-S625X_parse.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-S625X_parse.Tpo $(DEPDIR)/libpolarhrm_la-S625X_parse.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/S625X_watch/S625X_parse.cpp' object='S625X_parse.lo' libtool=yes \
+#	source='libpolarhrm/S625X_watch/S625X_parse.cpp' object='libpolarhrm_la-S625X_parse.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o S625X_parse.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-S625X_parse.lo `test -f 'libpolarhrm/S625X_watch/S625X_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X_parse.cpp
 
-RS800CX.lo: libpolarhrm/RS800CX_watch/RS800CX.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RS800CX.lo -MD -MP -MF $(DEPDIR)/RS800CX.Tpo -c -o RS800CX.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RS800CX.Tpo $(DEPDIR)/RS800CX.Plo
+libpolarhrm_la-RS800CX.lo: libpolarhrm/RS800CX_watch/RS800CX.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RS800CX.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RS800CX.Tpo -c -o libpolarhrm_la-RS800CX.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RS800CX.Tpo $(DEPDIR)/libpolarhrm_la-RS800CX.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/RS800CX_watch/RS800CX.cpp' object='RS800CX.lo' libtool=yes \
+#	source='libpolarhrm/RS800CX_watch/RS800CX.cpp' object='libpolarhrm_la-RS800CX.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RS800CX.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RS800CX.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX.cpp
 
-RS800CX_comm.lo: libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RS800CX_comm.lo -MD -MP -MF $(DEPDIR)/RS800CX_comm.Tpo -c -o RS800CX_comm.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RS800CX_comm.Tpo $(DEPDIR)/RS800CX_comm.Plo
+libpolarhrm_la-RS800CX_comm.lo: libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RS800CX_comm.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RS800CX_comm.Tpo -c -o libpolarhrm_la-RS800CX_comm.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RS800CX_comm.Tpo $(DEPDIR)/libpolarhrm_la-RS800CX_comm.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' object='RS800CX_comm.lo' libtool=yes \
+#	source='libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' object='libpolarhrm_la-RS800CX_comm.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RS800CX_comm.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RS800CX_comm.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_comm.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_comm.cpp
 
-RS800CX_parse_overview.lo: libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RS800CX_parse_overview.lo -MD -MP -MF $(DEPDIR)/RS800CX_parse_overview.Tpo -c -o RS800CX_parse_overview.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RS800CX_parse_overview.Tpo $(DEPDIR)/RS800CX_parse_overview.Plo
+libpolarhrm_la-RS800CX_parse_overview.lo: libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RS800CX_parse_overview.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RS800CX_parse_overview.Tpo -c -o libpolarhrm_la-RS800CX_parse_overview.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RS800CX_parse_overview.Tpo $(DEPDIR)/libpolarhrm_la-RS800CX_parse_overview.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' object='RS800CX_parse_overview.lo' libtool=yes \
+#	source='libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' object='libpolarhrm_la-RS800CX_parse_overview.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RS800CX_parse_overview.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RS800CX_parse_overview.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_overview.cpp
 
-RS800CX_parse_session.lo: libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RS800CX_parse_session.lo -MD -MP -MF $(DEPDIR)/RS800CX_parse_session.Tpo -c -o RS800CX_parse_session.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RS800CX_parse_session.Tpo $(DEPDIR)/RS800CX_parse_session.Plo
+libpolarhrm_la-RS800CX_parse_session.lo: libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RS800CX_parse_session.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RS800CX_parse_session.Tpo -c -o libpolarhrm_la-RS800CX_parse_session.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RS800CX_parse_session.Tpo $(DEPDIR)/libpolarhrm_la-RS800CX_parse_session.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' object='RS800CX_parse_session.lo' libtool=yes \
+#	source='libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' object='libpolarhrm_la-RS800CX_parse_session.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RS800CX_parse_session.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RS800CX_parse_session.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse_session.cpp
 
-RS800CX_parse.lo: libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RS800CX_parse.lo -MD -MP -MF $(DEPDIR)/RS800CX_parse.Tpo -c -o RS800CX_parse.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RS800CX_parse.Tpo $(DEPDIR)/RS800CX_parse.Plo
+libpolarhrm_la-RS800CX_parse.lo: libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RS800CX_parse.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RS800CX_parse.Tpo -c -o libpolarhrm_la-RS800CX_parse.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RS800CX_parse.Tpo $(DEPDIR)/libpolarhrm_la-RS800CX_parse.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' object='RS800CX_parse.lo' libtool=yes \
+#	source='libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' object='libpolarhrm_la-RS800CX_parse.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RS800CX_parse.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RS800CX_parse.lo `test -f 'libpolarhrm/RS800CX_watch/RS800CX_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RS800CX_watch/RS800CX_parse.cpp
 
-Overview.lo: libpolarhrm/Watch/Overview.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Overview.lo -MD -MP -MF $(DEPDIR)/Overview.Tpo -c -o Overview.lo `test -f 'libpolarhrm/Watch/Overview.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Overview.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Overview.Tpo $(DEPDIR)/Overview.Plo
+libpolarhrm_la-Overview.lo: libpolarhrm/Watch/Overview.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Overview.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Overview.Tpo -c -o libpolarhrm_la-Overview.lo `test -f 'libpolarhrm/Watch/Overview.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Overview.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Overview.Tpo $(DEPDIR)/libpolarhrm_la-Overview.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Overview.cpp' object='Overview.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Overview.cpp' object='libpolarhrm_la-Overview.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Overview.lo `test -f 'libpolarhrm/Watch/Overview.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Overview.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Overview.lo `test -f 'libpolarhrm/Watch/Overview.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Overview.cpp
 
-RawSessionFile.lo: libpolarhrm/Watch/RawSessionFile.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RawSessionFile.lo -MD -MP -MF $(DEPDIR)/RawSessionFile.Tpo -c -o RawSessionFile.lo `test -f 'libpolarhrm/Watch/RawSessionFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessionFile.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RawSessionFile.Tpo $(DEPDIR)/RawSessionFile.Plo
+libpolarhrm_la-RawSessionFile.lo: libpolarhrm/Watch/RawSessionFile.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RawSessionFile.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RawSessionFile.Tpo -c -o libpolarhrm_la-RawSessionFile.lo `test -f 'libpolarhrm/Watch/RawSessionFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessionFile.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RawSessionFile.Tpo $(DEPDIR)/libpolarhrm_la-RawSessionFile.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/RawSessionFile.cpp' object='RawSessionFile.lo' libtool=yes \
+#	source='libpolarhrm/Watch/RawSessionFile.cpp' object='libpolarhrm_la-RawSessionFile.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RawSessionFile.lo `test -f 'libpolarhrm/Watch/RawSessionFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessionFile.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RawSessionFile.lo `test -f 'libpolarhrm/Watch/RawSessionFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessionFile.cpp
 
-RawSessions.lo: libpolarhrm/Watch/RawSessions.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RawSessions.lo -MD -MP -MF $(DEPDIR)/RawSessions.Tpo -c -o RawSessions.lo `test -f 'libpolarhrm/Watch/RawSessions.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessions.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/RawSessions.Tpo $(DEPDIR)/RawSessions.Plo
+libpolarhrm_la-RawSessions.lo: libpolarhrm/Watch/RawSessions.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RawSessions.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RawSessions.Tpo -c -o libpolarhrm_la-RawSessions.lo `test -f 'libpolarhrm/Watch/RawSessions.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessions.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RawSessions.Tpo $(DEPDIR)/libpolarhrm_la-RawSessions.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/RawSessions.cpp' object='RawSessions.lo' libtool=yes \
+#	source='libpolarhrm/Watch/RawSessions.cpp' object='libpolarhrm_la-RawSessions.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RawSessions.lo `test -f 'libpolarhrm/Watch/RawSessions.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessions.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RawSessions.lo `test -f 'libpolarhrm/Watch/RawSessions.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/RawSessions.cpp
 
-wDate.lo: libpolarhrm/Watch/wDate.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT wDate.lo -MD -MP -MF $(DEPDIR)/wDate.Tpo -c -o wDate.lo `test -f 'libpolarhrm/Watch/wDate.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wDate.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/wDate.Tpo $(DEPDIR)/wDate.Plo
+libpolarhrm_la-wDate.lo: libpolarhrm/Watch/wDate.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-wDate.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-wDate.Tpo -c -o libpolarhrm_la-wDate.lo `test -f 'libpolarhrm/Watch/wDate.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wDate.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-wDate.Tpo $(DEPDIR)/libpolarhrm_la-wDate.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/wDate.cpp' object='wDate.lo' libtool=yes \
+#	source='libpolarhrm/Watch/wDate.cpp' object='libpolarhrm_la-wDate.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wDate.lo `test -f 'libpolarhrm/Watch/wDate.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wDate.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-wDate.lo `test -f 'libpolarhrm/Watch/wDate.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wDate.cpp
 
-HrmFile.lo: libpolarhrm/Watch/HrmFile.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HrmFile.lo -MD -MP -MF $(DEPDIR)/HrmFile.Tpo -c -o HrmFile.lo `test -f 'libpolarhrm/Watch/HrmFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/HrmFile.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/HrmFile.Tpo $(DEPDIR)/HrmFile.Plo
+libpolarhrm_la-HrmFile.lo: libpolarhrm/Watch/HrmFile.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-HrmFile.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-HrmFile.Tpo -c -o libpolarhrm_la-HrmFile.lo `test -f 'libpolarhrm/Watch/HrmFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/HrmFile.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-HrmFile.Tpo $(DEPDIR)/libpolarhrm_la-HrmFile.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/HrmFile.cpp' object='HrmFile.lo' libtool=yes \
+#	source='libpolarhrm/Watch/HrmFile.cpp' object='libpolarhrm_la-HrmFile.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HrmFile.lo `test -f 'libpolarhrm/Watch/HrmFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/HrmFile.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-HrmFile.lo `test -f 'libpolarhrm/Watch/HrmFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/HrmFile.cpp
 
-Lap.lo: libpolarhrm/Watch/Lap.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Lap.lo -MD -MP -MF $(DEPDIR)/Lap.Tpo -c -o Lap.lo `test -f 'libpolarhrm/Watch/Lap.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Lap.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Lap.Tpo $(DEPDIR)/Lap.Plo
+libpolarhrm_la-Lap.lo: libpolarhrm/Watch/Lap.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Lap.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Lap.Tpo -c -o libpolarhrm_la-Lap.lo `test -f 'libpolarhrm/Watch/Lap.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Lap.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Lap.Tpo $(DEPDIR)/libpolarhrm_la-Lap.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Lap.cpp' object='Lap.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Lap.cpp' object='libpolarhrm_la-Lap.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Lap.lo `test -f 'libpolarhrm/Watch/Lap.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Lap.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Lap.lo `test -f 'libpolarhrm/Watch/Lap.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Lap.cpp
 
-Limit.lo: libpolarhrm/Watch/Limit.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Limit.lo -MD -MP -MF $(DEPDIR)/Limit.Tpo -c -o Limit.lo `test -f 'libpolarhrm/Watch/Limit.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Limit.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Limit.Tpo $(DEPDIR)/Limit.Plo
+libpolarhrm_la-Limit.lo: libpolarhrm/Watch/Limit.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Limit.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Limit.Tpo -c -o libpolarhrm_la-Limit.lo `test -f 'libpolarhrm/Watch/Limit.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Limit.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Limit.Tpo $(DEPDIR)/libpolarhrm_la-Limit.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Limit.cpp' object='Limit.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Limit.cpp' object='libpolarhrm_la-Limit.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Limit.lo `test -f 'libpolarhrm/Watch/Limit.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Limit.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Limit.lo `test -f 'libpolarhrm/Watch/Limit.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Limit.cpp
 
-Sample.lo: libpolarhrm/Watch/Sample.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Sample.lo -MD -MP -MF $(DEPDIR)/Sample.Tpo -c -o Sample.lo `test -f 'libpolarhrm/Watch/Sample.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Sample.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Sample.Tpo $(DEPDIR)/Sample.Plo
+libpolarhrm_la-Sample.lo: libpolarhrm/Watch/Sample.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Sample.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Sample.Tpo -c -o libpolarhrm_la-Sample.lo `test -f 'libpolarhrm/Watch/Sample.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Sample.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Sample.Tpo $(DEPDIR)/libpolarhrm_la-Sample.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Sample.cpp' object='Sample.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Sample.cpp' object='libpolarhrm_la-Sample.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Sample.lo `test -f 'libpolarhrm/Watch/Sample.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Sample.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Sample.lo `test -f 'libpolarhrm/Watch/Sample.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Sample.cpp
 
-Session.lo: libpolarhrm/Watch/Session.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Session.lo -MD -MP -MF $(DEPDIR)/Session.Tpo -c -o Session.lo `test -f 'libpolarhrm/Watch/Session.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Session.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Session.Tpo $(DEPDIR)/Session.Plo
+libpolarhrm_la-Session.lo: libpolarhrm/Watch/Session.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Session.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Session.Tpo -c -o libpolarhrm_la-Session.lo `test -f 'libpolarhrm/Watch/Session.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Session.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Session.Tpo $(DEPDIR)/libpolarhrm_la-Session.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Session.cpp' object='Session.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Session.cpp' object='libpolarhrm_la-Session.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Session.lo `test -f 'libpolarhrm/Watch/Session.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Session.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Session.lo `test -f 'libpolarhrm/Watch/Session.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Session.cpp
 
-sportZone.lo: libpolarhrm/Watch/sportZone.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sportZone.lo -MD -MP -MF $(DEPDIR)/sportZone.Tpo -c -o sportZone.lo `test -f 'libpolarhrm/Watch/sportZone.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/sportZone.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/sportZone.Tpo $(DEPDIR)/sportZone.Plo
+libpolarhrm_la-sportZone.lo: libpolarhrm/Watch/sportZone.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-sportZone.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-sportZone.Tpo -c -o libpolarhrm_la-sportZone.lo `test -f 'libpolarhrm/Watch/sportZone.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/sportZone.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-sportZone.Tpo $(DEPDIR)/libpolarhrm_la-sportZone.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/sportZone.cpp' object='sportZone.lo' libtool=yes \
+#	source='libpolarhrm/Watch/sportZone.cpp' object='libpolarhrm_la-sportZone.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sportZone.lo `test -f 'libpolarhrm/Watch/sportZone.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/sportZone.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-sportZone.lo `test -f 'libpolarhrm/Watch/sportZone.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/sportZone.cpp
 
-wTime.lo: libpolarhrm/Watch/wTime.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT wTime.lo -MD -MP -MF $(DEPDIR)/wTime.Tpo -c -o wTime.lo `test -f 'libpolarhrm/Watch/wTime.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wTime.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/wTime.Tpo $(DEPDIR)/wTime.Plo
+libpolarhrm_la-wTime.lo: libpolarhrm/Watch/wTime.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-wTime.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-wTime.Tpo -c -o libpolarhrm_la-wTime.lo `test -f 'libpolarhrm/Watch/wTime.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wTime.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-wTime.Tpo $(DEPDIR)/libpolarhrm_la-wTime.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/wTime.cpp' object='wTime.lo' libtool=yes \
+#	source='libpolarhrm/Watch/wTime.cpp' object='libpolarhrm_la-wTime.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wTime.lo `test -f 'libpolarhrm/Watch/wTime.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wTime.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-wTime.lo `test -f 'libpolarhrm/Watch/wTime.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/wTime.cpp
 
-Watch.lo: libpolarhrm/Watch/Watch.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Watch.lo -MD -MP -MF $(DEPDIR)/Watch.Tpo -c -o Watch.lo `test -f 'libpolarhrm/Watch/Watch.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Watch.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Watch.Tpo $(DEPDIR)/Watch.Plo
+libpolarhrm_la-Watch.lo: libpolarhrm/Watch/Watch.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Watch.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Watch.Tpo -c -o libpolarhrm_la-Watch.lo `test -f 'libpolarhrm/Watch/Watch.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Watch.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Watch.Tpo $(DEPDIR)/libpolarhrm_la-Watch.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Watch/Watch.cpp' object='Watch.lo' libtool=yes \
+#	source='libpolarhrm/Watch/Watch.cpp' object='libpolarhrm_la-Watch.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Watch.lo `test -f 'libpolarhrm/Watch/Watch.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Watch.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Watch.lo `test -f 'libpolarhrm/Watch/Watch.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Watch.cpp
 
-util_functions.lo: libpolarhrm/util_functions.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT util_functions.lo -MD -MP -MF $(DEPDIR)/util_functions.Tpo -c -o util_functions.lo `test -f 'libpolarhrm/util_functions.cpp' || echo '$(srcdir)/'`libpolarhrm/util_functions.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/util_functions.Tpo $(DEPDIR)/util_functions.Plo
+libpolarhrm_la-util_functions.lo: libpolarhrm/util_functions.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-util_functions.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-util_functions.Tpo -c -o libpolarhrm_la-util_functions.lo `test -f 'libpolarhrm/util_functions.cpp' || echo '$(srcdir)/'`libpolarhrm/util_functions.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-util_functions.Tpo $(DEPDIR)/libpolarhrm_la-util_functions.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/util_functions.cpp' object='util_functions.lo' libtool=yes \
+#	source='libpolarhrm/util_functions.cpp' object='libpolarhrm_la-util_functions.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o util_functions.lo `test -f 'libpolarhrm/util_functions.cpp' || echo '$(srcdir)/'`libpolarhrm/util_functions.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-util_functions.lo `test -f 'libpolarhrm/util_functions.cpp' || echo '$(srcdir)/'`libpolarhrm/util_functions.cpp
 
-Datanode.lo: libpolarhrm/Datanode.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Datanode.lo -MD -MP -MF $(DEPDIR)/Datanode.Tpo -c -o Datanode.lo `test -f 'libpolarhrm/Datanode.cpp' || echo '$(srcdir)/'`libpolarhrm/Datanode.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/Datanode.Tpo $(DEPDIR)/Datanode.Plo
+libpolarhrm_la-Datanode.lo: libpolarhrm/Datanode.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Datanode.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Datanode.Tpo -c -o libpolarhrm_la-Datanode.lo `test -f 'libpolarhrm/Datanode.cpp' || echo '$(srcdir)/'`libpolarhrm/Datanode.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Datanode.Tpo $(DEPDIR)/libpolarhrm_la-Datanode.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/Datanode.cpp' object='Datanode.lo' libtool=yes \
+#	source='libpolarhrm/Datanode.cpp' object='libpolarhrm_la-Datanode.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Datanode.lo `test -f 'libpolarhrm/Datanode.cpp' || echo '$(srcdir)/'`libpolarhrm/Datanode.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Datanode.lo `test -f 'libpolarhrm/Datanode.cpp' || echo '$(srcdir)/'`libpolarhrm/Datanode.cpp
 
-libpolarhrm.lo: libpolarhrm/libpolarhrm.cpp
-	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm.lo -MD -MP -MF $(DEPDIR)/libpolarhrm.Tpo -c -o libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm.Tpo $(DEPDIR)/libpolarhrm.Plo
+libpolarhrm_la-libpolarhrm.lo: libpolarhrm/libpolarhrm.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-libpolarhrm.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-libpolarhrm.Tpo -c -o libpolarhrm_la-libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-libpolarhrm.Tpo $(DEPDIR)/libpolarhrm_la-libpolarhrm.Plo
 #	$(AM_V_CXX) \
-#	source='libpolarhrm/libpolarhrm.cpp' object='libpolarhrm.lo' libtool=yes \
+#	source='libpolarhrm/libpolarhrm.cpp' object='libpolarhrm_la-libpolarhrm.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-libpolarhrm.lo `test -f 'libpolarhrm/libpolarhrm.cpp' || echo '$(srcdir)/'`libpolarhrm/libpolarhrm.cpp
+
+libpolarhrm_la-Gps.lo: libpolarhrm/Watch/Gps.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-Gps.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-Gps.Tpo -c -o libpolarhrm_la-Gps.lo `test -f 'libpolarhrm/Watch/Gps.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Gps.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-Gps.Tpo $(DEPDIR)/libpolarhrm_la-Gps.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/Watch/Gps.cpp' object='libpolarhrm_la-Gps.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-Gps.lo `test -f 'libpolarhrm/Watch/Gps.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/Gps.cpp
+
+libpolarhrm_la-GpxFile.lo: libpolarhrm/Watch/GpxFile.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-GpxFile.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-GpxFile.Tpo -c -o libpolarhrm_la-GpxFile.lo `test -f 'libpolarhrm/Watch/GpxFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/GpxFile.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-GpxFile.Tpo $(DEPDIR)/libpolarhrm_la-GpxFile.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/Watch/GpxFile.cpp' object='libpolarhrm_la-GpxFile.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-GpxFile.lo `test -f 'libpolarhrm/Watch/GpxFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/GpxFile.cpp
 
 polarhrm.o: cli/polarhrm.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT polarhrm.o -MD -MP -MF $(DEPDIR)/polarhrm.Tpo -c -o polarhrm.o `test -f 'cli/polarhrm.cpp' || echo '$(srcdir)/'`cli/polarhrm.cpp
@@ -827,21 +871,21 @@ simulate_watch.obj: cli/simulate_watch.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simulate_watch.obj `if test -f 'cli/simulate_watch.cpp'; then $(CYGPATH_W) 'cli/simulate_watch.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/simulate_watch.cpp'; fi`
 
-test.o: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.o -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
+test-test.o: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.o -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test.o' libtool=no \
+#	source='cli/test.cpp' object='test-test.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
 
-test.obj: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.obj -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
+test-test.obj: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.obj -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test.obj' libtool=no \
+#	source='cli/test.cpp' object='test-test.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

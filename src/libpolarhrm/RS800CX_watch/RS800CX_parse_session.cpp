@@ -50,6 +50,8 @@
 #include "../Watch/wTime.h"
 #include "../Watch/wDate.h"
 #include "../Watch/sportZone.h"
+#include "../Watch/Gps.h"
+
 
 #define SHOW(x) show(x, &buf[x]);
 
@@ -127,12 +129,14 @@ void RS800CXparse::parse_samples(Session *w_session, RawSession *raw_sess){
 			if(w_session->getHasAltitudeData ()) {
 				alt_offset = 2;
 			}
-			double longitude; 
-			double latitude;
 
-			latitude  = toGpsDec(&buf[i+8+alt_offset]);
-			longitude = toGpsDec(&buf[i+4+alt_offset]);
-			printf("lat %.9f lon %.9f",latitude, longitude);
+			Gps *gpsWpt = new Gps();
+
+			gpsWpt->setLatitude(toGpsDec(&buf[i+8+alt_offset]));
+			gpsWpt->setLongitude (toGpsDec(&buf[i+4+alt_offset]));
+
+			printf("lat %.9f lon %.9f",gpsWpt->getLatitude(), gpsWpt->getLongitude());
+			w_session->samples[j]->setGps(gpsWpt);
 		}
 
 
@@ -198,7 +202,7 @@ void RS800CXparse::parse_laps(Session *w_session, RawSession *raw_sess){
 		laptime->setHour(buf[i+2] & 0x7F);
 		laptime->setMinute(buf[i+1] & 0x3F);
 		laptime->setSecond(buf[i] & 0x3F);
-		laptime->setThenth(((buf[i+1] & 0xc0) >> 4) | ((buf[i+0] & 0xc0) >> 6)) ;
+		laptime->setTenth(((buf[i+1] & 0xc0) >> 4) | ((buf[i+0] & 0xc0) >> 6)) ;
 
 		w_session->laps[j]->lap_end_time = laptime;
 		printf("%d time %s\n",i, w_session->laps[j]->lap_end_time->toString().c_str() );
@@ -277,7 +281,7 @@ void RS800CXparse::parse_sportzones(Session *w_session, RawSession *raw_sess){
 		onzone.setHour((unsigned char)buf[base_index+2 +i*3] & 0x7f);
 		onzone.setMinute((unsigned char) buf[base_index+1 +i*3] & 0x3f);
 		onzone.setSecond((unsigned char) buf[base_index +i*3] & 0x3f);
-		onzone.setThenth((unsigned char) ((buf[base_index+1] & 0xc0) >> 4) | ((buf[base_index] & 0xc0) >> 6));
+		onzone.setTenth((unsigned char) ((buf[base_index+1] & 0xc0) >> 4) | ((buf[base_index] & 0xc0) >> 6));
 
 		w_session->sportzones[i]->setOnZoneSeconds(onzone.toDouble());
 		if (i < SportZone::number_of_sportzones-1) {
@@ -370,7 +374,7 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	sessStartTime->setHour(unbcd(buf[25])&0x3F); 
 	sessStartTime->setMinute(unbcd(buf[24])); 
 	sessStartTime->setSecond(unbcd(buf[23]));
-	sessStartTime->setThenth((unsigned char) 0);
+	sessStartTime->setTenth((unsigned char) 0);
 
 	sessStartDate->setTime(sessStartTime);
 	w_session->setStartDate(sessStartDate);
@@ -391,7 +395,7 @@ Session* RS800CXparse::parseSession(RawSession *raw_sess){
 	duration->setHour(buf[28] & 0x7f);
 	duration->setMinute (buf[27] & 0x3f);
 	duration->setSecond (buf[26] & 0x3f);
-	duration->setThenth(((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)); //tenth
+	duration->setTenth(((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)); //tenth
 	w_session->setDuration(duration);
 
 	printf("?? thenth %f\n", (double)(((buf[27] & 0xc0) >> 4) | ( (buf[26] & 0xc0) >> 6))    );
@@ -449,7 +453,7 @@ buf[26] & 0x3f, // seconds
 		best_laptime->setHour   (buf[49] & 0x7F);
 		best_laptime->setMinute (buf[48] & 0x3F);
 		best_laptime->setSecond (buf[47] & 0x3F);
-		best_laptime->setThenth (((buf[48] & 0xc0) >> 4) | ((buf[47] & 0xc0) >> 6));
+		best_laptime->setTenth (((buf[48] & 0xc0) >> 4) | ((buf[47] & 0xc0) >> 6));
 	//}
 
 	//else {

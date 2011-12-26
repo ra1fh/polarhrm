@@ -33,6 +33,9 @@
 #include "libpolarhrm/libpolarhrm.h"
 #include "libpolarhrm/Datanode.h"
 
+#include "libpolarhrm/Watch/GpxFile.h"
+
+
 using namespace std;
 
 /* 
@@ -41,6 +44,7 @@ using namespace std;
   add an testfunction with a short description and use some usefull status messages
   that allow following the test
 
+  testing functions should not depend on other testfunctions!
 
   for shorter output just go to main and comment unsed function calls
 
@@ -72,6 +76,14 @@ void test_gps_uncode(void);
 
 /* test the init setup for the libpolarhrm */
 void test_libpolarhrm_global_settings(void);
+
+/* test the gpx file creation with sample data */
+void test_gpx_file_creation(void);
+
+/* test calculate with time objects */
+void test_calc_time_obj(void);
+
+
 
 /* inplementation here */
 
@@ -179,10 +191,13 @@ void test_date_and_time_obj(void){
 
 	wDate *date = new wDate(2011,12,1);
 	wTime *time = new wTime(1,25,29,0);
+
+	date->setTime(time);
 	cout << date->toString() << endl;
 	cout << time->toString() << endl;
 
 	cout << date->getshortYear() << endl;
+	cout << date->toTimestamp() << endl;
 
 }
 
@@ -206,6 +221,8 @@ void test_session_obj(void){
 
 
 void test_delete_single_session(void) {
+
+	cout << "Test: test_delete_single_session\n";
 
 /*
 	wDate *start_date = new wDate;
@@ -239,6 +256,9 @@ void test_delete_single_session(void) {
 
 
 std::list<Datanode> test_my_datanode_obj(void){
+
+	cout << "Test: test_my_datanode_obj\n";
+
 
 	// http://www.cs.uregina.ca/Links/class-info/210/STLList/
 
@@ -300,6 +320,8 @@ std::list<Datanode> test_my_datanode_obj(void){
 
 
 void test_gps_uncode(void) {
+
+	cout << "Test: test_gps_uncode\n";
 
 /* 
 	
@@ -404,14 +426,61 @@ union UStuff
 
 void test_libpolarhrm_global_settings(void){
 
+	cout << "Test: test_libpolarhrm_global_settings\n";
+
 //setWorkingDir("/usr/x");
 printf("getWorkingDir %s\n", getWorkingDir());
 printf("getDumpExtention %s\n", getDumpExtention());
 printf("getHRMExtention %s\n", getHRMExtention());
 
+}
+
+
+
+void test_gpx_file_creation(void){
+
+	cout << "Test: test_gpx_file_creation\n";
+
+	double lat = 48.216830000;
+	double lon = 16.395045000;
+
+	// timestamp
+	// YYYY-MM-DDThh:mm:ssTZD 
+	// http://www.w3.org/TR/NOTE-datetime
+	const char *wptTime = "YYYY-MM-DDThh:mm:ssTZD";
+
+
+	const char *fix = "none"; // don t know where to get this - however 
+	int sat = 6; // connected sattelites?? where could this be stored?
+	GpxFile file;
+
+	file.WriteHead ("test.xml", "starttime");
+	file.WriteWayPoint(lon, lat, wptTime, fix, sat);
+	file.WriteWayPoint(lon, lat, wptTime, fix, sat);
+	file.WriteFooter();
 
 }
 
+void test_calc_time_obj(void){
+
+	wTime time1(21,50,4,7);
+	wTime time2(1,0,0,3);
+	wTime time3;
+	wTime time4;
+
+	printf("time 1 %s\n",time1.toString().c_str());
+	printf("time 2 %s\n",time2.toString().c_str());
+					//rhs
+	time3 = time1 + time2;
+	printf("time 3 %s\n",time3.toString().c_str());
+
+	
+	time4.setSecond((int)180);
+	printf("time 4 %s\n",time4.toString().c_str());
+
+	printf("div %d\n", (121 / 60));
+	printf("mod %d\n", (121 % 60));
+}
 
 
 
@@ -426,7 +495,7 @@ int main(void) {
 //	test_run_two_sess_parsing();
 
 	/* test the date and time object behaviour */
-//	test_date_and_time_obj();
+	test_date_and_time_obj();
 
 	/* test the object behaviour */
 //	test_session_obj();
@@ -434,11 +503,15 @@ int main(void) {
 
 //	test_my_datanode_obj();
 
-	test_gps_uncode ();
+//	test_gps_uncode ();
 
 //	test_libpolarhrm_global_settings();
 
+/* test the gpx file creation with sample data */
+	test_gpx_file_creation();
 
+
+	test_calc_time_obj();
 
 return 0;
 }

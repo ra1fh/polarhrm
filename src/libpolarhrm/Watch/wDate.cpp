@@ -64,3 +64,25 @@ string wDate::getTimeToString(void){
 void wDate::setTime(wTime* t){
 	this->time = t;
 }
+
+
+
+
+string wDate::toTimestamp(void){
+
+	// timestamp
+	// YYYY-MM-DDThh:mm:ssTZD 
+	// http://www.w3.org/TR/NOTE-datetime
+
+	ostringstream outStream;
+	
+	outStream << setfill('0');
+	outStream << setw(4) << (int)year << "-"
+			  << setw(2) << (int)month << "-"
+			  << setw(2) << (int)day << "T"
+			  << setw(2) << (int) time->getHour() << ":"
+			  << setw(2) << (int) time->getMinute() << ":"
+			  << setw(2) << (int) time->getSecond () << "Z"; //dont know how to handle this
+
+	return outStream.str();
+}

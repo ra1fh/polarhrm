@@ -25,3 +25,10 @@ int Sample::getAlt() {
 	return alt;
 }
 
+void Sample::setGps(Gps *gps){
+	this->gps = gps;
+}
+
+Gps* Sample::getGps(void){
+	return this->gps;
+}

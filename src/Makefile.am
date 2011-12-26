@@ -15,7 +15,12 @@ simulate_LDADD = libpolarhrm.la
 test_SOURCES =  \
 	cli/test.cpp
 
+test_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
 test_LDFLAGS = libpolarhrm.la 
+
+test_LDADD = -lxml2 
 
 polarhrm_SOURCES =  \
 	cli/polarhrm.cpp \
@@ -82,7 +87,16 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/Datanode.h   \
 	libpolarhrm/libpolarhrm.cpp   \
 	libpolarhrm/libpolarhrm.h   \
-	libpolarhrm/supported_devices.h
+	libpolarhrm/supported_devices.h   \
+	libpolarhrm/Watch/Gps.cpp   \
+	libpolarhrm/Watch/Gps.h   \
+	libpolarhrm/Watch/GpxFile.cpp   \
+	libpolarhrm/Watch/GpxFile.h
+
+libpolarhrm_la_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
+libpolarhrm_la_LIBADD = -lxml2 
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta

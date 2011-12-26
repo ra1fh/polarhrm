@@ -383,7 +383,7 @@ Session* S625Xparse::parseSession(RawSession *raw_sess){
 	sessStartTime->setHour(unbcd(buf[12])&0x3F);
 	sessStartTime->setMinute(unbcd(buf[11]));
 	sessStartTime->setSecond(unbcd(buf[10]));
-	sessStartTime->setThenth((unsigned char) 0);
+	sessStartTime->setTenth((unsigned char) 0);
 
 	sessStartDate->setTime(sessStartTime);
 
@@ -586,7 +586,7 @@ Session* S625Xparse::parseSession(RawSession *raw_sess){
 	best_laptime->setHour (unbcd(buf[69]));
 	best_laptime->setMinute (unbcd(buf[68]));
 	best_laptime->setSecond (unbcd(buf[67]));
-	best_laptime->setThenth (unib(buf[66]));
+	best_laptime->setTenth (unib(buf[66]));
 
 	w_session->setBestLapTime(best_laptime);
 

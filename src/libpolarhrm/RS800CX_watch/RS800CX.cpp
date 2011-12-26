@@ -37,7 +37,7 @@
 #include "../Watch/HrmFile.h"
 #include "../file_operations.h"
 #include "../libpolarhrm.h"
-
+#include "../Watch/GpxFile.h"
 #include <list>
 #include "../Datanode.h"
 
@@ -211,4 +211,11 @@ void RS800CX::openRaw(std::string rawfilepath){
 		hrmfile->setPath(path);
 		hrmfile->save(session);
 
+
+		GpxFile *gpxfile = new GpxFile();
+		std::string gpxpath;
+
+		gpxpath.assign(workingDir);gpxpath.append(session->id);gpxpath.append(".gpx");
+		gpxfile->setPath(gpxpath);
+		gpxfile->save(session);
 }

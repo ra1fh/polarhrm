@@ -5,24 +5,22 @@
 #include <string>
 using namespace std;
 
-/*
-class WatchTime {
-};
-*/
+
 class wTime {
 	
   private:
     unsigned char hour;
     unsigned char minute;
     unsigned char second;
-    unsigned char thenth;
+    unsigned char tenth;
 
 
   public:
 
 	wTime(void);
-	wTime(unsigned char hour, unsigned char minute, unsigned char sec, unsigned char thenth);
-
+	wTime(unsigned char hour, unsigned char minute, unsigned char sec, unsigned char tenth);
+	wTime operator+(wTime &);
+	
 	string toString();
 	double toDouble();
 
@@ -32,11 +30,12 @@ class wTime {
 	void setMinute(unsigned char m){this->minute=m;}
 	unsigned char getMinute(void){return this->minute;}
 
+	void setSecond(int );
 	void setSecond(unsigned char s){this->second = s;}
 	unsigned char getSecond(void){return this->second;}
 
-	void setThenth(unsigned char t){this->thenth = t;}
-	unsigned char getThenth(void){return this->thenth;}
+	void setTenth(unsigned char t){this->tenth = t;}
+	unsigned char getTenth(void){return this->tenth;}
 	
 
 };

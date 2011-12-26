@@ -1,6 +1,7 @@
 #ifndef _SAMPLE_H
 #define _SAMPLE_H
 
+#include "Gps.h"
 
 class Sample {
 	
@@ -8,7 +9,7 @@ class Sample {
 		unsigned int hr;
 		unsigned int speed;
 		int alt;
-
+		Gps *gps;
 
 	public:
 		
@@ -20,6 +21,9 @@ class Sample {
 
 		void setAlt(int alt);
 		int getAlt();
+
+		void setGps(Gps *);
+		Gps* getGps(void);
 
 };
 #endif

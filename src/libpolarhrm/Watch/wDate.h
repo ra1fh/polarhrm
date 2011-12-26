@@ -12,7 +12,7 @@ class wTime;
 
 class wDate {
   private:
-		
+
 	wTime *time;
 
 	int year;
@@ -24,13 +24,19 @@ class wDate {
 	wDate(void){};
 	wDate(int year, unsigned char month, unsigned char day);
 	wDate(int year, int month, int day);
-	string toString();
+	string toString(void);
+	string toTimestamp(void);
 	string getTimeToString(void);
 
 	void setDate(int year, unsigned char month, unsigned char day);
 	void setTime(unsigned char hour, unsigned char minute, unsigned char sec, unsigned char thenth);
 	void setTime(wTime*);
-
+	wTime* getTime(void){return this->time;};
+	/*wTime getTime(void){return wTime(this->time->getHour(),
+	                                 this->time->getMinute(),
+	                                 this->time->getSecond(),
+	                                 this->time->getTenth());};
+*/
 	void setYear(int y){this->year = y;}
 	int getshortYear(void){return (this->year-BASE_YEAR);};
 	int getYear(void){return this->year;};
