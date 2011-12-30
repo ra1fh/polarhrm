@@ -57,6 +57,7 @@ void GpxFile::save(Session *session){
 	
 	for (int i=0; i<=session->getNumberOfSamples(); i++) {
 
+		//calculating the waypoint time based on the starttime of the session
 		wptTime.setSecond(session->getRecordingInterval()*(i+1));
 		wptTime = *startTime+wptTime;
 		startDate->setTime(&wptTime);

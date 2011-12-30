@@ -32,11 +32,7 @@ class wDate {
 	void setTime(unsigned char hour, unsigned char minute, unsigned char sec, unsigned char thenth);
 	void setTime(wTime*);
 	wTime* getTime(void){return this->time;};
-	/*wTime getTime(void){return wTime(this->time->getHour(),
-	                                 this->time->getMinute(),
-	                                 this->time->getSecond(),
-	                                 this->time->getTenth());};
-*/
+
 	void setYear(int y){this->year = y;}
 	int getshortYear(void){return (this->year-BASE_YEAR);};
 	int getYear(void){return this->year;};
