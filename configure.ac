@@ -26,6 +26,8 @@ AM_PROG_LIBTOOL
 
 
 
+PKG_CHECK_MODULES(LIBXML,libxml-2.0)
+
 AC_OUTPUT([
 Makefile
 doc/Makefile
