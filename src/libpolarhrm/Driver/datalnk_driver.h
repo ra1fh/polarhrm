@@ -20,10 +20,10 @@ polarhrm is free software: you can redistribute it and/or modify it
 #ifndef _DATALNK_DRIVER_H_
 #define _DATALNK_DRIVER_H_
 
-//#include "driver.h"
+#include "driver.h"
 
 
-class DataLnk_driver{
+class DataLnk_driver:public Driver{
 public:
 	void init(void);
 	int sendbytes(unsigned char query[], int size);

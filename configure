@@ -615,11 +615,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-<<<<<<< HEAD
-=======
 LIBUSB_LIBS
 LIBUSB_CFLAGS
->>>>>>> rcx5
 LIBXML_LIBS
 LIBXML_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -776,13 +773,9 @@ PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 LIBXML_CFLAGS
-<<<<<<< HEAD
-LIBXML_LIBS'
-=======
 LIBXML_LIBS
 LIBUSB_CFLAGS
 LIBUSB_LIBS'
->>>>>>> rcx5
 
 
 # Initialize some variables set by options.
@@ -1444,12 +1437,9 @@ Some influential environment variables:
   LIBXML_CFLAGS
               C compiler flags for LIBXML, overriding pkg-config
   LIBXML_LIBS linker flags for LIBXML, overriding pkg-config
-<<<<<<< HEAD
-=======
   LIBUSB_CFLAGS
               C compiler flags for LIBUSB, overriding pkg-config
   LIBUSB_LIBS linker flags for LIBUSB, overriding pkg-config
->>>>>>> rcx5
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -15159,8 +15149,7 @@ $as_echo "yes" >&6; }
 
 fi
 
-<<<<<<< HEAD
-=======
+
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBUSB" >&5
@@ -15253,7 +15242,6 @@ $as_echo "yes" >&6; }
 
 fi
 
->>>>>>> rcx5
 ac_config_files="$ac_config_files Makefile doc/Makefile src/Makefile samples/Makefile src/libpolarhrm/Makefile src/libpolarhrm/RS400_watch/Makefile"
 
 cat >confcache <<\_ACEOF
