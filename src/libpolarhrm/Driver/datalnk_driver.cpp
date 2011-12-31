@@ -23,6 +23,8 @@ polarhrm is free software: you can redistribute it and/or modify it
 #include <usb.h>
 #include <cstdio>
 
+//0da4:0004 Polar Electro OY 
+#define VENDOR_ID 0x0da4
 
 
 void DataLnk_driver::init(void){
@@ -30,16 +32,54 @@ void DataLnk_driver::init(void){
 	printf("hello from init\n");
 
 	
-//	usb_init();
-/*
-	usb_bus *busses;
+
+	struct usb_bus *busses;
 
 	usb_init();
 	usb_find_busses();
 	usb_find_devices();
 
 	busses = usb_get_busses();
-*/
+
+
+	struct usb_bus *bus;
+	int c, i, a;
+
+
+
+	for (bus = busses; bus; bus = bus->next) {
+		struct usb_device *dev;
+
+		for (dev = bus->devices; dev; dev = dev->next) {
+			/* Check if this device is a printer */
+			if (dev->descriptor.bDeviceClass == 7) {
+				/* Open the device, claim the interface and do your processing */
+				
+			}
+			if (dev->descriptor.idVendor == VENDOR_ID) {
+				printf("found DataLnk usb device!\n");
+				printf("Protocol %X\n",dev->descriptor.bDeviceProtocol);
+				printf("vendor id %X\n",dev->descriptor.idVendor );
+			}
+
+			/* Loop through all of the configurations */
+			for (c = 0; c < dev->descriptor.bNumConfigurations; c++) {
+				/* Loop through all of the interfaces */
+				for (i = 0; i < dev->config[c].bNumInterfaces; i++) {
+					/* Loop through all of the alternate settings */
+					for (a = 0; a < dev->config[c].interface[i].num_altsetting; a++) {
+
+						/* Check if this interface is a printer */
+						if (dev->config[c].interface[i].altsetting[a].bInterfaceClass == 7) {
+							/* Open the device, set the alternate setting, claim the interface and do your processing */
+							
+						}
+					}
+				}
+			}
+		}
+	}
+
 
 }
 

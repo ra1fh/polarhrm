@@ -104,9 +104,12 @@ polarhrm_DEPENDENCIES = libpolarhrm.la
 am_simulate_OBJECTS = simulate_watch.$(OBJEXT)
 simulate_OBJECTS = $(am_simulate_OBJECTS)
 simulate_DEPENDENCIES = libpolarhrm.la
-am_test_OBJECTS = test.$(OBJEXT)
+am_test_OBJECTS = test-test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_DEPENDENCIES = libpolarhrm.la
+test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(test_CXXFLAGS) \
+	$(CXXFLAGS) $(test_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -322,7 +325,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-libpolarhrm_la_LIBADD = -lxml2 
+libpolarhrm_la_LIBADD = -lxml2 \
+	-lusb 
+
 SUBDIRS = \
 	libpolarhrm
 
@@ -332,6 +337,12 @@ simulate_SOURCES = \
 simulate_LDADD = libpolarhrm.la 
 test_SOURCES = \
 	cli/test.cpp
+
+test_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
+test_LDFLAGS = -lxml2 \
+	-lusb 
 
 test_LDADD = libpolarhrm.la 
 polarhrm_SOURCES = \
@@ -536,7 +547,7 @@ simulate$(EXEEXT): $(simulate_OBJECTS) $(simulate_DEPENDENCIES)
 	$(AM_V_CXXLD)$(CXXLINK) $(simulate_OBJECTS) $(simulate_LDADD) $(LIBS)
 test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) 
 	@rm -f test$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -577,7 +588,7 @@ include ./$(DEPDIR)/libpolarhrm_la-wDate.Plo
 include ./$(DEPDIR)/libpolarhrm_la-wTime.Plo
 include ./$(DEPDIR)/polarhrm.Po
 include ./$(DEPDIR)/simulate_watch.Po
-include ./$(DEPDIR)/test.Po
+include ./$(DEPDIR)/test-test.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -883,21 +894,21 @@ simulate_watch.obj: cli/simulate_watch.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simulate_watch.obj `if test -f 'cli/simulate_watch.cpp'; then $(CYGPATH_W) 'cli/simulate_watch.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/simulate_watch.cpp'; fi`
 
-test.o: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.o -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
+test-test.o: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.o -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test.o' libtool=no \
+#	source='cli/test.cpp' object='test-test.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
 
-test.obj: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.obj -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
+test-test.obj: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.obj -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test.obj' libtool=no \
+#	source='cli/test.cpp' object='test-test.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -1,6 +1,7 @@
 
 
-libpolarhrm_la_LIBADD = -lxml2 
+libpolarhrm_la_LIBADD = -lxml2 \
+	-lusb 
 
 SUBDIRS = \
 	libpolarhrm
@@ -17,6 +18,12 @@ simulate_LDADD = libpolarhrm.la
 
 test_SOURCES =  \
 	cli/test.cpp
+
+test_CXXFLAGS = -I \
+	/usr/include/libxml2 
+
+test_LDFLAGS = -lxml2 \
+	-lusb 
 
 test_LDADD = libpolarhrm.la 
 
