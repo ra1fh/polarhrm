@@ -72,7 +72,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libpolarhrm_la_DEPENDENCIES =
 am_libpolarhrm_la_OBJECTS = libpolarhrm_la-file_operations.lo \
 	libpolarhrm_la-driver.lo libpolarhrm_la-irda_driver.lo \
-	libpolarhrm_la-S625X.lo libpolarhrm_la-S625X_comm.lo \
+	libpolarhrm_la-datalnk_driver.lo libpolarhrm_la-S625X.lo \
+	libpolarhrm_la-S625X_comm.lo \
 	libpolarhrm_la-S625X_parse_overview.lo \
 	libpolarhrm_la-S625X_parse_session.lo \
 	libpolarhrm_la-S625X_parse.lo libpolarhrm_la-RS800CX.lo \
@@ -103,12 +104,9 @@ polarhrm_DEPENDENCIES = libpolarhrm.la
 am_simulate_OBJECTS = simulate_watch.$(OBJEXT)
 simulate_OBJECTS = $(am_simulate_OBJECTS)
 simulate_DEPENDENCIES = libpolarhrm.la
-am_test_OBJECTS = test-test.$(OBJEXT)
+am_test_OBJECTS = test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
-test_DEPENDENCIES =
-test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(test_CXXFLAGS) \
-	$(CXXFLAGS) $(test_LDFLAGS) $(LDFLAGS) -o $@
+test_DEPENDENCIES = libpolarhrm.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -236,10 +234,14 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
+LIBUSB_CFLAGS =  
+LIBUSB_LIBS = -lusb  
+LIBXML_CFLAGS = -I/usr/include/libxml2  
+LIBXML_LIBS = -lxml2  
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAINT = #
+MAINT = 
 MAKEINFO = ${SHELL} /home/thomas/projects/polarhrm/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
@@ -253,17 +255,20 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2011-12-12
+PACKAGE_STRING = polarhrm 2012-01-01
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2011-12-12
+PACKAGE_VERSION = 2012-01-01
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2011-12-12
+VERSION = 2012-01-01
 abs_builddir = /home/thomas/projects/polarhrm/src
 abs_srcdir = /home/thomas/projects/polarhrm/src
 abs_top_builddir = /home/thomas/projects/polarhrm
@@ -317,6 +322,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
+libpolarhrm_la_LIBADD = -lxml2 
 SUBDIRS = \
 	libpolarhrm
 
@@ -327,11 +333,7 @@ simulate_LDADD = libpolarhrm.la
 test_SOURCES = \
 	cli/test.cpp
 
-test_CXXFLAGS = -I \
-	/usr/include/libxml2 
-
-test_LDFLAGS = libpolarhrm.la 
-test_LDADD = -lxml2 
+test_LDADD = libpolarhrm.la 
 polarhrm_SOURCES = \
 	cli/polarhrm.cpp \
 	cli/polarhrm.h \
@@ -348,6 +350,8 @@ libpolarhrm_la_SOURCES = \
 	libpolarhrm/Driver/driver.cpp   \
 	libpolarhrm/Driver/irda_driver.h   \
 	libpolarhrm/Driver/irda_driver.cpp   \
+	libpolarhrm/Driver/datalnk_driver.cpp   \
+	libpolarhrm/Driver/datalnk_driver.h   \
 	libpolarhrm/S625X_watch/S625X.cpp   \
 	libpolarhrm/S625X_watch/S625X.h   \
 	libpolarhrm/S625X_watch/S625X_comm.cpp   \
@@ -405,7 +409,6 @@ libpolarhrm_la_SOURCES = \
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 
 
-libpolarhrm_la_LIBADD = -lxml2 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -419,7 +422,7 @@ all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
-$(srcdir)/Makefile.in: # $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -444,9 +447,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: # $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): # $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
@@ -533,7 +536,7 @@ simulate$(EXEEXT): $(simulate_OBJECTS) $(simulate_DEPENDENCIES)
 	$(AM_V_CXXLD)$(CXXLINK) $(simulate_OBJECTS) $(simulate_LDADD) $(LIBS)
 test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) 
 	@rm -f test$(EXEEXT)
-	$(AM_V_CXXLD)$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -563,6 +566,7 @@ include ./$(DEPDIR)/libpolarhrm_la-S625X_parse_session.Plo
 include ./$(DEPDIR)/libpolarhrm_la-Sample.Plo
 include ./$(DEPDIR)/libpolarhrm_la-Session.Plo
 include ./$(DEPDIR)/libpolarhrm_la-Watch.Plo
+include ./$(DEPDIR)/libpolarhrm_la-datalnk_driver.Plo
 include ./$(DEPDIR)/libpolarhrm_la-driver.Plo
 include ./$(DEPDIR)/libpolarhrm_la-file_operations.Plo
 include ./$(DEPDIR)/libpolarhrm_la-irda_driver.Plo
@@ -573,7 +577,7 @@ include ./$(DEPDIR)/libpolarhrm_la-wDate.Plo
 include ./$(DEPDIR)/libpolarhrm_la-wTime.Plo
 include ./$(DEPDIR)/polarhrm.Po
 include ./$(DEPDIR)/simulate_watch.Po
-include ./$(DEPDIR)/test-test.Po
+include ./$(DEPDIR)/test.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -622,6 +626,14 @@ libpolarhrm_la-irda_driver.lo: libpolarhrm/Driver/irda_driver.cpp
 #	source='libpolarhrm/Driver/irda_driver.cpp' object='libpolarhrm_la-irda_driver.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-irda_driver.lo `test -f 'libpolarhrm/Driver/irda_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/irda_driver.cpp
+
+libpolarhrm_la-datalnk_driver.lo: libpolarhrm/Driver/datalnk_driver.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-datalnk_driver.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-datalnk_driver.Tpo -c -o libpolarhrm_la-datalnk_driver.lo `test -f 'libpolarhrm/Driver/datalnk_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/datalnk_driver.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-datalnk_driver.Tpo $(DEPDIR)/libpolarhrm_la-datalnk_driver.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/Driver/datalnk_driver.cpp' object='libpolarhrm_la-datalnk_driver.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-datalnk_driver.lo `test -f 'libpolarhrm/Driver/datalnk_driver.cpp' || echo '$(srcdir)/'`libpolarhrm/Driver/datalnk_driver.cpp
 
 libpolarhrm_la-S625X.lo: libpolarhrm/S625X_watch/S625X.cpp
 	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-S625X.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-S625X.Tpo -c -o libpolarhrm_la-S625X.lo `test -f 'libpolarhrm/S625X_watch/S625X.cpp' || echo '$(srcdir)/'`libpolarhrm/S625X_watch/S625X.cpp
@@ -871,21 +883,21 @@ simulate_watch.obj: cli/simulate_watch.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simulate_watch.obj `if test -f 'cli/simulate_watch.cpp'; then $(CYGPATH_W) 'cli/simulate_watch.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/simulate_watch.cpp'; fi`
 
-test-test.o: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.o -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
+test.o: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.o -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test-test.o' libtool=no \
+#	source='cli/test.cpp' object='test.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.o `test -f 'cli/test.cpp' || echo '$(srcdir)/'`cli/test.cpp
 
-test-test.obj: cli/test.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test-test.obj -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
+test.obj: cli/test.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.obj -MD -MP -MF $(DEPDIR)/test.Tpo -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test.Tpo $(DEPDIR)/test.Po
 #	$(AM_V_CXX) \
-#	source='cli/test.cpp' object='test-test.obj' libtool=no \
+#	source='cli/test.cpp' object='test.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test-test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.obj `if test -f 'cli/test.cpp'; then $(CYGPATH_W) 'cli/test.cpp'; else $(CYGPATH_W) '$(srcdir)/cli/test.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

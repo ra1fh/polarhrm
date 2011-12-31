@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(polarhrm, 2011-12-12, mailto:thomas.foyth@gmail.com)
+AC_INIT(polarhrm, 2012-01-01, mailto:thomas.foyth@gmail.com)
 
 
 AC_SUBST(MYPATH)
@@ -25,6 +25,10 @@ AM_PROG_LIBTOOL
 
 
 
+
+PKG_CHECK_MODULES(LIBXML,libxml-2.0)
+
+PKG_CHECK_MODULES(LIBUSB,libusb)
 
 AC_OUTPUT([
 Makefile

@@ -35,6 +35,10 @@
 
 #include "libpolarhrm/Watch/GpxFile.h"
 
+#include "libpolarhrm/Driver/datalnk_driver.h"
+#include "libpolarhrm/Driver/datalnk_driver.cpp"
+
+//#include "libpolarhrm/Driver/irda_driver.h"
 
 using namespace std;
 
@@ -83,7 +87,8 @@ void test_gpx_file_creation(void);
 /* test calculate with time objects */
 void test_calc_time_obj(void);
 
-
+/* rcx5 inital test */
+void test_rcx5_support(void);
 
 /* inplementation here */
 
@@ -483,6 +488,20 @@ void test_calc_time_obj(void){
 }
 
 
+/* rcx5 inital test */
+void test_rcx5_support(void){
+
+	printf("rcx5 inital test\n");
+
+	printf("create driver object\n");
+
+	DataLnk_driver *dldriver;
+	dldriver = new DataLnk_driver();
+
+	dldriver->init();
+
+	dldriver->close();
+}
 
 
 
@@ -512,6 +531,10 @@ int main(void) {
 
 
 	test_calc_time_obj();
+
+
+	/* rcx5 inital test */
+	test_rcx5_support();
 
 return 0;
 }

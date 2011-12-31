@@ -171,10 +171,14 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
+LIBUSB_CFLAGS =  
+LIBUSB_LIBS = -lusb  
+LIBXML_CFLAGS = -I/usr/include/libxml2  
+LIBXML_LIBS = -lxml2  
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAINT = #
+MAINT = 
 MAKEINFO = ${SHELL} /home/thomas/projects/polarhrm/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
@@ -188,17 +192,20 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2011-12-12
+PACKAGE_STRING = polarhrm 2012-01-01
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2011-12-12
+PACKAGE_VERSION = 2012-01-01
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2011-12-12
+VERSION = 2012-01-01
 abs_builddir = /home/thomas/projects/polarhrm
 abs_srcdir = /home/thomas/projects/polarhrm
 abs_top_builddir = /home/thomas/projects/polarhrm
@@ -271,7 +278,7 @@ all: config.h
 .SUFFIXES:
 am--refresh:
 	@:
-$(srcdir)/Makefile.in: # $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -298,9 +305,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
 
-$(top_srcdir)/configure: # $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	$(am__cd) $(srcdir) && $(AUTOCONF)
-$(ACLOCAL_M4): # $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
@@ -313,7 +320,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in: # $(am__configure_deps) 
+$(srcdir)/config.h.in:  $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@

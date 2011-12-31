@@ -1,4 +1,7 @@
 
+
+libpolarhrm_la_LIBADD = -lxml2 
+
 SUBDIRS = \
 	libpolarhrm
 
@@ -15,12 +18,7 @@ simulate_LDADD = libpolarhrm.la
 test_SOURCES =  \
 	cli/test.cpp
 
-test_CXXFLAGS = -I \
-	/usr/include/libxml2 
-
-test_LDFLAGS = libpolarhrm.la 
-
-test_LDADD = -lxml2 
+test_LDADD = libpolarhrm.la 
 
 polarhrm_SOURCES =  \
 	cli/polarhrm.cpp \
@@ -39,6 +37,8 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/Driver/driver.cpp   \
 	libpolarhrm/Driver/irda_driver.h   \
 	libpolarhrm/Driver/irda_driver.cpp   \
+	libpolarhrm/Driver/datalnk_driver.cpp   \
+	libpolarhrm/Driver/datalnk_driver.h   \
 	libpolarhrm/S625X_watch/S625X.cpp   \
 	libpolarhrm/S625X_watch/S625X.h   \
 	libpolarhrm/S625X_watch/S625X_comm.cpp   \
@@ -95,8 +95,6 @@ libpolarhrm_la_SOURCES =  \
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 
-
-libpolarhrm_la_LIBADD = -lxml2 
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta
