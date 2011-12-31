@@ -116,6 +116,11 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
+<<<<<<< HEAD
+=======
+LIBUSB_CFLAGS =  
+LIBUSB_LIBS = -lusb  
+>>>>>>> rcx5
 LIBXML_CFLAGS = -I/usr/include/libxml2  
 LIBXML_LIBS = -lxml2  
 LIPO = 
@@ -135,10 +140,10 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2011-12-12
+PACKAGE_STRING = polarhrm 2012-01-01
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2011-12-12
+PACKAGE_VERSION = 2012-01-01
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -148,7 +153,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2011-12-12
+VERSION = 2012-01-01
 abs_builddir = /home/thomas/projects/polarhrm/doc
 abs_srcdir = /home/thomas/projects/polarhrm/doc
 abs_top_builddir = /home/thomas/projects/polarhrm
