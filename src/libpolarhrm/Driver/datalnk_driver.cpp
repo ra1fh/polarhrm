@@ -23,18 +23,53 @@ polarhrm is free software: you can redistribute it and/or modify it
 #include <usb.h>
 #include <cstdio>
 
-//0da4:0004 Polar Electro OY 
-#define VENDOR_ID 0x0da4
+// lsusb output 
+// 0da4:0004 Polar Electro OY 
+// lets try to find the device using c++ code
 
 
 void DataLnk_driver::init(void){
 
 	printf("hello from init\n");
 
-	
+	int retval;
+	char buf[1024];
+	int buflen = 1024;
+
+
+	retval = find_device();
+
+	if (retval == DEVICE_DISCOVERED) {
+
+		//open it
+
+		printf("Protocol %X\n",dev->descriptor.bDeviceProtocol);
+		printf("vendor id %X\n",dev->descriptor.idVendor );
+		printf("configurations %d\n",dev->descriptor.bNumConfigurations );
+
+		dev_handle = usb_open(dev);
+
+		// http://www.linuxforums.org/forum/linux-tutorials-howtos-reference-material/10865-developing-usb-device-drivers-userspace-using-libusb.html
+		// http://libusb.6.n5.nabble.com/Fwd-usb-get-string-simple-always-returns-1-td3316956.html
+		printf("! display the usb device string\n"
+		       "! this seems to require root!!\n");
+
+		retval=usb_get_string_simple(dev_handle, 1, buf, buflen);
+		if (retval > 0)
+			printf("str -->%s <--\n", buf);
+		retval=usb_get_string_simple(dev_handle, 2, buf, buflen);
+		if (retval > 0)
+			printf("str -->%s <--\n", buf);
+	}
+
+
+}
+
+int DataLnk_driver::find_device(void){
 
 	struct usb_bus *busses;
 
+	// init the libiary according doc
 	usb_init();
 	usb_find_busses();
 	usb_find_devices();
@@ -45,41 +80,40 @@ void DataLnk_driver::init(void){
 	struct usb_bus *bus;
 	int c, i, a;
 
-
-
 	for (bus = busses; bus; bus = bus->next) {
-		struct usb_device *dev;
 
 		for (dev = bus->devices; dev; dev = dev->next) {
 			/* Check if this device is a printer */
-			if (dev->descriptor.bDeviceClass == 7) {
+			//if (dev->descriptor.bDeviceClass == 7) {
 				/* Open the device, claim the interface and do your processing */
-				
-			}
+			//}
 			if (dev->descriptor.idVendor == VENDOR_ID) {
 				printf("found DataLnk usb device!\n");
-				printf("Protocol %X\n",dev->descriptor.bDeviceProtocol);
-				printf("vendor id %X\n",dev->descriptor.idVendor );
+				return DEVICE_DISCOVERED;
 			}
 
-			/* Loop through all of the configurations */
+			//FIXME I think we could end up here!
+			// only 1 configuration
+			/* 
+			// Loop through all of the configurations 
 			for (c = 0; c < dev->descriptor.bNumConfigurations; c++) {
-				/* Loop through all of the interfaces */
+				// Loop through all of the interfaces 
 				for (i = 0; i < dev->config[c].bNumInterfaces; i++) {
-					/* Loop through all of the alternate settings */
+					// Loop through all of the alternate settings
 					for (a = 0; a < dev->config[c].interface[i].num_altsetting; a++) {
 
-						/* Check if this interface is a printer */
+						// Check if this interface is a printer 
 						if (dev->config[c].interface[i].altsetting[a].bInterfaceClass == 7) {
-							/* Open the device, set the alternate setting, claim the interface and do your processing */
+							// Open the device, set the alternate setting, claim the interface and do your processing
 							
 						}
 					}
 				}
-			}
+			} */
 		}
 	}
 
+	return DEVICE_NOT_DISCOVERED;
 
 }
 
@@ -92,9 +126,22 @@ void DataLnk_driver::close(void){
 
 	printf("hello from close\n");
 
+	if (dev_handle != NULL) {
+		usb_close(dev_handle);
+
+	}
 }
 
 
+
+/*
+
+int usb_bulk_write(usb_dev_handle *dev, int ep, const char *bytes, int size, int timeout);
+int usb_bulk_read(usb_dev_handle *dev, int ep, char *bytes, int size, int timeout);
+int usb_interrupt_write(usb_dev_handle *dev, int ep, const char *bytes, int size, int timeout);
+int usb_interrupt_read(usb_dev_handle *dev, int ep, char *bytes, int size, int timeout);
+
+*/
 
 int DataLnk_driver::sendbytes(unsigned char query[], int size){
 

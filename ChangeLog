@@ -3,6 +3,11 @@ History
 =============
 dd.mm.yyyy
 
+02.01.2012
+	* gpx file gets write out (only implemented when reading a raw file with -r option)
+	* configure checks for installed libxml2 and libusb (future use for datalnk support)
+	* initial rcx5 driver implementation (search for usb device)
+
 12.12.2011
 	* started building a shared lib & seperating the cli(command line interface)
 	* wrote a application to simulate an HRM device.

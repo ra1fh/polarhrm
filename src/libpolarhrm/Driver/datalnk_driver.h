@@ -20,6 +20,13 @@ polarhrm is free software: you can redistribute it and/or modify it
 #ifndef _DATALNK_DRIVER_H_
 #define _DATALNK_DRIVER_H_
 
+#define VENDOR_ID 0x0da4
+#define DEVICE_DISCOVERED 1
+#define DEVICE_NOT_DISCOVERED 0
+
+
+#include <usb.h>
+
 #include "driver.h"
 
 
@@ -33,6 +40,12 @@ public:
 protected:
 
 private:
+
+	usb_dev_handle *dev_handle;
+	struct usb_device *dev;
+
+	//find the usb device connected 
+	int find_device(void);
 
 };
 

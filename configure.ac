@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(polarhrm, 2012-01-01, mailto:thomas.foyth@gmail.com)
+AC_INIT(polarhrm, 2012-01-02, mailto:thomas.foyth@gmail.com)
 
 
 AC_SUBST(MYPATH)
