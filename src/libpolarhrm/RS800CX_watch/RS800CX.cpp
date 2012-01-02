@@ -212,10 +212,11 @@ void RS800CX::openRaw(std::string rawfilepath){
 		hrmfile->save(session);
 
 
+		//FIXME only write gpx files when gps data are stored in session
 		GpxFile *gpxfile = new GpxFile();
 		std::string gpxpath;
 
-		gpxpath.assign(workingDir);gpxpath.append(session->id);gpxpath.append(".gpx");
+		gpxpath.assign(workingDir);gpxpath.append(session->id);gpxpath.append(gpxExtention);
 		gpxfile->setPath(gpxpath);
 		gpxfile->save(session);
 }

@@ -36,6 +36,7 @@ static const char *tempFilename = "temp";
 /* extentions */
 static const char *dumpExtention = ".dump";
 static const char *hrmExtention = ".hrm";
+static const char *gpxExtention = ".gpx";
 
 /* set of functions to manipulate global values 
   use them to configure the library */
