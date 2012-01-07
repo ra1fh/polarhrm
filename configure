@@ -15149,6 +15149,7 @@ $as_echo "yes" >&6; }
 
 fi
 
+
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBUSB" >&5
 $as_echo_n "checking for LIBUSB... " >&6; }

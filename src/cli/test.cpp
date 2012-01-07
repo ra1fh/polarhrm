@@ -500,6 +500,7 @@ void test_rcx5_support(void){
 
 	dldriver->init();
 
+//	dldriver->sendbytes();
 	dldriver->close();
 }
 
