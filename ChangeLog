@@ -3,6 +3,10 @@ History
 =============
 dd.mm.yyyy
 
+07.01.2012
+	* init Datalnk device works (led flashing)
+
+
 02.01.2012
 	* gpx file gets write out (only implemented when reading a raw file with -r option)
 	* configure checks for installed libxml2 and libusb (future use for datalnk support)

@@ -369,40 +369,37 @@ int usb_interrupt_read(usb_dev_handle *dev, int ep, char *bytes, int size, int t
 
 */
 
-int DataLnk_driver::sendbytes(unsigned char query[], int size){
+int DataLnk_driver::sendbytes(const char query[], int size){
 
-	printf("hello from sendbytes\n");
-
-	return 0;
-}
-
-
-// for testing 
-int DataLnk_driver::sendbytes(void){
-
-//	const char bytes[] = {0x04,0x40,0x20,0x00,0x10,0x1e,0x34,0x4d,0x10,0x1c,0x00,0x00,0x00,0x00,0x00,0x00,0x22,0xb8,0xa9,0x00,0xe7,0x02,0x04,0x01,0x09,0x08,0x06,0x06,0x4d,0x34,0x1e,0x2b,0x0b,0x1e,0x0f,0x27,0x15};
-
-	const char bytes[] = {0x01, 0x07};
-//	const char bytes[] = {0x01, 0x40, 0x01, 0x00, 0x51};
-//	const char bytes[] = {0x01, 0x40, 0x01, 0x00, 0x55};
-	
-//	const char bytes[] = {0x80, 0x06, 0x00, 0x01, 0x00, 0x00, 0x12, 0x00};
-//	const char bytes[] = {0x09, 0x02, 0x29, 0x00, 0x01, 0x01, 0x02, 0xa0, 0x32};
+	int ret = -1;
 
 	if (dev_handle != NULL) {
-		//for ( char x = 0; x <= 0xFF; x++)
-		//usb_bulk_write(dev_handle, 0x00000003, bytes, 0x100, 3000);
-
+		// usually the send size is 0x0000100
+		ret = usb_interrupt_write(dev_handle, 
+		                          DATALNK_USB_ENDPOINT_OUT, 
+		                          query, 
+		                          size, 
+		                          DATALNK_USB_TIMEOUT);
 	}
-	return 0;
+	return ret;
 }
 
 
-int DataLnk_driver::recvbytes(unsigned char buf[]){
 
-	printf("hello from recvbytes\n");
 
-	return 0;
+
+int DataLnk_driver::recvbytes( char buf[]){
+
+	int ret = -1;
+	
+	if (dev_handle != NULL)
+		ret = usb_interrupt_read(dev_handle, 
+		                         DATALNK_USB_ENDPOINT_IN, 
+		                         buf, 
+		                         0x0000200, 
+		                         DATALNK_USB_TIMEOUT);
+
+	return ret;
 } 
 
 
@@ -417,7 +414,8 @@ void DataLnk_driver::print_bytes(char *buf, int len){
 	for(i=0; i<len; i++) {
 		printf(" %.2x",(unsigned char)buf[i] );
 		if((i+1)%16 == 0)
-			printf ("\n%08d:",((i+1)/16)*10);
+			//printf ("\n%08d:",((i+1)/16)*10);
+			printf ("\n%07x0:",((i+1)/16));
 	}
 	printf ("\n");
 }

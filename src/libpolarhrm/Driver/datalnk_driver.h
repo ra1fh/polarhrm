@@ -22,6 +22,9 @@ polarhrm is free software: you can redistribute it and/or modify it
 
 #define VENDOR_ID 0x0da4
 
+#define DATALNK_USB_TIMEOUT 1000
+#define DATALNK_USB_ENDPOINT_IN 0x81
+#define DATALNK_USB_ENDPOINT_OUT 0x03
 
 #include <usb.h>
 
@@ -31,9 +34,8 @@ polarhrm is free software: you can redistribute it and/or modify it
 class DataLnk_driver:public Driver{
 public:
 	void init(void);
-	int sendbytes(unsigned char query[], int size);
-	int sendbytes(void);
-	int recvbytes(unsigned char buf[]);
+	int sendbytes(const char query[], int size);
+	int recvbytes(char buf[]);
 	void close(void);
 
 protected:
