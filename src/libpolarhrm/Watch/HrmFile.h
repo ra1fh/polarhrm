@@ -3,6 +3,8 @@
 
 
 #include <string>
+
+#include "Session.h"
 using namespace std;
 
 class HrmFile {
