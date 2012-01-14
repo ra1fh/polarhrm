@@ -27,6 +27,7 @@ enum dev {
 	DEVICE_S625X=22, //use monitor number
 	DEVICE_S725X, //www says it is exactly the same as S625X just has cycling gear packed instead of s1 footpod
 	DEVICE_RS800CX=38,
+	DEVICE_RCX5=105, //lets set a random number
 	DEVICE_NOT_SUPPORTED = 99
 };
 
@@ -43,7 +44,8 @@ static suppDevices supportedDevices[] =
 {
 	{ DEVICE_S625X, "S625X", "hrm writting, run speed, altituede is working"},
 	{ DEVICE_S725X, "S725X", "same as S625X"},
-	{ DEVICE_RS800CX, "RS800CX", "current developing"}
+	{ DEVICE_RS800CX, "RS800CX", "current developing"},
+	{ DEVICE_RCX5, "RCX5", "current driver developing"}
 };
 
 
