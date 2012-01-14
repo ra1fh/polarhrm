@@ -32,4 +32,8 @@
 
 	double toGpsDec(unsigned char pos[]);
 
+	// show the content of a buffer in usbsnoop 
+	// output format (makes it easy to compare)
+	void print_bytes(char *buf, int len);
+
 #endif

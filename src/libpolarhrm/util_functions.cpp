@@ -16,7 +16,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <cctype>
-
+#include <cstdio>
 #include "util_functions.h"
 
 
@@ -72,4 +72,21 @@ double toGpsDec(unsigned char pos[]){
 	coordinate += pos[3];
 
 	return coordinate;
+}
+
+
+
+
+// show the content of a buffer in usbsnoop 
+// output format (makes it easy to compare)
+void print_bytes(char *buf, int len){
+	int i;
+	printf ("%08d:",0);
+	for(i=0; i<len; i++) {
+		printf(" %.2x",(unsigned char)buf[i] );
+		if((i+1)%16 == 0)
+			//printf ("\n%08d:",((i+1)/16)*10);
+			printf ("\n%07x0:",((i+1)/16));
+	}
+	printf ("\n");
 }
