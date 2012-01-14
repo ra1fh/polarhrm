@@ -98,7 +98,11 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/Watch/Gps.cpp   \
 	libpolarhrm/Watch/Gps.h   \
 	libpolarhrm/Watch/GpxFile.cpp   \
-	libpolarhrm/Watch/GpxFile.h
+	libpolarhrm/Watch/GpxFile.h   \
+	libpolarhrm/RCX5_watch/RCX5_comm.h   \
+	libpolarhrm/RCX5_watch/RCX5_comm.cpp   \
+	libpolarhrm/RCX5_watch/RCX5.cpp   \
+	libpolarhrm/RCX5_watch/RCX5.h
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 

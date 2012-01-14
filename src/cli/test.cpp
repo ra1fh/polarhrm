@@ -36,9 +36,10 @@
 #include "libpolarhrm/Watch/GpxFile.h"
 
 #include "libpolarhrm/Driver/datalnk_driver.h"
-#include "libpolarhrm/Driver/datalnk_driver.cpp"
+#include "libpolarhrm/Driver/irda_driver.h"
 
-//#include "libpolarhrm/Driver/irda_driver.h"
+#include "libpolarhrm/RCX5_watch/RCX5_comm.h"
+
 
 using namespace std;
 
@@ -491,17 +492,28 @@ void test_calc_time_obj(void){
 /* rcx5 inital test */
 void test_rcx5_support(void){
 
+	int ret=0;
 	printf("rcx5 inital test\n");
 
-	printf("create driver object\n");
+	unsigned char buf[1024];
+	int len = 0;
+	printf("create comm object\n");
 
-	DataLnk_driver *dldriver;
-	dldriver = new DataLnk_driver();
+	RCX5comm *rcx5comm;
+	rcx5comm = new RCX5comm(new DataLnk_driver());
 
-	dldriver->init();
+	rcx5comm->initDriver();
 
-//	dldriver->sendbytes();
-	dldriver->close();
+	ret=rcx5comm->findWatch(20);
+
+	rcx5comm->getOverview(buf, len);
+
+	rcx5comm->getSession(10333);
+
+//	rcx5comm->handshake();
+	//rcx5comm->idle(); 
+	
+	rcx5comm->closeDriver();
 }
 
 
@@ -515,7 +527,7 @@ int main(void) {
 //	test_run_two_sess_parsing();
 
 	/* test the date and time object behaviour */
-	test_date_and_time_obj();
+//	test_date_and_time_obj();
 
 	/* test the object behaviour */
 //	test_session_obj();
@@ -528,10 +540,10 @@ int main(void) {
 //	test_libpolarhrm_global_settings();
 
 /* test the gpx file creation with sample data */
-	test_gpx_file_creation();
+//	test_gpx_file_creation();
 
 
-	test_calc_time_obj();
+//	test_calc_time_obj();
 
 
 	/* rcx5 inital test */

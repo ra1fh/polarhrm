@@ -34,8 +34,8 @@ polarhrm is free software: you can redistribute it and/or modify it
 class DataLnk_driver:public Driver{
 public:
 	void init(void);
-	int sendbytes(const char query[], int size);
-	int recvbytes(char buf[]);
+	int sendbytes(unsigned char query[], int size);
+	int recvbytes(unsigned char buf[]);
 	void close(void);
 
 protected:
@@ -49,7 +49,6 @@ private:
 	//find the usb device connected 
 	struct usb_device *find_device(void);
 
-	void print_bytes(char *buf, int len);
 
 };
 

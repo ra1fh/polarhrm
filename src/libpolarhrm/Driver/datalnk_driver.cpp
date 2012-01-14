@@ -25,6 +25,8 @@ polarhrm is free software: you can redistribute it and/or modify it
 #include <cstring>
 #include <assert.h>
 
+#include "../util_functions.h"
+
 // lsusb output 
 // 0da4:0004 Polar Electro OY 
 
@@ -81,155 +83,110 @@ void DataLnk_driver::init(void){
 //		assert(ret >= 0);
 
 
-	ret = usb_get_descriptor(dev_handle, 0x0000001, 0x0000000, buf, 0x0000012);
-	printf("1 get descriptor returned %d, bytes: ", ret);
-	print_bytes(buf, ret);
+		ret = usb_get_descriptor(dev_handle, 0x0000001, 0x0000000, buf, 0x0000012);
+		printf("1 get descriptor returned %d, bytes: ", ret);
+		print_bytes(buf, ret);
 
-//usleep(4*1000);
+		//usleep(4*1000);
 
-	ret = usb_get_descriptor(dev_handle, 0x0000002, 0x0000000, buf, 0x0000009);
-	printf("2 get descriptor returned %d, bytes: ", ret);
-	print_bytes(buf, ret);
+		ret = usb_get_descriptor(dev_handle, 0x0000002, 0x0000000, buf, 0x0000009);
+		printf("2 get descriptor returned %d, bytes: ", ret);
+		print_bytes(buf, ret);
 
-//usleep(3*1000);
+		//usleep(3*1000);
 
-	ret = usb_get_descriptor(dev_handle, 0x0000002, 0x0000000, buf, 0x0000029);
-	printf("3 get descriptor returned %d, bytes: ", ret);
-	print_bytes(buf, ret);
+		ret = usb_get_descriptor(dev_handle, 0x0000002, 0x0000000, buf, 0x0000029);
+		printf("3 get descriptor returned %d, bytes: ", ret);
+		print_bytes(buf, ret);
 
-//usleep(3*1000);
+		//usleep(3*1000);
 
-	ret = usb_release_interface(dev_handle, 0);
-	if (ret != 0) 
+		ret = usb_release_interface(dev_handle, 0);
+		if (ret != 0) 
 		printf("failed to release interface before set_configuration: %d\n", ret);
 */
-	ret = usb_set_configuration(dev_handle, 0x0000001);
-	printf("4 set configuration returned %d\n", ret);
+		ret = usb_set_configuration(dev_handle, 0x0000001);
+		printf("4 set configuration returned %d\n", ret);
 
-	ret = usb_claim_interface(dev_handle, 0);
-	if (ret != 0) 
-		printf("claim after set_configuration failed with error %d\n", ret);
+		ret = usb_claim_interface(dev_handle, 0);
+		if (ret != 0) 
+			printf("claim after set_configuration failed with error %d\n", ret);
 
 /*
-	ret = usb_set_altinterface(dev_handle, 0);
-	printf("4 set alternate setting returned %d\n", ret);
-//	usleep(41*1000);
+		ret = usb_set_altinterface(dev_handle, 0);
+		printf("4 set alternate setting returned %d\n", ret);
+		usleep(41*1000);
 */
 
-	ret = usb_control_msg(dev_handle, USB_TYPE_CLASS + USB_RECIP_INTERFACE, 0x000000a, 0x0000000, 0x0000000, buf, 0x0000000, 1000);
-	printf("5 control msg returned %d", ret);
+		ret = usb_control_msg(dev_handle, USB_TYPE_CLASS + USB_RECIP_INTERFACE, 0x000000a, 0x0000000, 0x0000000, buf, 0x0000000, 1000);
+		printf("5 control msg returned %d", ret);
 
-//  usleep(6*1000);
+		//  usleep(6*1000);
 /*
-	ret = usb_get_descriptor(dev_handle, 0x0000022, 0x0000000, buf, 0x0000076);
-	printf("6 get descriptor returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+		ret = usb_get_descriptor(dev_handle, 0x0000022, 0x0000000, buf, 0x0000076);
+		printf("6 get descriptor returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
 */
 
 /*
-//	usleep(5*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("7 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+	//	usleep(5*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("7 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
 
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("8 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("8 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 */
 
 //usleep(401*1000);
 	memcpy(buf, "\x01\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0x0000100);
 	ret = usb_interrupt_write(dev_handle, 0x00000003, buf, 0x0000100, 1000);
-	printf("9 interrupt write returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
-//	usleep(14*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("10 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
+//	printf("9 interrupt write returned %d, bytes: \n", ret);
+//	print_bytes(buf, ret);
 
 /*
-//	usleep(2*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("11 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+	//	usleep(2*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("11 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
-//	usleep(4*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("12 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+	//	usleep(4*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("12 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
-//	usleep(1*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("13 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+	//	usleep(1*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("13 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
-//	usleep(3*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("14 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+	//	usleep(3*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("14 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 */
 
-
-//	usleep(2*1000);
-	memcpy(buf, "\x01\x40\x01\x00\x51\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0x0000100);
-	ret = usb_interrupt_write(dev_handle, 0x00000003, buf, 0x0000100, 1000);
-	printf("15 interrupt write returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
-
-
-
-//	usleep(5*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("16 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
+		//FIXME dont know if we need to send the idle? at this time.
+		memcpy(buf, "\x01\x40\x01\x00\x51\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0x0000100);
+		ret = usb_interrupt_write(dev_handle, 0x00000003, buf, 0x0000100, 1000);
+		//printf("15 interrupt write returned %d, bytes: \n", ret);
+		//print_bytes(buf, ret);
 
 /*
-  //FIXME from this point the deamon of the windows software is 
-	// polling for data
-//	usleep(2*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("17 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
+		//FIXME from this point the deamon of the windows software is periodic
+		// polling for data
+		usleep(5*1000);
+		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
+		printf("16 interrupt read returned %d, bytes: \n", ret);
+		print_bytes(buf, ret);
 
-
-
-//	usleep(2*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("18 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
-//	usleep(1*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("19 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
-
-
-//	usleep(19*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("20 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
-
-//	usleep(2500*1000);
-	ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-	printf("21 interrupt read returned %d, bytes: \n", ret);
-	print_bytes(buf, ret);
 
 */
-
-/*
-
-	assert(ret == 0);
-	ret = usb_close(dev_handle);
-	assert(ret == 0);
-*/
-}
+		printf("\nHID device set up. (Led starts flashing)\n");
+	}
 
 }
 
@@ -253,6 +210,7 @@ struct usb_device * DataLnk_driver::find_device(void){
 
 	busses = usb_get_busses();
 
+	char buf[0x100];
 
 	struct usb_bus *bus;
 	int c, i, a;
@@ -360,16 +318,9 @@ void DataLnk_driver::close(void){
 
 
 
-/*
 
-int usb_bulk_write(usb_dev_handle *dev, int ep, const char *bytes, int size, int timeout);
-int usb_bulk_read(usb_dev_handle *dev, int ep, char *bytes, int size, int timeout);
-int usb_interrupt_write(usb_dev_handle *dev, int ep, const char *bytes, int size, int timeout);
-int usb_interrupt_read(usb_dev_handle *dev, int ep, char *bytes, int size, int timeout);
 
-*/
-
-int DataLnk_driver::sendbytes(const char query[], int size){
+int DataLnk_driver::sendbytes(unsigned char query[], int size){
 
 	int ret = -1;
 
@@ -377,7 +328,7 @@ int DataLnk_driver::sendbytes(const char query[], int size){
 		// usually the send size is 0x0000100
 		ret = usb_interrupt_write(dev_handle, 
 		                          DATALNK_USB_ENDPOINT_OUT, 
-		                          query, 
+		                          (const char*) query, 
 		                          size, 
 		                          DATALNK_USB_TIMEOUT);
 	}
@@ -388,34 +339,16 @@ int DataLnk_driver::sendbytes(const char query[], int size){
 
 
 
-int DataLnk_driver::recvbytes( char buf[]){
+int DataLnk_driver::recvbytes(unsigned char buf[]){
 
 	int ret = -1;
 	
 	if (dev_handle != NULL)
 		ret = usb_interrupt_read(dev_handle, 
 		                         DATALNK_USB_ENDPOINT_IN, 
-		                         buf, 
-		                         0x0000200, 
+		                         (char*)(buf), 
+		                         0x200,
 		                         DATALNK_USB_TIMEOUT);
 
 	return ret;
 } 
-
-
-
-
-
-// show the content of a buffer in usbsnoop 
-// output format (makes it easy to compare)
-void DataLnk_driver::print_bytes(char *buf, int len){
-	int i;
-	printf ("%08d:",0);
-	for(i=0; i<len; i++) {
-		printf(" %.2x",(unsigned char)buf[i] );
-		if((i+1)%16 == 0)
-			//printf ("\n%08d:",((i+1)/16)*10);
-			printf ("\n%07x0:",((i+1)/16));
-	}
-	printf ("\n");
-}
