@@ -89,7 +89,10 @@ am_libpolarhrm_la_OBJECTS = libpolarhrm_la-file_operations.lo \
 	libpolarhrm_la-Watch.lo libpolarhrm_la-util_functions.lo \
 	libpolarhrm_la-Datanode.lo libpolarhrm_la-libpolarhrm.lo \
 	libpolarhrm_la-Gps.lo libpolarhrm_la-GpxFile.lo \
-	libpolarhrm_la-RCX5_comm.lo libpolarhrm_la-RCX5.lo
+	libpolarhrm_la-RCX5_comm.lo libpolarhrm_la-RCX5.lo \
+	libpolarhrm_la-RCX5_parse.lo \
+	libpolarhrm_la-RCX5_parse_overview.lo \
+	libpolarhrm_la-RCX5_parse_session.lo
 libpolarhrm_la_OBJECTS = $(am_libpolarhrm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -259,10 +262,10 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2012-01-02
+PACKAGE_STRING = polarhrm 2012-02-02
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2012-01-02
+PACKAGE_VERSION = 2012-02-02
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -272,7 +275,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2012-01-02
+VERSION = 2012-02-02
 abs_builddir = /home/thomas/projects/polarhrm/src
 abs_srcdir = /home/thomas/projects/polarhrm/src
 abs_top_builddir = /home/thomas/projects/polarhrm
@@ -420,7 +423,11 @@ libpolarhrm_la_SOURCES = \
 	libpolarhrm/RCX5_watch/RCX5_comm.h   \
 	libpolarhrm/RCX5_watch/RCX5_comm.cpp   \
 	libpolarhrm/RCX5_watch/RCX5.cpp   \
-	libpolarhrm/RCX5_watch/RCX5.h
+	libpolarhrm/RCX5_watch/RCX5.h   \
+	libpolarhrm/RCX5_watch/RCX5_parse.cpp   \
+	libpolarhrm/RCX5_watch/RCX5_parse.h   \
+	libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp   \
+	libpolarhrm/RCX5_watch/RCX5_parse_session.cpp
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 
@@ -569,6 +576,9 @@ include ./$(DEPDIR)/libpolarhrm_la-Limit.Plo
 include ./$(DEPDIR)/libpolarhrm_la-Overview.Plo
 include ./$(DEPDIR)/libpolarhrm_la-RCX5.Plo
 include ./$(DEPDIR)/libpolarhrm_la-RCX5_comm.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RCX5_parse.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RCX5_parse_overview.Plo
+include ./$(DEPDIR)/libpolarhrm_la-RCX5_parse_session.Plo
 include ./$(DEPDIR)/libpolarhrm_la-RS800CX.Plo
 include ./$(DEPDIR)/libpolarhrm_la-RS800CX_comm.Plo
 include ./$(DEPDIR)/libpolarhrm_la-RS800CX_parse.Plo
@@ -884,6 +894,30 @@ libpolarhrm_la-RCX5.lo: libpolarhrm/RCX5_watch/RCX5.cpp
 #	source='libpolarhrm/RCX5_watch/RCX5.cpp' object='libpolarhrm_la-RCX5.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RCX5.lo `test -f 'libpolarhrm/RCX5_watch/RCX5.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5.cpp
+
+libpolarhrm_la-RCX5_parse.lo: libpolarhrm/RCX5_watch/RCX5_parse.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RCX5_parse.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RCX5_parse.Tpo -c -o libpolarhrm_la-RCX5_parse.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RCX5_parse.Tpo $(DEPDIR)/libpolarhrm_la-RCX5_parse.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/RCX5_watch/RCX5_parse.cpp' object='libpolarhrm_la-RCX5_parse.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RCX5_parse.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse.cpp
+
+libpolarhrm_la-RCX5_parse_overview.lo: libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RCX5_parse_overview.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RCX5_parse_overview.Tpo -c -o libpolarhrm_la-RCX5_parse_overview.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RCX5_parse_overview.Tpo $(DEPDIR)/libpolarhrm_la-RCX5_parse_overview.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp' object='libpolarhrm_la-RCX5_parse_overview.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RCX5_parse_overview.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp
+
+libpolarhrm_la-RCX5_parse_session.lo: libpolarhrm/RCX5_watch/RCX5_parse_session.cpp
+	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-RCX5_parse_session.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-RCX5_parse_session.Tpo -c -o libpolarhrm_la-RCX5_parse_session.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse_session.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-RCX5_parse_session.Tpo $(DEPDIR)/libpolarhrm_la-RCX5_parse_session.Plo
+#	$(AM_V_CXX) \
+#	source='libpolarhrm/RCX5_watch/RCX5_parse_session.cpp' object='libpolarhrm_la-RCX5_parse_session.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-RCX5_parse_session.lo `test -f 'libpolarhrm/RCX5_watch/RCX5_parse_session.cpp' || echo '$(srcdir)/'`libpolarhrm/RCX5_watch/RCX5_parse_session.cpp
 
 polarhrm.o: cli/polarhrm.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT polarhrm.o -MD -MP -MF $(DEPDIR)/polarhrm.Tpo -c -o polarhrm.o `test -f 'cli/polarhrm.cpp' || echo '$(srcdir)/'`cli/polarhrm.cpp

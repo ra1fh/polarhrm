@@ -102,7 +102,11 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/RCX5_watch/RCX5_comm.h   \
 	libpolarhrm/RCX5_watch/RCX5_comm.cpp   \
 	libpolarhrm/RCX5_watch/RCX5.cpp   \
-	libpolarhrm/RCX5_watch/RCX5.h
+	libpolarhrm/RCX5_watch/RCX5.h   \
+	libpolarhrm/RCX5_watch/RCX5_parse.cpp   \
+	libpolarhrm/RCX5_watch/RCX5_parse.h   \
+	libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp   \
+	libpolarhrm/RCX5_watch/RCX5_parse_session.cpp
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 
