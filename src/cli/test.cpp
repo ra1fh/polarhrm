@@ -499,21 +499,16 @@ void test_rcx5_support(void){
 	int len = 0;
 	printf("create comm object\n");
 
+	RCX5 *watch;
+	watch = new RCX5();
+
+	watch->saveHRM();
+
+/*
 	RCX5comm *rcx5comm;
-	rcx5comm = new RCX5comm(new DataLnk_driver());
-
-	rcx5comm->initDriver();
-
-	ret=rcx5comm->findWatch(20);
-
-	rcx5comm->getOverview(buf, len);
-
-	rcx5comm->getSession(10333);
-
-//	rcx5comm->handshake();
-	//rcx5comm->idle(); 
-	
-	rcx5comm->closeDriver();
+	rcx5comm = new RCX5comm(new DataLnk_driver);
+	rcx5comm->getSession(1,10333);
+*/
 }
 
 
