@@ -31,6 +31,7 @@
 #include "libpolarhrm/libpolarhrm.h"
 #include "libpolarhrm/S625X_watch/S625X.h"
 #include "libpolarhrm/RS800CX_watch/RS800CX.h"
+#include "libpolarhrm/RCX5_watch/RCX5.h"
 
 #include "libpolarhrm/Watch/Watch.h"
 #include "libpolarhrm/file_operations.h"
@@ -211,6 +212,9 @@ int main (int argc, char **argv){
 				break;
 			case DEVICE_RS800CX:
 				watch = new RS800CX();
+				break;
+			case DEVICE_RCX5:
+				watch = new RCX5();
 				break;
 			case DEVICE_NOT_SUPPORTED:
 				printf("device is not supported so far. :-(\nif it has an irda interface you can help supporting this device.\n");
