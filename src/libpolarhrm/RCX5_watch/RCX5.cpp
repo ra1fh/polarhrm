@@ -61,7 +61,7 @@ void RCX5::saveHRM(void){
 
 		ret=this->watchcomm->findWatch(20); //try 20 times
 		// don t call the function for now
-		this->watchcomm->handshake();
+		//this->watchcomm->handshake();
 
 		Overview *w_overview = new Overview;
 		this->watchcomm->getOverview(buf, len);
@@ -77,11 +77,14 @@ void RCX5::saveHRM(void){
 
 		RawSession *raw_session;
 
+//XXX just for testing to get only one specific session :-)
+// some additonal source code adapitons required
+//	int sess_no = 4;
 		if (0 < w_overview->getSessionNumber()) {
 
 			// get session raw data including protocoll data and store them in a node list
-//			for (int sess_no=0; sess_no < w_overview->getSessionNumber(); sess_no++) {
-int sess_no = 0;
+			for (int sess_no=0; sess_no < w_overview->getSessionNumber(); sess_no++) {
+
 				this->watchcomm->getSessionOverview(buf, len, sess_no);
 				int used_bytes = this->parser->parseSessionOverview(buf,len);
 
@@ -94,7 +97,7 @@ int sess_no = 0;
 				raw_session = RCX5parse::parseRawSession(&nodelist);
 
 				allraw_sessions->setRawSession(raw_session, sess_no);
-//			}
+			}
 		}
 
 		else {
@@ -112,10 +115,10 @@ int sess_no = 0;
 			// note! we start counting at 1
 			// it is importend to know that shifting the index from watch orignal to 
 			// array-index 0 for storing data does not get messed up!
-			for (int i=1; i<=w_overview->getSessionNumber(); i++ ) {
+			for (int sess_no=0; sess_no<=w_overview->getSessionNumber(); sess_no++ ) {
 
 				RawSession *raw_session;
-				raw_session = allraw_sessions->getRawSession(i);
+				raw_session = allraw_sessions->getRawSession(sess_no);
 
 				//raw_session->print();
 
@@ -123,14 +126,13 @@ int sess_no = 0;
 				//#ifdef DUMP_RAW
 				std::string raw_path;
 				char filename[40];
-				sprintf(filename, "rcx5_session%02d", i);
+				sprintf(filename, "rcx5_session%02d", sess_no);
 				raw_path = create_filepath(workingDir,filename,dumpExtention);
 
 				raw_session->saveRaw(raw_path);
 				//#endif
 
-
-
+/*
 				Session *session;
 				session = this->parser->parseSession(raw_session);
 
@@ -146,25 +148,25 @@ int sess_no = 0;
 				rename(raw_path.c_str(), dump_path.c_str());
 				//#endif
 
-/*
+
 				std::string hrmpath;
 				hrmpath = create_filepath(workingDir,session->getFilename().c_str(),hrmExtention);
 
 				HrmFile *hrmfile = new HrmFile(this->monitor,this->version);
 				hrmfile->setPath(hrmpath);
 				hrmfile->save(session);
-*/
+
 				//#ifdef DUMP_RAW
-				std::cout<< "saved dump session number " << i << " @ " << dump_path << std::endl;
+				std::cout<< "saved dump session number " << sess_no << " @ " << dump_path << std::endl;
 				//#endif
-//				std::cout << "saved hrm session number " << i << " @ " << hrmpath << std::endl;
+//				std::cout << "saved hrm session number " << sess_no << " @ " << hrmpath << std::endl;
 
 				// emty memory
 				delete raw_session;
-				delete session; 
+				delete session; */
 			} // end for 
 		} //end if 
-
+		
 }
 
 
@@ -197,7 +199,7 @@ void RCX5::eraseSessions(void) {
 
 
 void RCX5::openRaw(std::string rawfilepath){
-/*
+
 		RawSession *rawsession = new RawSession();
 
 		rawsession->readRaw(rawfilepath);
@@ -205,7 +207,7 @@ void RCX5::openRaw(std::string rawfilepath){
 
 		Session *session = new Session();
 		session = parser->parseSession(rawsession);
-
+/*
 		HrmFile *hrmfile = new HrmFile(monitor,version);
 
 		//overwrite existing file

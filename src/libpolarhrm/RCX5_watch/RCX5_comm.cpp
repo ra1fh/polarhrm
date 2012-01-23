@@ -70,7 +70,6 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	int counter=0;
 	unsigned char sendquery[256];
 
-
 	// first query at an open snyc connection
 	// Get overview -> response holds the number of sessions
 	// 												report can hold other    0xAA
@@ -167,7 +166,7 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 /* get the sessiondata out of the watch and store them in a node list. 
  the idea is to have a clear separation and any datamaipulation 
  data are manipulated at the with parse functions */
-std::list<Datanode> RCX5comm::getSession(int sess_no, int bytes) {
+std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 
 //get session
 //little endian coding
@@ -208,18 +207,18 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int bytes) {
 	packet.intvalue = packet_size;
 	accumulate.intvalue = 0; // start value
 
-	sesschecksum = bytes;
+	sesschecksum = sess_len;
 
-	if((bytes % packet_size) != 0) {
+	if((sess_len % packet_size) != 0) {
 		// dont forget the modulo as additonal packet
-		nodes_left=(bytes/packet_size)+1;
+		nodes_left=(sess_len/packet_size)+1;
 	}
 	else {
-		nodes_left=(bytes/packet_size);
+		nodes_left=(sess_len/packet_size);
 	}
 
 	printf("%d packets each 446 bytes (load) \n",nodes_left );
-	printf("last packet size %d bytes\n",bytes%packet_size);
+	printf("last packet size %d bytes\n",sess_len%packet_size);
 
 	// after sending the init query go ahead a long as all bytes get received
 	//while (checksum < w_o->used_bytes))
@@ -248,30 +247,37 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int bytes) {
 		do {
 			usleep(1000);
 			len = this->driver->recvbytes(buf);
-		}while (len != 512);
-
+		}while (len != RCX5_TRANSFER_BUFFER_SIZE);
 
 		print_bytes((char*)buf, len);
-
-
 		printf("There are %i packets left to transfer\n",nodes_left-1);
 
+
+		// this is a bit nasty but makes life much more easy at raw session 
+		// parsing with the existing function
+		// we just cout off the transferbuffer witch is 512 to the packet 
+		// size of 446
+		// and the last packet (nodes left 1) gets cut to its calculated size
+		if (nodes_left == 1) {
+			checksum += sess_len % packet_size;
+			//overwrite len with packet size
+			len = sess_len % packet_size;
+		}
+		else {
+			checksum += packet_size;
+			//overwrite len with packet size
+			len = packet_size;
+		}
 		// need to subtract the protocol specific bytes
 		// but ONLY for checksum.
 		//will be managed in parse function
-		checksum += len;
-		checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_HEAD;
-		checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_TAIL;
+		//checksum += len; //FIXME this is not working because len gives the 
+						   // complete buffer len of 512 and not only the 
+						   // protocol sprecific len
+		//XXX the protocol specific bytes also count??
+		//checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_HEAD;
+		//checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_TAIL;
 
-
-		//calculate values for the next query
-		accumulate.intvalue += packet_size;
-		if(2 == nodes_left ) {
-			packet.intvalue = bytes % packet_size;
-		}
-		else {
-			packet.intvalue = packet_size;
-		}
 
 		//put the received data into a node list
 		Datanode node(buf, len);
@@ -282,6 +288,18 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int bytes) {
 		#if defined(DEBUGPRINT)
 			printf("get sessiondata bytes: %d / %d\n\n\n",checksum, sesschecksum);
 		#endif
+
+
+
+		//finally calculate values for the next query
+		accumulate.intvalue += packet_size;
+		if(1 == nodes_left ) {
+			packet.intvalue = sess_len % packet_size;
+		}
+		else {
+			packet.intvalue = packet_size;
+		}
+
 	} while (nodes_left > 0);
 
 return l;
@@ -389,9 +407,14 @@ void RCX5comm::handshake(void){
 	do {
 		usleep(1000);
 		rlen = this->driver->recvbytes(rbuf);
-	}while (rlen <= 1);
+	}while (rlen != 512);
 
 	this->idle();
+
+	//XXX if not sending the idle2 command the user has to accept the 
+	// pairing dialog at the watch
+	this->idle2();
+
 
 	printf("handshake ? %d\n",rlen);
 	print_bytes((char*)rbuf, rlen);

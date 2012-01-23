@@ -31,14 +31,14 @@
 
 
 // values for data transfer
-#define RCX5_TRANSFER_BUFFER_SIZE 1024
+#define RCX5_TRANSFER_BUFFER_SIZE 512
 
 // fix the fact that the datalength starts at byte 1
 // but saving the data in the array beginns at index 0
 #define RCX5_ZERO_INDEX_FIX 1
 
 #define RCX5_PACKETS_INCLUDING_HEADER 446
-#define RCX5_FIRST_PACKET_CORRECTION_HEAD 10
+#define RCX5_FIRST_PACKET_CORRECTION_HEAD 7
 #define RCX5_FIRST_PACKET_CORRECTION_TAIL 0 //looks like there is no tail to 
 												// cut off!! 
 												// it figured out during 

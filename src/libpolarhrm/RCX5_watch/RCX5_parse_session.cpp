@@ -355,22 +355,22 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	// FIXME dont know where this is stored
 	w_session->setSiUnit(true);
 
-	unsigned short timestamp = ((buf[22] << 8) | buf[21]);
+	unsigned short timestamp = ((buf[31] << 8) | buf[30]);
 
 	wDate* sessStartDate = new wDate();
-	sessStartDate->setYear((int)BASE_YEAR + (timestamp >> 9) );
-	sessStartDate->setMonth((timestamp & 0x1e0) >> 5);
-	sessStartDate->setDay(timestamp & 0x1f);
+	sessStartDate->setYear((int)BASE_YEAR + lnib(buf[37]) );
+	sessStartDate->setMonth(buf[36]);
+	sessStartDate->setDay(buf[35]);
 
 	wTime* sessStartTime = new wTime();
-	sessStartTime->setHour(unbcd(buf[25])&0x3F); 
-	sessStartTime->setMinute(unbcd(buf[24])); 
-	sessStartTime->setSecond(unbcd(buf[23]));
+	sessStartTime->setHour(unbcd(buf[34])); 
+	sessStartTime->setMinute(unbcd(buf[33])); 
+	sessStartTime->setSecond(unbcd(buf[32]));
 	sessStartTime->setTenth((unsigned char) 0);
 
 	sessStartDate->setTime(sessStartTime);
 	w_session->setStartDate(sessStartDate);
-
+	printf ("XXX %X\n", buf[42]);
 	printf("OK Date %s\n",w_session->getStartDate()->toString().c_str());
 	printf("OK Start Time %s\n",sessStartTime->toString().c_str());
 
@@ -384,45 +384,46 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 							w_session->getStartDate()->getMinute());
 
 	wTime *duration =new wTime();
-	duration->setHour(buf[28] & 0x7f);
-	duration->setMinute (buf[27] & 0x3f);
-	duration->setSecond (buf[26] & 0x3f);
-	duration->setTenth(((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)); //tenth
+	duration->setHour( unbcd (buf[31]) );
+	duration->setMinute (unbcd (buf[30]));
+	duration->setSecond (unbcd (buf[29]));
+	duration->setTenth(unbcd(buf[28])); //tenth
 	w_session->setDuration(duration);
 
-	printf("?? thenth %f\n", (double)(((buf[27] & 0xc0) >> 4) | ( (buf[26] & 0xc0) >> 6))    );
 	printf("OK w_session->duration=%f\n",w_session->getDuration()->toDouble());
 	printf("OK w_session->duration=%s\n",w_session->getDuration()->toString().c_str());
 
-	printf("?? duration at byte 99 ");
-	test(&buf[99]);
 
+/*
 	w_session->hr_avg=buf[29];
 	printf("OK w_session->hr_avg=%d\n",w_session->hr_avg);
 	w_session->hr_max=buf[30];
 	printf("OK w_session->hr_max=%d\n",w_session->hr_max);
 	w_session->hr_min=buf[31];
 	printf("OK w_session->hr_min=%d\n",w_session->hr_min);
-
+*/
 	//  user related data
-	w_session->user_hr_max = buf[35];
-	printf("OK w_session->user_hr_max=%d\n",w_session->user_hr_max);
-	w_session->user_hr_rest = buf[36];
+	w_session->user_hr_max = buf[212];
+	printf("?? w_session->user_hr_max=%d\n",w_session->user_hr_max);
+	w_session->user_hr_rest = buf[47];
 	printf("OK w_session->user_hr_rest=%d\n",w_session->user_hr_rest);
-	w_session->user_vo2_max = buf[37];
+	w_session->user_vo2_max = buf[43];
 	printf("OK w_session->user_vo2_max=%d\n",w_session->user_vo2_max);
-	w_session->calories = toshort(&buf[32]);
-	printf("OK w_session->calories=%d\n",w_session->calories);
+//	w_session->calories = toshort(&buf[32]);
+//	printf("OK w_session->calories=%d\n",w_session->calories);
 
-	SHOW(34);
-	SHOW(38);
-	SHOW(39);
-	SHOW(40);
+	printf("?? record HR data %X\n",buf[158]);
+	printf("?? record GPS data %X\n",buf[159]);
 
-
-	w_session->setNumberOfLaps(buf[46]);
-	printf("OK w_session->number_of_laps=%d\n",w_session->getNumberOfLaps());
-	printf("?? number_automated_laps=%d\n",buf[47]); //what is the difference?
+	if(buf[292] == 173) {
+		w_session->setNumberOfLaps(1);
+	}
+	else {
+		w_session->setNumberOfLaps(buf[292]);
+	}
+	printf("?? w_session->number_of_laps=%d\n",w_session->getNumberOfLaps());
+/*
+//	printf("?? number_automated_laps=%d\n",buf[47]); //what is the difference?
 
 	w_session->best_lap = buf[51];
 	printf("?? w_session->best_lap=%d\n",w_session->best_lap);
@@ -431,35 +432,41 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	w_session->pace_avg = toshort(&buf[54]);;
 	printf("?? w_session->pace_avg=%d\n",w_session->pace_avg);
 
+*/
+
+	// laptime 
+	wTime *best_laptime = new wTime();
+	wTime *avg_laptime = new wTime();
+
+	if (w_session->getNumberOfLaps() != 1) {
+		best_laptime->setHour   (unbcd(buf[305]));
+		best_laptime->setMinute (unbcd(buf[304]));
+		best_laptime->setSecond (unbcd(buf[303]));
+		best_laptime->setTenth  (unbcd(buf[302]));
+
+		avg_laptime->setHour   (unbcd(buf[297]));
+		avg_laptime->setMinute (unbcd(buf[296]));
+		avg_laptime->setSecond (unbcd(buf[295]));
+		avg_laptime->setTenth  (unbcd(buf[294]));
+
+	}
+	else {
+		//set end time
+		best_laptime = duration;
+		avg_laptime = duration;
+	}
+	w_session->setBestLapTime(best_laptime);
+
+	printf("OK w_session->best_laptime=%f\n",w_session->getBestLapTime()->toDouble());
+	printf("OK w_session->best_laptime=%s\n",w_session->getBestLapTime()->toString().c_str());
+
+	// not saving this for now
+	printf("OK            avg_laptime=%f\n",avg_laptime->toDouble());
+	printf("OK            avg_laptime=%s\n",avg_laptime->toString().c_str());
+
 
 
 /*
-(buf[28] & 0x7f, //hour
-buf[27] & 0x3f, // minutes
-buf[26] & 0x3f, // seconds
-((buf[27] & 0xc0) >> 4) | ((buf[26] & 0xc0) >> 6)
-*/
-	wTime *best_laptime = new wTime();
-
-	//if (w_session->getNumberOfLaps() != 1) {
-		best_laptime->setHour   (buf[49] & 0x7F);
-		best_laptime->setMinute (buf[48] & 0x3F);
-		best_laptime->setSecond (buf[47] & 0x3F);
-		best_laptime->setTenth (((buf[48] & 0xc0) >> 4) | ((buf[47] & 0xc0) >> 6));
-	//}
-
-	//else {
-		//set end time
-		//best_laptime = duration;
-
-	//}
-	
-	w_session->setBestLapTime(best_laptime);
-
-	printf("?? w_session->best_laptime=%f\n",w_session->getBestLapTime()->toDouble());
-	printf("?? w_session->best_laptime=%s\n",w_session->getBestLapTime()->toString().c_str());
-
-
 	printf("?? 56 byte %X\t%d allways FF??\n",buf[56], buf[56]);
 
 
@@ -487,27 +494,10 @@ buf[26] & 0x3f, // seconds
 	bool gps = ((buf[18]&0x10) && (buf[18]&0x08)) ? true:false;
 
 
-	SHOW(20);
-
-	SHOW(41);
-	SHOW(42);
-	SHOW(43);
-	SHOW(44);
-	SHOW(45);
-
-	SHOW(47);
-	SHOW(48);
-	SHOW(49);
-	SHOW(50);
-
-	SHOW(56);
-	SHOW(57);
-	SHOW(58);
-	SHOW(59);
-	SHOW(60);
+	
 	printf("\n\n");
 
-
+*/
 /* need to find this values
 	 * bike 1- 3
 	 * speed sensor
@@ -543,7 +533,7 @@ buf[26] & 0x3f, // seconds
 	// runspeed foodpod S3
 	// runspeed GPS
 	// cs bike 
-
+/*
 	int lap_byte_size = 7; // base length
 	int sample_size = 1;   //HR only sounds correct ;-)
 
@@ -576,7 +566,7 @@ buf[26] & 0x3f, // seconds
 	w_session->setHasSpeedData((runspeed || gps) ? true:false );
 	printf("?? w_session->has_speed_data %d\n",w_session->getHasSpeedData() );
 
-
+*/
 
 	// FIXME get this working therefore cycling data is needed
 	/*
@@ -587,7 +577,7 @@ buf[26] & 0x3f, // seconds
 
 	printf("?? w_session->has_cadence_data %d\n",w_session->getHasCadenceData());
 	*/
-
+/*
 	// looks like some similar value
 	test(&buf[38]);
 	printf("?? left time to save sessions? ");
@@ -596,9 +586,9 @@ buf[26] & 0x3f, // seconds
 	//SHOW(80);
 	//SHOW(81);
 	//SHOW(82);
+*/
 
-
-	switch (buf[19]) {
+	switch (buf[50]) {
 		case 0:
 			w_session->setRecordingInterval(1);
 			break;
@@ -616,9 +606,9 @@ buf[26] & 0x3f, // seconds
 			break;
 	}
 
-	printf("OK w_session->recording_interval=%d\n",w_session->getRecordingInterval());
+	printf("?? w_session->recording_interval=%d\n",w_session->getRecordingInterval());
 
-
+/*
 	// RCX5 protocoll size is at least 170 
 	//calculating hr sample data length
 	// e.g.:
@@ -679,7 +669,7 @@ buf[26] & 0x3f, // seconds
 	parse_sportzones (w_session, raw_sess);
 
 	parse_laps(w_session, raw_sess);
-
+*/
 /*
 	int base= 422;
 	test(&buf[base + 0]);
@@ -786,12 +776,12 @@ RawSession* RCX5parse::parseRawSession(std::list<Datanode>* nodelist){
 		printf("rawbuffer filled %d\n\n",rawbuf_filled);
 
 		// whats in the node buffer
-		for (int j=0; j<=current->getBufLen(); j++)
+		for (int j=0; j<current->getBufLen(); j++)
 			printf("%X ", nodebuf[j]);
 		printf("\n\n");
 
 		// whats copied
-		for (int j=rawbuf_filled; j<=rawbuf_filled+nodebuflen; j++)
+		for (int j=rawbuf_filled; j<rawbuf_filled+nodebuflen; j++)
 			printf("%X ",rawbuf[j]);
 		printf("\n\n");
 
@@ -802,8 +792,7 @@ RawSession* RCX5parse::parseRawSession(std::list<Datanode>* nodelist){
 	// result
 	printf("\nfinal rawbuffer (len %i)\n", rawbuf_filled);
 	
-	for (int j=0; j<=rawbuf_filled; j++)
-		printf("%X ",rawbuf[j]);
+	print_bytes ((char*)rawbuf, rawbuf_filled);
 	printf("\n\n");
 
 
