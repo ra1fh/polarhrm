@@ -370,7 +370,7 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 	sessStartDate->setTime(sessStartTime);
 	w_session->setStartDate(sessStartDate);
-	printf ("XXX %X\n", buf[42]);
+
 	printf("OK Date %s\n",w_session->getStartDate()->toString().c_str());
 	printf("OK Start Time %s\n",sessStartTime->toString().c_str());
 
@@ -402,7 +402,11 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	w_session->hr_min=buf[31];
 	printf("OK w_session->hr_min=%d\n",w_session->hr_min);
 */
+
+
 	//  user related data
+	SHOW(45);
+	SHOW(46);
 	w_session->user_hr_max = buf[212];
 	printf("?? w_session->user_hr_max=%d\n",w_session->user_hr_max);
 	w_session->user_hr_rest = buf[47];
@@ -414,6 +418,9 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 	printf("?? record HR data %X\n",buf[158]);
 	printf("?? record GPS data %X\n",buf[159]);
+
+	SHOW(160);
+	SHOW(161);
 
 	if(buf[292] == 173) {
 		w_session->setNumberOfLaps(1);
@@ -434,6 +441,15 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 */
 
+	SHOW(66);
+	SHOW(67);
+	SHOW(70);
+	SHOW(85);
+	SHOW(113);
+	SHOW(114);
+	SHOW(115);
+	SHOW(116);
+	SHOW(117);
 	// laptime 
 	wTime *best_laptime = new wTime();
 	wTime *avg_laptime = new wTime();
@@ -448,7 +464,6 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 		avg_laptime->setMinute (unbcd(buf[296]));
 		avg_laptime->setSecond (unbcd(buf[295]));
 		avg_laptime->setTenth  (unbcd(buf[294]));
-
 	}
 	else {
 		//set end time
@@ -625,86 +640,20 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	printf("?? proof of calculation: duration / record interval = %d\n", (int)floor(w_session->getDuration()->toDouble() / w_session->getRecordingInterval()));
 	printf ("?? byte 97 number_of_samples seems to be something different %d\n",toshort(&buf[97]));
 
+	*/
 
-	SHOW(97);
-	SHOW(98);
-
-
-	SHOW(102);
-	SHOW(103);
-	SHOW(104);
-	SHOW(105);
-	SHOW(106);
-	SHOW(107);
-	SHOW(108);
-	SHOW(109);
-	SHOW(110);
-
-	SHOW(111);
-	SHOW(112);
-	SHOW(113);
-	SHOW(114);
-	SHOW(115);
-
-	SHOW(116);
-	SHOW(117);
-	SHOW(118);
-	SHOW(119);
-	SHOW(120);
-
-	SHOW(121);
-	SHOW(122);
-
-
-	SHOW(165);
-	//SHOW(170);
-	SHOW(171);
-	SHOW(172);
-	SHOW(173);
-	SHOW(174);
-	SHOW(175);
-
+	SHOW(202);
+	SHOW(204);
+	SHOW(206);
+	SHOW(208);
+	SHOW(210);
+	SHOW(212);
+/*
 	//XXX disabled for shorter output
 	parse_samples(w_session, raw_sess);
 	parse_sportzones (w_session, raw_sess);
 
 	parse_laps(w_session, raw_sess);
-*/
-/*
-	int base= 422;
-	test(&buf[base + 0]);
-	test(&buf[base + 1]);
-	test(&buf[base + 2]);
-	test(&buf[base + 3]);
-	test(&buf[base + 4]);
-	test(&buf[base + 5]);
-	test(&buf[base + 6]);
-	test(&buf[base + 7]);
-	test(&buf[base + 8]);
-	test(&buf[base + 9]);
-	test(&buf[base + 10]);
-	printf("\n");
-	//632 ALT @620
-	// -34
-	test(&buf[599]);
-	// -34
-	test(&buf[565]);
-	// -34
-	test(&buf[531]);
-	// -33
-	test(&buf[498]);
-	// -34
-	test(&buf[464]);
-	// -34
-	test(&buf[430]);
-//514
-
-test(&buf[47]);
-
-174
-
-430
-
 */
 
 	return w_session;
