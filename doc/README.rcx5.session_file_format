@@ -418,3 +418,32 @@ Byte	Meaning
 400
 401
 
+
+0	Lap Number (hex)
+1	Lap split time Tenth BCD
+2	Lap split time Second BCD
+3	Lap split time Minute BCD
+4	Lap split time Hour BCD
+5	Lap time Tenth BCD
+6	Lap time Second BCD
+7	Lap time Minute BCD
+8	Lap time Hour BCD
+
+384 begin Lap 1
+437 begin Lap 2
+482 begin Lap 3
+535 begin Lap 4
+588 begin Lap 5
+640 begin Lap 6
+693 begin Lap 7
+745 begin Lap 8
+798 begin Lap 9
+851 begin Lap 10
+897 begin Lap 11
+949 begin Lap 12
+1002 begin Lap 13
+1055 begin Lap 14
+1108 begin Lap 15
+1160 begin Lap 16
+1213 begin Lap 17
+1267 begin Lap 18 (last lap) has missing values ( wrong buffer size mainpulation!)

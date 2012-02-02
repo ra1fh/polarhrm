@@ -387,7 +387,7 @@ void RCX5comm::handshake(void){
 	// response is 1 byte long with 0x00 
 	// 
 	// the read request is sent up to 4 times
-	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,0x08,0x00,0x04,0x08};
+	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,0x09,0x00,0x04,0x07};
 
 
 	// the following read commands 
@@ -413,7 +413,7 @@ void RCX5comm::handshake(void){
 
 	//XXX if not sending the idle2 command the user has to accept the 
 	// pairing dialog at the watch
-	this->idle2();
+	//this->idle2();
 
 
 	printf("handshake ? %d\n",rlen);

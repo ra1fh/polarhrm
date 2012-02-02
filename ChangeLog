@@ -3,9 +3,14 @@ History
 =============
 dd.mm.yyyy
 
+02.02.2012
+	* started session parsing rcx5
+
+14.01.2012
+	* rcx5: get overview, find watch, get session - functions implemented
+
 07.01.2012
 	* init Datalnk device works (led flashing)
-
 
 02.01.2012
 	* gpx file gets write out (only implemented when reading a raw file with -r option)

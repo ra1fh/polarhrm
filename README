@@ -33,10 +33,16 @@ then run
 or 
 	./polarhrm rs800cx
 
+NEW:
+	#./polarhrm rcx5
 
 note: you may get an error when building "no route to target" at the end of make 
 command.
 however, check the src dir if the binaries are built.
+
+Note: the rcx5 uses a driver based on libusb.
+      I didn t find a way to access the usb system without root. 
+
 
 
 processing this will have the following result:

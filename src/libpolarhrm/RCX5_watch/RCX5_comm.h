@@ -37,7 +37,10 @@
 // but saving the data in the array beginns at index 0
 #define RCX5_ZERO_INDEX_FIX 1
 
-#define RCX5_PACKETS_INCLUDING_HEADER 446
+#define RCX5_PACKETS_NO_HEADER 446
+// length 453
+#define RCX5_PACKETS_INCLUDING_HEADER 459
+
 #define RCX5_FIRST_PACKET_CORRECTION_HEAD 7
 #define RCX5_FIRST_PACKET_CORRECTION_TAIL 0 //looks like there is no tail to 
 												// cut off!! 
