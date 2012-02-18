@@ -93,6 +93,12 @@ class Session {
 	void setHasAirPressureData(bool);
 	bool getHasAirPressureData(void);
 
+	void setHasGPSData(bool);
+	bool getHasGPSData(void);
+
+	void setHasHRData(bool);
+	bool getHasHRData(void);
+
 	void setNumberOfLaps(unsigned int);
 	unsigned int getNumberOfLaps(void);
 
@@ -114,6 +120,8 @@ class Session {
 	bool has_HR_AND_CC_data;				/* HR/CC data 0 = HR data only, 1 = HR + cycling data */
 	bool has_air_pressure_data;				/* Air pressure (0=off, 1=on) */
 
+	bool has_HR_data;
+	bool has_GPS_data;
 
 	bool si_units;							/* true = kg/cm/km */
 

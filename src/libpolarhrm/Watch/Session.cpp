@@ -224,3 +224,26 @@ void Session::setHasAirPressureData(bool AirPressure){
 bool Session::getHasAirPressureData(void){
 	return this->has_air_pressure_data;
 }
+
+
+
+void Session::setHasGPSData(bool GPSData){
+	this->has_GPS_data = GPSData;
+}
+
+
+
+bool Session::getHasGPSData(void){
+	return this->has_GPS_data;
+}
+
+
+void Session::setHasHRData(bool HRdata){
+	this->has_HR_data = HRdata;
+}
+
+
+bool Session::getHasHRData(void){
+	return this->has_HR_data;
+}
+
