@@ -134,14 +134,14 @@ Byte	Meaning
 117	show ??
 118
 119
-120
-121
-122
-123
-124
-125
-126
-127
+120	show ??
+121	show ??
+122	show ??
+123	show ??
+124	show ??
+125	show ??
+126	show ??
+127	show ??
 128
 129
 130
@@ -150,7 +150,7 @@ Byte	Meaning
 133
 134
 135
-136
+136	lap offset?? 0x35
 137
 138
 139
@@ -206,27 +206,27 @@ Byte	Meaning
 189
 190
 191
-192
+192	calories ??
 193
-194
+194	avg heart rate
 195
-196
+196	min heart rate
 197
-198
+198	max heart rate
 199
 200
 201
-202	show ?? allways 0x60 ??
+202	HR value Zone 1
 203
-204
+204	HR value Zone 2
 205
-206
+206	HR value Zone 3
 207
-208
+208	HR value Zone 4
 209
-210
+210	HR value Zone 5
 211
-212	USR HR MAX ??
+212	last HR value USR HR MAX ??
 213
 214
 215
@@ -276,23 +276,23 @@ Byte	Meaning
 259
 260
 261
-262
+262	fat burn % of calories ??
 263
-264
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277
-278
+264	sportzone 1 second BCD
+265	sportzone 1 minute BCD
+266	sportzone 1 hour BCD
+267	sportzone 2 second BCD
+268	sportzone 2 minute BCD
+269	sportzone 2 hour BCD
+270	sportzone 3 second BCD
+271	sportzone 3 minute BCD
+272	sportzone 3 hour BCD
+273	sportzone 4 second BCD
+274	sportzone 4 minute BCD
+275	sportzone 4 hour BCD
+276	sportzone 5 second BCD
+277	sportzone 5 minute BCD
+278	sportzone 4 hour BCD
 279
 280
 281
@@ -399,8 +399,8 @@ Byte	Meaning
 381
 382
 383
-384
-385
+384	first lap number 0x01
+385	see lap section
 386
 387
 388
@@ -411,39 +411,51 @@ Byte	Meaning
 393
 394
 395
-396
-397
-398
-399
-400
-401
 
 
-0	Lap Number (hex)
-1	Lap split time Tenth BCD
-2	Lap split time Second BCD
-3	Lap split time Minute BCD
-4	Lap split time Hour BCD
-5	Lap time Tenth BCD
-6	Lap time Second BCD
-7	Lap time Minute BCD
-8	Lap time Hour BCD
+Lap and HR data
+first I thought that the data is stored like RS800CX or S625X but it proofed 
+wrong.
 
-384 begin Lap 1
-437 begin Lap 2
-482 begin Lap 3
-535 begin Lap 4
-588 begin Lap 5
-640 begin Lap 6
-693 begin Lap 7
-745 begin Lap 8
-798 begin Lap 9
-851 begin Lap 10
-897 begin Lap 11
-949 begin Lap 12
-1002 begin Lap 13
-1055 begin Lap 14
-1108 begin Lap 15
-1160 begin Lap 16
-1213 begin Lap 17
-1267 begin Lap 18 (last lap) has missing values ( wrong buffer size mainpulation!)
+It seems that there are no more seperate sections for lap and hr data.
+parsing data from the end of file has the last lap stored first.
+lap & hr data
+session length - given index
+
+...
+52	
+51	end sample data ??
+50
+..	some other lap related values
+31
+30 Avg heart rate
+29
+28 End heart rate
+27
+26 Max Heart rate 
+25
+24
+23
+22	GPS lon (if no gps data is 0x00) the data size stays the same!
+21	GPS lon
+20	GPS lon
+19	GPS lon
+18	GPS lat
+17	GPS lat
+16	GPS lat
+15	GPS lat
+14
+13	Lap Number (hex)
+12	Lap split time Tenth BCD
+11	Lap split time Second BCD
+10	Lap split time Minute BCD
+9	Lap split time Hour BCD
+8	Lap time Tenth BCD
+7	Lap time Second BCD
+6	Lap time Minute BCD
+5	Lap time Hour BCD
+4
+3
+2
+1
+end of lap data (or end of raw session file)

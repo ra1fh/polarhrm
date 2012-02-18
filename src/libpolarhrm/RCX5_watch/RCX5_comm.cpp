@@ -194,7 +194,7 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 	unsigned char buf[RCX5_TRANSFER_BUFFER_SIZE];
 	unsigned char sendquery[256];
 
-	const int packet_size = RCX5_PACKETS_INCLUDING_HEADER;
+	const int packet_size = RCX5_PACKETS_NO_HEADER;
 
 	union Usize{
 		int16_t intvalue;
@@ -212,13 +212,16 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 	if((sess_len % packet_size) != 0) {
 		// dont forget the modulo as additonal packet
 		nodes_left=(sess_len/packet_size)+1;
+
+		printf("%d packets each %d bytes (load) \n",nodes_left-1, packet_size );
+		printf("last packet size %d bytes\n",sess_len%packet_size);
+
 	}
 	else {
 		nodes_left=(sess_len/packet_size);
+		printf("%d packets each %d bytes (load) \n",nodes_left, packet_size );
 	}
 
-	printf("%d packets each 446 bytes (load) \n",nodes_left );
-	printf("last packet size %d bytes\n",sess_len%packet_size);
 
 	// after sending the init query go ahead a long as all bytes get received
 	//while (checksum < w_o->used_bytes))
@@ -268,6 +271,9 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 			//overwrite len with packet size
 			len = packet_size;
 		}
+		//add header
+		len += RCX5_ALL_OTHER_PACKETS_CORRECTION_HEAD;
+
 		// need to subtract the protocol specific bytes
 		// but ONLY for checksum.
 		//will be managed in parse function
@@ -365,18 +371,28 @@ void RCX5comm::deleteAllFiles(void){
 
 //
 //
-// try to establish a handshake connection between host and watch
+// try to establish a connection between host and watch
 //
 //
-void RCX5comm::handshake(void){
+int RCX5comm::pairing(void){
 
 	unsigned char sendquery[256];
 	unsigned char rbuf[1024];
 	int rlen=0;
-
-
-	printf("start pairing ...\n");
 	RCX5comm::write_buffer(sendquery, 256, 0);
+
+	bool pairingSuccess; 
+	int ret;
+
+	const int pairingID = 9047; // four digits 
+	char pairingIDarry[4];
+	sprintf(pairingIDarry, "%d", pairingID);
+
+	//fix ASCII to int
+	pairingIDarry[0] -= 0x30;
+	pairingIDarry[1] -= 0x30;
+	pairingIDarry[2] -= 0x30;
+	pairingIDarry[3] -= 0x30;
 
 	// handshake call 
 	// asking the watch to accept connections with this the given ID
@@ -387,105 +403,59 @@ void RCX5comm::handshake(void){
 	// response is 1 byte long with 0x00 
 	// 
 	// the read request is sent up to 4 times
-	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,0x09,0x00,0x04,0x07};
-
+//	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,0x09,0x00,0x04,0x07};
+	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,
+							pairingIDarry[0],
+							pairingIDarry[1],
+							pairingIDarry[2],
+							pairingIDarry[3]};
 
 	// the following read commands 
 	// 00
 	// 04 40 03 00 40 b6 00 02 
 	// 04 42 03 00 40 b6 00 02
 	// 04 42 03 00 40 b6 00 02 
-
-
 	memcpy(sendquery, q, sizeof(q));
-	int counter =0;
 
+	int counter  = 0;
+	int rcounter = 0;
 
+	printf("send pairing command ...\nlook at your watch to accept the request %d\n",pairingID);
+	do{
+		this->driver->sendbytes(sendquery, sizeof(sendquery));
 
-	this->driver->sendbytes(sendquery, sizeof(sendquery));
+		do {
+			usleep(1000);
+			rlen = this->driver->recvbytes(rbuf);
+			rcounter++;
+		}while (rlen != 512); //XXX ignore rcounter for now!
 
-	do {
-		usleep(1000);
-		rlen = this->driver->recvbytes(rbuf);
-	}while (rlen != 512);
+		//response
+		//04 42 03 00 40 b6 00 01 00 00 00 00 00 00 00 00
+		if(rbuf[7] == 1) {
+			pairingSuccess = true;
+			printf("sync connection has opend! \n");
+			break;
+		}
+
+		// waiting for accepting pairing
+		//response
+		//04 42 03 00 40 b6 00 02 00 00 00 00 00 00 00 00
+		else if(rbuf[7] == 2) {
+			usleep(100000);
+			pairingSuccess=false;
+		}
+
+		counter++;
+	}while(counter < 100 && !pairingSuccess);
 
 	this->idle();
+	this->idle2();
 
-	//XXX if not sending the idle2 command the user has to accept the 
-	// pairing dialog at the watch
-	//this->idle2();
-
-
-	printf("handshake ? %d\n",rlen);
-	print_bytes((char*)rbuf, rlen);
-
-
-	if(1) {
-		printf("sync connection has opend \n");
-		usleep(1000);
-
-/*
-		// second query at an open snyc connection
-		unsigned char q2[]={0x01, 0x40, 0x04, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0xb7, 0x00, 0xff};
-		RCX5comm::write_buffer(sendquery, 256, 0);
-		memcpy(sendquery, q2, sizeof(q2));
-
-		printf("2 query\n");
-		this->driver->sendbytes(sendquery, sizeof(sendquery));
-		do {
-			usleep(1000);
-			rlen = this->driver->recvbytes(rbuf);
-		}while (rlen <= 1);
-		print_bytes((char*)rbuf, rlen);
-*/
-
-		this->idle();
-
-/*
-		// no command send before
-		// dont know why?
-		do {
-			usleep(1000);
-			rlen = this->driver->recvbytes(rbuf);
-		}while (rlen <= 1);
-		print_bytes((char*)rbuf, rlen);
-*/
-
-		this->idle2();
-
-/*
-		// no command send before
-		// dont know why?
-		do {
-			usleep(1000);
-			rlen = this->driver->recvbytes(rbuf);
-		}while (rlen <= 1);
-		print_bytes((char*)rbuf, rlen);
-
-
-
-		printf("3 query\n");
-		// third query at an open snyc connection
-		unsigned char q3[]={0x01, 0x40, 0x02, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0x01};
-		RCX5comm::write_buffer(sendquery, 256, 0);
-		memcpy(sendquery, q3, sizeof(q3));
-
-
-		this->driver->sendbytes(sendquery, sizeof(sendquery));
-		do {
-			usleep(1000);
-			rlen = this->driver->recvbytes(rbuf);
-		}while (rlen <= 1);
-		print_bytes((char*)rbuf, rlen);
-*/
-
-
-
-
-
-
-	} //end if
-
+	if(pairingSuccess){
+		return 1;
+	}
+	return -1;
 }
 
 
@@ -524,14 +494,11 @@ int RCX5comm::findWatch(int retry){
 			IDNumber += unbcd(rbuf[24])*100;
 			IDNumber += unbcd(rbuf[25])*10;
 			IDNumber += unbcd(rbuf[26])*1; 
-			printf("\nfound watch with ID number (serial number?) %d\n",IDNumber);
-			printf("in the received buffer must be the product name string\n");
 
 			return IDNumber;
 		}
 		counter++;
 	} while(counter < retry );
-	printf("\ndid not find any watch!\n");
 	return -1;
 }
 

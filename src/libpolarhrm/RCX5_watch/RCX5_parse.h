@@ -56,5 +56,7 @@ class RCX5parse {
 	void parse_gpsdata(Session *w_session, RawSession *raw_sess);
 	void test(unsigned char pos[]);
 	void show(int, unsigned char *pos);
+
+	int findNextLapOffset(unsigned char *buf,int bufsize, int lap_no);
 };
 #endif

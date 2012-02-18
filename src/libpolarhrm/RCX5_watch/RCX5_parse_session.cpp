@@ -49,19 +49,6 @@
 
 
 
-#if DO_COMPILE
-
-bool bike1;
-bool bike2;
-bool runspeed;
-bool altitude;
-bool cadence;
-bool power;
-
-int lap_byte_size;
-int sample_size;
-
-#endif // DO NOT COMPILE
 
 
 void RCX5parse::parse_samples(Session *w_session, RawSession *raw_sess){
@@ -73,7 +60,7 @@ void RCX5parse::parse_samples(Session *w_session, RawSession *raw_sess){
 	float speed_val;
 	int alt;
 	int j=0; // count printed samples
-    
+
 	// FIXME get values form parse calling parse function
 	int lap_byte_size = w_session->lap_byte_size;
 	int sample_size = w_session->sample_size;
@@ -160,94 +147,73 @@ void RCX5parse::parse_samples(Session *w_session, RawSession *raw_sess){
 void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 
 	unsigned char *buf;
-	buf = raw_sess->getRawBuffer();
 	int sesslen;
+	double prev_lap_endtime=0;
+
+	buf = raw_sess->getRawBuffer();
 	sesslen = raw_sess->getRawBufferlen();
 
 
-	int i;
-
-	int hr_index;
-	double prev_lap_endtime=0;
-	int prev_index;
-
-	int lap_byte_size = w_session->lap_byte_size;
-
-
-
-	printf("lap byte size, %d\n\n",lap_byte_size);
 	w_session->laps = (Lap**) new Lap[w_session->getNumberOfLaps()-1];
 
-	prev_index = raw_sess->getRawBufferlen();
+	int i = raw_sess->getRawBufferlen();
 
-	for (int j=0;j<=(w_session->getNumberOfLaps()-1);j++){
+	for (int lap_no=w_session->getNumberOfLaps(); lap_no>0; lap_no--){
 
-		w_session->laps[j]= new Lap;
+		// XXX this is a dirty workaround to parse the laps
+		// the issue is that I cannot calculate correct aumount of data 
+		// that is strored within a lap! :-(
+		i = findNextLapOffset (buf,i,lap_no);
 
-		w_session->laps[j]->lap_no=j+1;
-		printf("\n===== LAP %d ===== \n",j+1 );
+		w_session->laps[lap_no]= new Lap;
 
-		i=sesslen-lap_byte_size-(lap_byte_size*j);
+		w_session->laps[lap_no]->lap_no=lap_no;
+		printf("\n===== LAP %d ===== %d \n",lap_no, buf[i-13] );
 
+		// split time 
+		wTime *laptime_sum = new wTime();
+		laptime_sum->setHour  (unbcd(buf[i-9]));
+		laptime_sum->setMinute(unbcd(buf[i-10]));
+		laptime_sum->setSecond(unbcd(buf[i-11]));
+		laptime_sum->setTenth (unbcd(buf[i-12])*0.1);
 
+		w_session->laps[lap_no]->lap_end_time = laptime_sum;
+		printf("%d split time %s\n",i, w_session->laps[lap_no]->lap_end_time->toString().c_str() );
+		printf("w_session->lap[%d]->lap_end_time=%f\n",lap_no,w_session->laps[lap_no]->lap_end_time->toDouble());
+
+		//lap time 
 		wTime *laptime = new wTime();
-		laptime->setHour(buf[i+2] & 0x7F);
-		laptime->setMinute(buf[i+1] & 0x3F);
-		laptime->setSecond(buf[i] & 0x3F);
-		laptime->setTenth(((buf[i+1] & 0xc0) >> 4) | ((buf[i+0] & 0xc0) >> 6)) ;
+		laptime->setHour  (unbcd(buf[i-5]));
+		laptime->setMinute(unbcd(buf[i-6]));
+		laptime->setSecond(unbcd(buf[i-7]));
+		laptime->setTenth (unbcd(buf[i-8])*0.1);
 
-		w_session->laps[j]->lap_end_time = laptime;
-		printf("%d time %s\n",i, w_session->laps[j]->lap_end_time->toString().c_str() );
+		w_session->laps[lap_no]->laptime = laptime;
+		printf("%d lap time %s\n",i, w_session->laps[lap_no]->laptime->toString().c_str() );
+		printf("w_session->lap[%d]->laptime=%f\n",lap_no, w_session->laps[lap_no]->laptime->toDouble());
+		printf("%f\n",w_session->laps[lap_no]->laptime->toDouble()-(w_session->laps[lap_no]->laptime->getTenth()*0.1));
 
-		printf("w_session->lap[j]->lap_end_time=%f\n",w_session->laps[j]->lap_end_time->toDouble());
+//		printf("start lap HR %d\n",buf[i+3]);
 
+		w_session->laps[lap_no]->hr_end = (unsigned int) buf[i-30];
+		w_session->laps[lap_no]->hr_avg = (unsigned int) buf[i-28];
+		w_session->laps[lap_no]->hr_max = (unsigned int) buf[i-26];
 
-		//hr_index = round ((w_session->laps[j]->lap_end_time->toDouble() - prev_lap_endtime) / w_session->getRecordingInterval());
-		//prev_lap_endtime = w_session->laps[j]->lap_end_time->toDouble();
-	
-	
-		//printf("search for minimum from %d to %d len %d\n" , prev_index-hr_index, prev_index, hr_index);
+		printf("end HR = %d\n",w_session->laps[lap_no]->hr_end);
+		printf("avg HR = %d\n",w_session->laps[lap_no]->hr_avg);
+		printf("max HR = %d\n",w_session->laps[lap_no]->hr_max);
 
-		/* need to search in samples for samllest value*/
-		//w_session->laps[j]->hr_min = find_minimum (&buf[prev_index-hr_index-sample_size],hr_index, sample_size);
-	
-		/* shift to next */
-		//prev_index = prev_index-hr_index; 
-
-
-		printf("start lap HR %d\n",buf[i+3]);
-		
-		w_session->laps[j]->hr_end = (unsigned int) buf[i+3];
-		w_session->laps[j]->hr_avg = (unsigned int) buf[i+4];
-		w_session->laps[j]->hr_max = (unsigned int) buf[i+5];
-
-		printf("min HR = %d\n",w_session->laps[j]->hr_min);
-		printf("avg HR = %d\n",w_session->laps[j]->hr_avg);
-		printf("max HR = %d\n",w_session->laps[j]->hr_max);
-
-
-		if (w_session->getHasAltitudeData()){
-			printf("ALT = %d\n",buf[i+18]);
-			w_session->laps[j]->alt = buf[i+20];
-			printf("Avg ALT of Lap = %d\n",w_session->laps[j]->alt);
-
-			printf("?? temperature = %d\n",(lnib(buf[i+30])<<4) + unib(buf[i+31]) );
-		}
-		
-			// just gps for now
-		if (w_session->getHasSpeedData()) {
-
+		if (w_session->getHasGPSData()) {
 			double longitude; 
 			double latitude;
-
-			latitude  = toGpsDec(&buf[i+22]);
-			longitude = toGpsDec(&buf[i+18]);
+			latitude  = toGpsDec(&buf[i-22]);
+			longitude = toGpsDec(&buf[i-18]);
 			printf("lat %.9f lon %.9f\n",latitude, longitude);
-
 		}
 	}
-
 }
+
+
 
 
 
@@ -259,32 +225,35 @@ void RCX5parse::parse_sportzones(Session *w_session, RawSession *raw_sess){
 	sesslen = raw_sess->getRawBufferlen();
 
 	/* Sport zone limits */
-	SportZone::number_of_sportzones=buf[123];
+	SportZone::number_of_sportzones=5;
 	printf("?? Number of SportZones=%d\n", SportZone::number_of_sportzones);
-	w_session->sportzones = (SportZone**)new SportZone[SportZone::number_of_sportzones-1];
+	w_session->sportzones = (SportZone**)new SportZone[SportZone::number_of_sportzones];
 	for (int i = 0; i < SportZone::number_of_sportzones; i++) {
+
 		w_session->sportzones[i] = new SportZone();
 		w_session->sportzones[i]->setZoneNumber(i+1);
-		w_session->sportzones[i]->setLowPercent(buf[124 + i]);
-		w_session->sportzones[i]->setHighPercent(buf[124 + 1 + i]);
+		w_session->sportzones[i]->setLowPercent (buf[202 + (2 * i)]); //FIXME here we have absolute HR values!
+		w_session->sportzones[i]->setHighPercent(buf[204 + (2 * i)]); // add logic to sportzone class to handle percent and absolute values! 
 
 		wTime onzone;
-		int base_index = 135;
-		onzone.setHour((unsigned char)buf[base_index+2 +i*3] & 0x7f);
-		onzone.setMinute((unsigned char) buf[base_index+1 +i*3] & 0x3f);
-		onzone.setSecond((unsigned char) buf[base_index +i*3] & 0x3f);
-		onzone.setTenth((unsigned char) ((buf[base_index+1] & 0xc0) >> 4) | ((buf[base_index] & 0xc0) >> 6));
+		int base_index = 264;
+		onzone.setHour  ((unsigned char) unbcd(buf[base_index +2 +i*3]));
+		onzone.setMinute((unsigned char) unbcd(buf[base_index +1 +i*3]));
+		onzone.setSecond((unsigned char) unbcd(buf[base_index +   i*3]));
+		onzone.setTenth ((unsigned char) 0);
 
 		w_session->sportzones[i]->setOnZoneSeconds(onzone.toDouble());
+//		printf("Zone %d %s\n",i+1,(char *)onzone.toString().c_str() );
+
 		if (i < SportZone::number_of_sportzones-1) {
-			printf("?? Zone Z%d form %d to %d%% %gsec\n", 
+			printf("?? Zone Z%d form\t%d to %d\t%gsec\n", 
 			       w_session->sportzones[i]->getZoneNumber(),
 			       w_session->sportzones[i]->getLowPercent(),
 			       w_session->sportzones[i]->getHighPercent()-1,
 			       w_session->sportzones[i]->getOnZoneSeconds());
 		}
 		else {
-			printf("?? Zone Z%d form %d to %d%% %gsec\n", 
+			printf("?? Zone Z%d form\t%d to %d\t%gsec\n", 
 			       w_session->sportzones[i]->getZoneNumber(),
 			       w_session->sportzones[i]->getLowPercent(),
 			       w_session->sportzones[i]->getHighPercent(),
@@ -294,9 +263,11 @@ void RCX5parse::parse_sportzones(Session *w_session, RawSession *raw_sess){
 }
 
 
+
+
+
+
 void RCX5parse::parse_gpsdata(Session *w_session, RawSession *raw_sess){
-
-
 
 }
 
@@ -309,73 +280,46 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 	unsigned char *buf;
 	buf = raw_sess->getRawBuffer();
-	int sesslen;
-	sesslen = raw_sess->getRawBufferlen();
-
-	int chk_sesslen;
+	int sesslen = raw_sess->getRawBufferlen();
 
 	Session *w_session = new Session();
 
-	//0 	Bytes in file (MSB)
-	//1 	Bytes in file (LSB)
-	chk_sesslen=buf[1]+(buf[0]<<8);
 
-	if (chk_sesslen != sesslen) {
-		printf("session length missmatch \n"
-		       "Length should be %i but buffer size is %i\n", chk_sesslen, sesslen);
-		printf("WE HAVE A PROBLEM !!!\n\n"
-		       "It looks like there is 4 byte discrepance\n"
-		       "I guess the first 4 bytes count as part of\n"
-		       " the protocol head but I am not sure\n\n");
-	}
 
 	printf("lines printed with OK seem to be correct parsed\n"
 			"lines that have one or more questionmarks at the beginning \n"
 			"need to be checked - and confirmed\n");
 
-
 	printf("sesslen %i\n",sesslen);
 	
-	/*	
-	unsigned char rawdata[7];
-	unsigned char encdata[7];
-	// copy bytes to rawbuffer and encode 
-	memcpy(rawdata, &buf[3], 7);
-	watch_decode_string(encdata, rawdata);
-	printf("%s\n",encdata);
-	
 
-	//	w_session->id[31];
-    
-	//	strcpy(w_session->name,"FILENAME");
-	
-	w_session->limit_type;
-*/
+	//w_session->limit_type;
+
 
 	// FIXME dont know where this is stored
 	w_session->setSiUnit(true);
 
-	unsigned short timestamp = ((buf[31] << 8) | buf[30]);
-
+	// Start date of the session
 	wDate* sessStartDate = new wDate();
 	sessStartDate->setYear((int)BASE_YEAR + lnib(buf[37]) );
 	sessStartDate->setMonth(buf[36]);
 	sessStartDate->setDay(buf[35]);
+	w_session->setStartDate(sessStartDate);
+	printf("OK Date %s\n",w_session->getStartDate()->toString().c_str());
 
+
+	// Start time of the session
 	wTime* sessStartTime = new wTime();
 	sessStartTime->setHour(unbcd(buf[34])); 
 	sessStartTime->setMinute(unbcd(buf[33])); 
 	sessStartTime->setSecond(unbcd(buf[32]));
 	sessStartTime->setTenth((unsigned char) 0);
-
 	sessStartDate->setTime(sessStartTime);
-	w_session->setStartDate(sessStartDate);
-
-	printf("OK Date %s\n",w_session->getStartDate()->toString().c_str());
 	printf("OK Start Time %s\n",sessStartTime->toString().c_str());
 
-	//  create a fileneame for later saving
-	//  the extention is added on demand .hrm .dump or what ever 
+
+	// create a fileneame for later saving
+	// the extention is added on demand .hrm .dump or what ever 
 	snprintf(w_session->id,31,"%d-%d-%d_%d_%d",
 							w_session->getStartDate()->getYear(),
 							w_session->getStartDate()->getMonth(),
@@ -383,46 +327,42 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 							w_session->getStartDate()->getHour(),
 							w_session->getStartDate()->getMinute());
 
+
+	// Session Duration
 	wTime *duration =new wTime();
 	duration->setHour( unbcd (buf[31]) );
 	duration->setMinute (unbcd (buf[30]));
 	duration->setSecond (unbcd (buf[29]));
-	duration->setTenth(unbcd(buf[28])); //tenth
+	duration->setTenth(unbcd(buf[28])*0.1); //tenth
 	w_session->setDuration(duration);
-
 	printf("OK w_session->duration=%f\n",w_session->getDuration()->toDouble());
 	printf("OK w_session->duration=%s\n",w_session->getDuration()->toString().c_str());
 
 
-/*
-	w_session->hr_avg=buf[29];
+	// Session HR values 
+	w_session->hr_avg=buf[194];
+	w_session->hr_max=buf[198];
+	w_session->hr_min=buf[196];
 	printf("OK w_session->hr_avg=%d\n",w_session->hr_avg);
-	w_session->hr_max=buf[30];
 	printf("OK w_session->hr_max=%d\n",w_session->hr_max);
-	w_session->hr_min=buf[31];
 	printf("OK w_session->hr_min=%d\n",w_session->hr_min);
-*/
 
 
-	//  user related data
-	SHOW(45);
-	SHOW(46);
+	// user related Data
 	w_session->user_hr_max = buf[212];
-	printf("?? w_session->user_hr_max=%d\n",w_session->user_hr_max);
 	w_session->user_hr_rest = buf[47];
-	printf("OK w_session->user_hr_rest=%d\n",w_session->user_hr_rest);
 	w_session->user_vo2_max = buf[43];
+	printf("?? w_session->user_hr_max=%d\n",w_session->user_hr_max);
+	printf("OK w_session->user_hr_rest=%d\n",w_session->user_hr_rest);
 	printf("OK w_session->user_vo2_max=%d\n",w_session->user_vo2_max);
-//	w_session->calories = toshort(&buf[32]);
-//	printf("OK w_session->calories=%d\n",w_session->calories);
 
-	printf("?? record HR data %X\n",buf[158]);
-	printf("?? record GPS data %X\n",buf[159]);
+	w_session->calories = toshort(&buf[192]);
+	printf("OK w_session->calories=%d\n",w_session->calories);
 
-	SHOW(160);
-	SHOW(161);
 
-	if(buf[292] == 173) {
+	//FIXME figure out the number of stored laps
+	// this is a first approach.
+	if(buf[292] > 99) {
 		w_session->setNumberOfLaps(1);
 	}
 	else {
@@ -441,29 +381,20 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 */
 
-	SHOW(66);
-	SHOW(67);
-	SHOW(70);
-	SHOW(85);
-	SHOW(113);
-	SHOW(114);
-	SHOW(115);
-	SHOW(116);
-	SHOW(117);
-	// laptime 
+	// laptime and avg laptime
 	wTime *best_laptime = new wTime();
-	wTime *avg_laptime = new wTime();
+	wTime *avg_laptime  = new wTime();
 
 	if (w_session->getNumberOfLaps() != 1) {
 		best_laptime->setHour   (unbcd(buf[305]));
 		best_laptime->setMinute (unbcd(buf[304]));
 		best_laptime->setSecond (unbcd(buf[303]));
-		best_laptime->setTenth  (unbcd(buf[302]));
+		best_laptime->setTenth  (unbcd(buf[302])*0.1);
 
 		avg_laptime->setHour   (unbcd(buf[297]));
 		avg_laptime->setMinute (unbcd(buf[296]));
 		avg_laptime->setSecond (unbcd(buf[295]));
-		avg_laptime->setTenth  (unbcd(buf[294]));
+		avg_laptime->setTenth  (unbcd(buf[294])*0.1);
 	}
 	else {
 		//set end time
@@ -471,23 +402,17 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 		avg_laptime = duration;
 	}
 	w_session->setBestLapTime(best_laptime);
-
 	printf("OK w_session->best_laptime=%f\n",w_session->getBestLapTime()->toDouble());
 	printf("OK w_session->best_laptime=%s\n",w_session->getBestLapTime()->toString().c_str());
-
-	// not saving this for now
+	//XXX not saving this for now
 	printf("OK            avg_laptime=%f\n",avg_laptime->toDouble());
 	printf("OK            avg_laptime=%s\n",avg_laptime->toString().c_str());
 
 
 
+	// figure out what data is recorded in the session
+
 /*
-	printf("?? 56 byte %X\t%d allways FF??\n",buf[56], buf[56]);
-
-
-	SHOW(18);
-
-	// figure out what data is recorded
 	printf("?? 18 bit 7 UNKNOWN %d\n",(buf[18]&0x80) >> 7);
 	printf("?? 18 bit 6 UNKNOWN %d\n",(buf[18]&0x40) >> 6);
 	printf("?? 18 bit 5 UNKNOWN %d\n",(buf[18]&0x20) >> 5);
@@ -496,114 +421,62 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	printf("?? 18 bit 2 Cadence %d\n",(buf[18]&0x04) >> 2);
 	printf("?? 18 bit 1 UNKNOWN %d\n",(buf[18]&0x02) >> 1);
 	printf("?? 18 bit 0 Altitude %d\n",buf[18]&0x01);
-
-
-	bool bike2 = ((buf[18]&0x20) && (buf[18]&0x10)) ? true:false;    //bit 5
-	bool bike1 =  (buf[18]&0x20) ? true:false; 
-	bool runspeed = (buf[18]&0x10) ? true:false;     //bit 4
-	bool power = (buf[18]&0x08) ? true:false;      //bit 3
-	bool cadence = (buf[18]&0x04) ? true:false;    //bit 2
-	bool altitude = (buf[18]&0x01) ? true:false;   //bit 1
-
-	// lets try this
-	bool gps = ((buf[18]&0x10) && (buf[18]&0x08)) ? true:false;
-
-
-	
-	printf("\n\n");
-
 */
+
 /* need to find this values
-	 * bike 1- 3
+	 * bike 1- 2
 	 * speed sensor
 	 * cadence
-	 * shoe 1- 3
-	 * gps G3 on - off byte 18 -> 0x18
+	 * gps G3 on - off
 	 * altitude on - off
-*/
 
-	/* the RCX5 manual tells the impact of switching on or of various settings
-
-	 *	RR-Data (messures heartbeat variations)
-		 don t handle this setting 
-
+	 the RCX5 manual tells the impact of switching on or of various settings
 	 *	Speed
 	 *	Cadence
 	 *	S3
 	 *	GPS
- 		if gps on lap_byte_size = 25
-
-	 *	Altitude
-		if ALT on byte 18 bit 0 is true
-		if ALT lap_byte_size = 14
-
-
-	 */
-
-
-	// lap_byte_size
-	// standard size is 7 (HR Only) but sometimes 6
-
-	// speed could be 
-	// runspeed foodpod S3
-	// runspeed GPS
-	// cs bike 
-/*
-	int lap_byte_size = 7; // base length
-	int sample_size = 1;   //HR only sounds correct ;-)
-
-	if (altitude) {
-		sample_size = 2; //FIXME
-		lap_byte_size = 7; //need to be checked
-	}
-	if (gps){
-		sample_size=12; 
-		// HR = 1 byte
-		// special purpose 3 bytes, satellite connections, pace
-		// longitude = 4 byte
-		// latitude = 4 byte
-		lap_byte_size = 26; 
-	}
-	if (altitude && gps) {
-		sample_size=14; // FIXME higher value!
-		lap_byte_size =  34;
-	}
-
-	w_session->lap_byte_size = lap_byte_size;
-	w_session->sample_size = sample_size;
-
-	printf("?? w_session->sample_size = %d\n",w_session->sample_size);
-
-
-	w_session->setHasAltitudeData(altitude);
-	printf("?? w_session->has_altitude_data %d\n",w_session->getHasAltitudeData());
-
-	w_session->setHasSpeedData((runspeed || gps) ? true:false );
-	printf("?? w_session->has_speed_data %d\n",w_session->getHasSpeedData() );
-
 */
 
-	// FIXME get this working therefore cycling data is needed
-	/*
-	w_session->setHasHRandCCData ((runspeed || (bike1 || bike2)) ? true:false);
 
-	w_session->setHasCadenceData (cadence);
-	w_session->setHasPowerData (power);
+	// has HR data?
+	if (1 == buf[158]) {
+		w_session->setHasHRData(true);
+	}
+	else {
+		w_session->setHasHRData(false);
+	}
 
-	printf("?? w_session->has_cadence_data %d\n",w_session->getHasCadenceData());
-	*/
-/*
-	// looks like some similar value
-	test(&buf[38]);
-	printf("?? left time to save sessions? ");
-	test(&buf[80]);
-	// left time to save sessions?
-	//SHOW(80);
-	//SHOW(81);
-	//SHOW(82);
-*/
+	// has GPS data?
+	if (1 == buf[159]) {
+		w_session->setHasGPSData(true);
+	}
+	else {
+		w_session->setHasGPSData(false);
+	}
 
-	switch (buf[50]) {
+	//FIXME has cadence data?
+	if(0) {
+		w_session->setHasCadenceData (true);
+	}
+	else {
+		w_session->setHasCadenceData (false);
+	}
+
+	//FIXME has power data?
+	if(0) {
+		w_session->setHasPowerData (true);
+	}
+	else {
+		w_session->setHasPowerData (false);
+	}
+
+	printf("?? record HR data %d\n",w_session->getHasHRData());
+	printf("?? record GPS data %d\n",w_session->getHasGPSData());
+
+
+	// session record interval
+	//buf[50], buf[114]
+	switch (buf[160]) {
 		case 0:
 			w_session->setRecordingInterval(1);
 			break;
@@ -620,18 +493,20 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 			w_session->setRecordingInterval(60);
 			break;
 	}
-
 	printf("?? w_session->recording_interval=%d\n",w_session->getRecordingInterval());
+	printf("?? recording_interval raw buf %d\n",buf[160]);
 
-/*
-	// RCX5 protocoll size is at least 170 
-	//calculating hr sample data length
-	// e.g.:
-	// 2046 samples
-	// 175 first hr value
-	// 2220 hr
-	// 2227 end length there is only one lap stored
 
+
+	/*
+	// FIXME i think it goes differnet than rs800cx
+	// RCX5 protocoll size is at least ?? 
+	// calculating hr sample data length
+
+	w_session->lap_byte_size = lap_byte_size;
+	w_session->sample_size = sample_size;
+
+	printf("?? w_session->sample_size = %d\n",w_session->sample_size);
 
 	//w_session->setNumberOfSamples((sesslen-(174+w_session->getNumberOfLaps()*lap_byte_size)-sample_size)/sample_size);
 	w_session->setNumberOfSamples((int)floor(w_session->getDuration()->toDouble() / w_session->getRecordingInterval())-1);
@@ -642,19 +517,47 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 
 	*/
 
+/*
+	// interesting data
+	SHOW(45);
+	SHOW(46);
+	SHOW(66);
+	SHOW(67);
+	SHOW(70);
+	SHOW(85);
+	SHOW(113);
+	SHOW(114);
+	SHOW(115);
+	SHOW(116);
+	SHOW(117);
+
+	SHOW(120);
+	SHOW(121);
+	SHOW(122);
+	SHOW(123);
+	SHOW(124);
+	SHOW(125);
+	SHOW(126);
+	SHOW(127);
+
+	SHOW(160);
+	SHOW(161);
+
 	SHOW(202);
 	SHOW(204);
 	SHOW(206);
 	SHOW(208);
 	SHOW(210);
 	SHOW(212);
+*/
+
 /*
 	//XXX disabled for shorter output
 	parse_samples(w_session, raw_sess);
 	parse_sportzones (w_session, raw_sess);
 
-	parse_laps(w_session, raw_sess);
 */
+	parse_laps(w_session, raw_sess);
 
 	return w_session;
 }
@@ -817,4 +720,26 @@ void RCX5parse::test(unsigned char pos[]) {
 void RCX5parse::show(int i, unsigned char *pos){
 	std::cout << "?? " << std::dec << i << " byte\t" << std::hex << (int)pos[0] << "\t" << std::dec << (int)pos[0] << "\t";
 	std::cout << std::bitset<8>(pos[0]) << std::endl;
+}
+
+
+
+
+// the function trys to find the next stating point for parsing lap data
+// I dont know why there is a discrepance with the lap offsets
+//
+//
+int RCX5parse::findNextLapOffset(unsigned char *buf, int i, int lap_no){
+
+
+	printf("search for lap %d @ index %d\n",lap_no,i );
+	do {
+
+//		printf("%X ",buf[i]);
+		i--;
+
+	} while (buf[i] != lap_no || buf[i+7] != 0x00 || buf[i+8] != 0x00);
+
+	printf("\n");
+	return i+13;
 }

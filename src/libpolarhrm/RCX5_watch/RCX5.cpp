@@ -54,14 +54,27 @@ void RCX5::saveHRM(void){
 
 		unsigned char buf[BUF_SIZE];
 		int i,len;
-		int ret;
+		int ret, watchID;
 
 		this->watchcomm->setDriver(driver);
 		this->watchcomm->initDriver();
 
-		ret=this->watchcomm->findWatch(20); //try 20 times
-		// don t call the function for now
-		//this->watchcomm->handshake();
+		watchID=this->watchcomm->findWatch(20); //try 20 times
+
+		if (watchID > 0) {
+			printf("\nfound watch with ID number (serial number?) %d\n",watchID);
+			printf("in the received buffer must be the product name string\n");
+		}
+		else {
+			printf("\ndidn' t find any watch!\n");
+			printf("please try agian\n");
+			exit(EXIT_FAILURE);
+		}
+
+		ret = this->watchcomm->pairing();
+		if (-1 == ret ) {
+			exit(EXIT_FAILURE);
+		}
 
 		Overview *w_overview = new Overview;
 		this->watchcomm->getOverview(buf, len);
@@ -79,7 +92,7 @@ void RCX5::saveHRM(void){
 
 //XXX just for testing to get only one specific session :-)
 // some additonal source code adapitons required
-//	int sess_no = 4;
+//	int sess_no = 7;
 		if (0 < w_overview->getSessionNumber()) {
 
 			// get session raw data including protocoll data and store them in a node list

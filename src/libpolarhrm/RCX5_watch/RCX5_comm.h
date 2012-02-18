@@ -38,9 +38,9 @@
 #define RCX5_ZERO_INDEX_FIX 1
 
 #define RCX5_PACKETS_NO_HEADER 446
-// length 453
-#define RCX5_PACKETS_INCLUDING_HEADER 459
-
+//max transfer length 453
+//#define RCX5_PACKETS_INCLUDING_HEADER 453
+// 467
 #define RCX5_FIRST_PACKET_CORRECTION_HEAD 7
 #define RCX5_FIRST_PACKET_CORRECTION_TAIL 0 //looks like there is no tail to 
 												// cut off!! 
@@ -70,7 +70,7 @@ class RCX5comm {
 	void deleteFile(unsigned char year,unsigned char month,unsigned char day,unsigned char hour,unsigned char minute,unsigned char second);
 	void deleteAllFiles(void);
 
-	void handshake(void);
+	int pairing(void);
 	void getUser(unsigned char &raw_user_data, int &len);
 
 	int getReminder(unsigned char data[], unsigned char rem_num);	
