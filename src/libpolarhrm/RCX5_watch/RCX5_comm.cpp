@@ -385,7 +385,7 @@ int RCX5comm::pairing(void){
 	int ret;
 
 	const int pairingID = 9047; // four digits 
-	char pairingIDarry[4];
+	char pairingIDarry[5];
 	sprintf(pairingIDarry, "%d", pairingID);
 
 	//fix ASCII to int
