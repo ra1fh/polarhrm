@@ -39,6 +39,7 @@
 #include "libpolarhrm/Driver/irda_driver.h"
 
 #include "libpolarhrm/RCX5_watch/RCX5_comm.h"
+#include "libpolarhrm/RCX5_watch/RCX5_parse.h"
 
 
 using namespace std;
@@ -434,7 +435,7 @@ void test_libpolarhrm_global_settings(void){
 
 	cout << "Test: test_libpolarhrm_global_settings\n";
 
-//setWorkingDir("/usr/x");
+setWorkingDir("/home/thomas/praw/");
 printf("getWorkingDir %s\n", getWorkingDir());
 printf("getDumpExtention %s\n", getDumpExtention());
 printf("getHRMExtention %s\n", getHRMExtention());
@@ -492,23 +493,112 @@ void test_calc_time_obj(void){
 /* rcx5 inital test */
 void test_rcx5_support(void){
 
-	int ret=0;
 	printf("rcx5 inital test\n");
 
+	RCX5comm *watchcomm;
+	RCX5parse *parser;
+	Driver *driver;
+
+	driver = new DataLnk_driver();
+	parser = new RCX5parse;
+	watchcomm = new RCX5comm(driver);
+
+
 	unsigned char buf[1024];
-	int len = 0;
-	printf("create comm object\n");
+	int i,len=0;
+	int ret, watchID;
 
-	RCX5 *watch;
-	watch = new RCX5();
+	watchcomm->setDriver(driver);
+	watchcomm->initDriver();
 
-	watch->saveHRM();
+	watchID=watchcomm->findWatch(20); //try 20 times
+
+	if (watchID > 0) {
+		printf("\nfound watch with ID number (serial number?) %d\n",watchID);
+		printf("in the received buffer must be the product name string\n");
+	}
+	else {
+		printf("\ndidn' t find any watch!\n");
+		printf("please try agian\n");
+		exit(EXIT_FAILURE);
+	}
+
+	ret = watchcomm->pairing();
+	if (-1 == ret ) {
+		exit(EXIT_FAILURE);
+	}
+
+	Overview *w_overview = new Overview;
+	watchcomm->getOverview(buf, len);
+
+	w_overview = parser->parseOverview(buf, len);
+
+	std::list<Datanode> nodelist;
+
+	RawSessions *allraw_sessions = new RawSessions();
+	allraw_sessions->setSessionNumber(w_overview->getSessionNumber());
+
+	RawSession *raw_session;
+
+//XXX just for testing to get only one specific session :-)
+// some additonal source code adapitons required
+	int sess_no = 11;
+
+	// get session raw data including protocoll data and store them in a node list
+	watchcomm->getSessionOverview(buf, len, sess_no);
+	int used_bytes = parser->parseSessionOverview(buf,len);
+
+	printf ("sess %d bytes %d \n", sess_no, used_bytes);
+	nodelist = watchcomm->getSession(sess_no, used_bytes);
+
+
+	raw_session = new RawSession();
+	raw_session = RCX5parse::parseRawSession(&nodelist);
+
+	allraw_sessions->setRawSession(raw_session, sess_no);
+
+
+
+	// once all raw data is transfered just close the connection to the watch 
+	watchcomm->disconnect();
+	//watchcomm->closeDriver();
+
+
+	std::string raw_path;
+	char filename[40];
+	sprintf(filename, "rcx5_session%02d", sess_no);
+	raw_path = create_filepath(workingDir,filename,dumpExtention);
+
+	raw_session->saveRaw(raw_path);
 
 /*
-	RCX5comm *rcx5comm;
-	rcx5comm = new RCX5comm(new DataLnk_driver);
-	rcx5comm->getSession(1,10333);
-*/
+				Session *session;
+				session = this->parser->parseSession(raw_session);
+
+				//create the filename string for the session
+				session->setFileExtention(hrmExtention);
+				//FIXME set a parameter to overwirte an existing file 
+				session->createFilename(workingDir);
+
+
+				std::string hrmpath;
+				hrmpath = create_filepath(workingDir,session->getFilename().c_str(),hrmExtention);
+
+				HrmFile *hrmfile = new HrmFile(this->monitor,this->version);
+				hrmfile->setPath(hrmpath);
+				hrmfile->save(session);
+
+				//#ifdef DUMP_RAW
+				std::cout<< "saved dump session number " << sess_no << " @ " << dump_path << std::endl;
+				//#endif
+//				std::cout << "saved hrm session number " << sess_no << " @ " << hrmpath << std::endl;
+
+				// emty memory
+				delete raw_session;
+				delete session; */
+//			} // end for 
+//		} //end if 
+
 }
 
 
@@ -532,7 +622,7 @@ int main(void) {
 
 //	test_gps_uncode ();
 
-//	test_libpolarhrm_global_settings();
+	test_libpolarhrm_global_settings();
 
 /* test the gpx file creation with sample data */
 //	test_gpx_file_creation();
@@ -542,7 +632,7 @@ int main(void) {
 
 
 	/* rcx5 inital test */
-	test_rcx5_support();
+//	test_rcx5_support();
 
 return 0;
 }
