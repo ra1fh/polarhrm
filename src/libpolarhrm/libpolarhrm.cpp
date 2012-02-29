@@ -17,7 +17,18 @@ polarhrm is free software: you can redistribute it and/or modify it
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
 #include "libpolarhrm.h"
+
+
+const char *workingDir;
+
+const char *tempFilename = "temp";
+
+const char *dumpExtention = ".dump";
+const char *hrmExtention = ".hrm";
+const char *gpxExtention = ".gpx";
+
 
 void setWorkingDir(const char* path) {
 	workingDir = path;

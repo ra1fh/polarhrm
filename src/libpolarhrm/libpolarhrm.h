@@ -25,21 +25,22 @@
    don t forget the last slash!!! 
    software does not check if dir exists or is wirtable
    (usabillity comes later)  */  
-static const char *workingDir = "/home/thomas/praw/";
-
+extern const char *workingDir;
 
 /* temp filename
    is used to store session data before sessioninformation is parsed 
    after parsing the file will be renamed to corrct name */
-static const char *tempFilename = "temp";
+extern const char *tempFilename; // = "temp";
 
 /* extentions */
-static const char *dumpExtention = ".dump";
-static const char *hrmExtention = ".hrm";
-static const char *gpxExtention = ".gpx";
+extern const char *dumpExtention; // = ".dump";
+extern const char *hrmExtention;  // = ".hrm";
+extern const char *gpxExtention;  // = ".gpx";
+
 
 /* set of functions to manipulate global values 
   use them to configure the library */
+
 void setWorkingDir(const char*);
 const char*getWorkingDir(void);
 void setDumpExtention(const char* ext);

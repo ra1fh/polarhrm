@@ -3,6 +3,15 @@ History
 =============
 dd.mm.yyyy
 
+29.02.2012
+	* fixed bug at setting working dir. (define extern value)
+
+10.02.2012
+	* enhanced pairing sequenc
+
+06.02.2012
+	* sticked rcx5 sessions correct together
+
 02.02.2012
 	* started session parsing rcx5
 
