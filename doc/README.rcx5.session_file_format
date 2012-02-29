@@ -64,7 +64,7 @@ Byte	Meaning
 47	RestHR
 48
 49
-50	Record Interval (0=1sec, 1=2sec, 2=5sec, 3=15sec, 4=60sec)
+50
 51
 52
 53
@@ -174,7 +174,7 @@ Byte	Meaning
 157
 158	has HR record data ??
 159	has GPS record data ??
-160	?? SI Units 
+160	Record Interval (0=1sec, 1=2sec, 2=5sec, 3=15sec, 4=60sec)
 161	?? some other parameter
 162
 163
@@ -350,8 +350,8 @@ Byte	Meaning
 333
 334
 335
-336
 --end of session head ??
+336
 337
 338
 339

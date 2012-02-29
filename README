@@ -1,5 +1,5 @@
 
-getting started
+getting started (IRDA)
 ==================
 
 before using the software be sure that you have a porpper configured 
@@ -13,7 +13,7 @@ http://code.google.com/p/polarhrm/wiki/IRDA_Information
 
 
 do not install the software, just compile and execute it.
-(I din't have expirience with uninstalling sections in makefile, so please don t 
+(I don t have expirience with uninstalling sections in makefile, so please don t 
 call make install or make unistall for now)
 
 
@@ -28,10 +28,10 @@ then run
 	./configure
 	make
 	cd src
-	./polarhrm s625x
+	$./polarhrm s625x
 
 or 
-	./polarhrm rs800cx
+	$./polarhrm rs800cx
 
 NEW:
 	#./polarhrm rcx5
@@ -42,15 +42,15 @@ however, check the src dir if the binaries are built.
 
 Note: the rcx5 uses a driver based on libusb.
       I didn t find a way to access the usb system without root. 
-
+      so you have to it run as root
 
 
 processing this will have the following result:
 
-*)connect the watch (s625X / rs800cx)
-*)transfer all sessions to the computer (s625X / rs800cx)
-*)dump raw data to files (s625X / rs800cx)
-*)parse all knowen data, and print them to screen (s625X / rs800cx)
+*)connect the watch (s625X / rs800cx / rcx5)
+*)transfer all sessions to the computer (s625X / rs800cx / rcx5)
+*)dump raw data to files (s625X / rs800cx / rcx5)
+*)parse all knowen data, and print them to screen (s625X / rs800cx / rcx5)
 *)write HRM file (s625X)
 
 to read an existing dump file run 
@@ -60,6 +60,9 @@ to read an existing dump file run
 or
 
 ./polarhrm rs800cx -r /path/to/dumpfile.dump
+
+./polarhrm rcx5 -r /path/to/dumpfile.dump
+
 
 
 todos
@@ -157,13 +160,14 @@ here I wirte some ideas of the concept to add a new device:
 			TODO see wiki
 			
 		parsing data
-			once you have a dump of raw data you can go stating the parsing
+			once you have a dump of raw data you can go starting the parsing
 			the best is to do step by step.
 			try to find if some of the allready knowen parsing funcitons work.
-			orientate at bcd coded values. 
+			look at bcd coded values. 
 			make small sessions that have only minor changes. 
-			edit only one setting at a setting. 
-			then the hard time comes.
+			 eg. set HR record interval highest value.
+			edit only one setting at once. 
+
 			compare them with tools, and write the session parsing function.
 
 			tools I use:	meld (gnome),

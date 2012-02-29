@@ -153,29 +153,28 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 	buf = raw_sess->getRawBuffer();
 	sesslen = raw_sess->getRawBufferlen();
 
+	// base lap offset 
+	const int lap_offset = 52;
 
 	w_session->laps = (Lap**) new Lap[w_session->getNumberOfLaps()-1];
 
 	int i = raw_sess->getRawBufferlen();
+	i=i-13;
 
 	for (int lap_no=w_session->getNumberOfLaps(); lap_no>0; lap_no--){
 
-		// XXX this is a dirty workaround to parse the laps
-		// the issue is that I cannot calculate correct aumount of data 
-		// that is strored within a lap! :-(
-		i = findNextLapOffset (buf,i,lap_no);
 
 		w_session->laps[lap_no]= new Lap;
 
 		w_session->laps[lap_no]->lap_no=lap_no;
-		printf("\n===== LAP %d ===== %d \n",lap_no, buf[i-13] );
+		printf("\n===== LAP %d ===== %d \n",lap_no, buf[i] );
 
 		// split time 
 		wTime *laptime_sum = new wTime();
-		laptime_sum->setHour  (unbcd(buf[i-9]));
-		laptime_sum->setMinute(unbcd(buf[i-10]));
-		laptime_sum->setSecond(unbcd(buf[i-11]));
-		laptime_sum->setTenth (unbcd(buf[i-12])*0.1);
+		laptime_sum->setHour  (unbcd(buf[i+4]));
+		laptime_sum->setMinute(unbcd(buf[i+3]));
+		laptime_sum->setSecond(unbcd(buf[i+2]));
+		laptime_sum->setTenth (unbcd(buf[i+1])*0.1);
 
 		w_session->laps[lap_no]->lap_end_time = laptime_sum;
 		printf("%d split time %s\n",i, w_session->laps[lap_no]->lap_end_time->toString().c_str() );
@@ -183,10 +182,10 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 
 		//lap time 
 		wTime *laptime = new wTime();
-		laptime->setHour  (unbcd(buf[i-5]));
-		laptime->setMinute(unbcd(buf[i-6]));
-		laptime->setSecond(unbcd(buf[i-7]));
-		laptime->setTenth (unbcd(buf[i-8])*0.1);
+		laptime->setHour  (unbcd(buf[i+8]));
+		laptime->setMinute(unbcd(buf[i+7]));
+		laptime->setSecond(unbcd(buf[i+6]));
+		laptime->setTenth (unbcd(buf[i+5])*0.1);
 
 		w_session->laps[lap_no]->laptime = laptime;
 		printf("%d lap time %s\n",i, w_session->laps[lap_no]->laptime->toString().c_str() );
@@ -195,21 +194,30 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 
 //		printf("start lap HR %d\n",buf[i+3]);
 
-		w_session->laps[lap_no]->hr_end = (unsigned int) buf[i-30];
-		w_session->laps[lap_no]->hr_avg = (unsigned int) buf[i-28];
-		w_session->laps[lap_no]->hr_max = (unsigned int) buf[i-26];
+		if (w_session->getHasHRData()){
+			w_session->laps[lap_no]->hr_end = (unsigned int) buf[i-17];
+			w_session->laps[lap_no]->hr_avg = (unsigned int) buf[i-15];
+			w_session->laps[lap_no]->hr_max = (unsigned int) buf[i-13];
 
-		printf("end HR = %d\n",w_session->laps[lap_no]->hr_end);
-		printf("avg HR = %d\n",w_session->laps[lap_no]->hr_avg);
-		printf("max HR = %d\n",w_session->laps[lap_no]->hr_max);
-
+			printf("end HR = %d\n",w_session->laps[lap_no]->hr_end);
+			printf("avg HR = %d\n",w_session->laps[lap_no]->hr_avg);
+			printf("max HR = %d\n",w_session->laps[lap_no]->hr_max);
+		}
 		if (w_session->getHasGPSData()) {
 			double longitude; 
 			double latitude;
-			latitude  = toGpsDec(&buf[i-22]);
-			longitude = toGpsDec(&buf[i-18]);
+			latitude  = toGpsDec(&buf[i-5]);
+			longitude = toGpsDec(&buf[i-9]);
 			printf("lat %.9f lon %.9f\n",latitude, longitude);
 		}
+		// XXX this is a dirty workaround to parse the laps
+		// the issue is that I cannot calculate correct aumount of data 
+		// that is strored within a lap! :-(
+		if(lap_no > 1) {
+			i = i-lap_offset;
+			i = findNextLapOffset (buf,i,lap_no-1);
+		}
+
 	}
 }
 
@@ -474,7 +482,7 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	printf("?? record GPS data %d\n",w_session->getHasGPSData());
 
 
-	// session record interval
+	//FIXME session record interval - find where the data is stored?
 	//buf[50], buf[114]
 	switch (buf[160]) {
 		case 0:
@@ -551,13 +559,17 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	SHOW(212);
 */
 
+//FIXME not implemented 
+//	parse_samples(w_session, raw_sess);
+
 /*
 	//XXX disabled for shorter output
-	parse_samples(w_session, raw_sess);
 	parse_sportzones (w_session, raw_sess);
 
 */
-	parse_laps(w_session, raw_sess);
+	if (w_session->getNumberOfLaps ()>1) {
+		parse_laps(w_session, raw_sess);
+	}
 
 	return w_session;
 }
@@ -571,7 +583,7 @@ RawSession* RCX5parse::parseRawSession(std::list<Datanode>* nodelist){
 	RawSession *raw_session = new RawSession;
 
 	unsigned char *nodebuf;
-	int buflen;
+	int buflen=0;
 	int rawbuf_filled=0;
 	int nodecount=0;
 	int nodebuflen=0; 
@@ -593,7 +605,7 @@ RawSession* RCX5parse::parseRawSession(std::list<Datanode>* nodelist){
 		}
 	}
 
-
+	printf("allocate %d memory\n",buflen);
 	unsigned char *rawbuf; // buffer the session without any protocol header
 	rawbuf = new unsigned char[buflen]; //FIXME buflen is too large because we
 										// didn t subtracted the bytes used by
@@ -733,13 +745,20 @@ int RCX5parse::findNextLapOffset(unsigned char *buf, int i, int lap_no){
 
 
 	printf("search for lap %d @ index %d\n",lap_no,i );
-	do {
+
+
+
+	while (buf[i] != lap_no 	// find lap number
+	       ||  buf[i+8] != 0x00
+	       ||  buf[i+9] != 0x00
+	       || buf[i+10] != 0x00
+	       || buf[i+11] != 0x00
+	       || buf[i+12] != 0x00){ 
 
 //		printf("%X ",buf[i]);
 		i--;
+	}
 
-	} while (buf[i] != lap_no || buf[i+7] != 0x00 || buf[i+8] != 0x00);
-
-	printf("\n");
-	return i+13;
+	printf("next index %d\n",i);
+	return i;
 }

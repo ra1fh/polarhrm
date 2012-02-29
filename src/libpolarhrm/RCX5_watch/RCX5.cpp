@@ -128,7 +128,7 @@ void RCX5::saveHRM(void){
 			// note! we start counting at 1
 			// it is importend to know that shifting the index from watch orignal to 
 			// array-index 0 for storing data does not get messed up!
-			for (int sess_no=0; sess_no<=w_overview->getSessionNumber(); sess_no++ ) {
+			for (int sess_no=0; sess_no<w_overview->getSessionNumber(); sess_no++ ) {
 
 				RawSession *raw_session;
 				raw_session = allraw_sessions->getRawSession(sess_no);
