@@ -159,6 +159,15 @@ int main (int argc, char **argv){
 	arguments.verbose = false;
 	arguments.listDevices = false;
 
+
+	/* if someone calls the program without any parameter 
+	   display help menu */
+	if(1 == argc) {
+		argc++;
+		argv[1] = (char *)"--help";
+	}
+
+	
 	/* Where the magic happens */
 	argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
@@ -178,7 +187,8 @@ int main (int argc, char **argv){
 		std::cout<< "debug = " << arguments.debuglevel << std::endl;
 		std::cout<< "rawread = " << arguments.rawfilepath << std::endl;
 		std::cout<< "DRIVER = (information now in class definition)" << std::endl;
-		std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
+		if (NULL != arguments.args[0])
+			std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
 		std::cout<< "verbose printing = " << arguments.verbose << std::endl;
 		std::cout<< "interface = " << arguments.interface << std::endl;
 

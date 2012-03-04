@@ -44,8 +44,8 @@ static suppDevices supportedDevices[] =
 {
 	{ DEVICE_S625X, "S625X", "hrm writting, run speed, altituede is working"},
 	{ DEVICE_S725X, "S725X", "same as S625X"},
-	{ DEVICE_RS800CX, "RS800CX", "current developing"},
-	{ DEVICE_RCX5, "RCX5", "current driver developing"}
+	{ DEVICE_RS800CX, "RS800CX", "hrm writting gps working "},
+	{ DEVICE_RCX5, "RCX5", "developing"}
 };
 
 

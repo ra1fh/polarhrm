@@ -130,7 +130,7 @@ LIBXML_LIBS = -lxml2
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAINT = #
+MAINT = 
 MAKEINFO = ${SHELL} /home/thomas/projects/polarhrm/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
@@ -144,10 +144,10 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2012-02-02
+PACKAGE_STRING = polarhrm 2012-03-03
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2012-02-02
+PACKAGE_VERSION = 2012-03-03
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -157,7 +157,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2012-02-02
+VERSION = 2012-03-03
 abs_builddir = /home/thomas/projects/polarhrm/src/libpolarhrm/RS400_watch
 abs_srcdir = /home/thomas/projects/polarhrm/src/libpolarhrm/RS400_watch
 abs_top_builddir = /home/thomas/projects/polarhrm
@@ -217,7 +217,7 @@ dist_data_DATA = librs400.tar.bz2 \
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: # $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -242,9 +242,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: # $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): # $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
