@@ -108,15 +108,13 @@ void S625Xparse::parse_samples(Session *w_session, RawSession *raw_sess){
 			// byte c+1: Speed (LSB); speed (km/h) = Speed / 16.0
 		
 			speed_val = 0;
-			
-			if (altitude) speed_val = (buf[i+2]<<3)+buf[i+3];
 
-			else speed_val = (buf[i+1]<<3)+buf[i+2];
-			
-			speed_val = (speed_val/16)*10;
-			speed_val = round(speed_val);
+			if (altitude) speed_val = ((((buf[i+2]& 0xE0)<<3)+buf[i+3])*10)/16.0;
+
+			else speed_val = ((((buf[i+1]& 0xE0)<<3)+buf[i+2])*10)/16.0;
+
+			speed_val = speed_val +0.5;
 			w_session->samples[j]->setSpeed((unsigned int) speed_val);
-
 			printf("\t%d",w_session->samples[j]->getSpeed());
 		}
 
@@ -127,7 +125,7 @@ void S625Xparse::parse_samples(Session *w_session, RawSession *raw_sess){
 
 			if (runspeed) alt = buf[i+1] + ((buf[i+2] & 0x1F)<<8)-512;
 	
-			w_session->samples[j]->setAlt(alt);   
+			w_session->samples[j]->setAlt(alt);
 			printf("\t%d",w_session->samples[j]->getAlt());
 		}
 
@@ -162,7 +160,7 @@ void S625Xparse::parse_laps(Session *w_session, RawSession *raw_sess ){
 
 		w_session->laps[j]= new Lap;
 
-		w_session->laps[j]->lap_no=j+1;	
+		w_session->laps[j]->lap_no=j+1;
 		printf("\n ===== LAP %d ===== \n",j+1 );
 
 		i=130+(lap_byte_size*j);
@@ -179,8 +177,10 @@ void S625Xparse::parse_laps(Session *w_session, RawSession *raw_sess ){
 		printf("search for minimum from %d to %d len %d\n" , prev_index-hr_index, prev_index, hr_index);
 
 		/* need to search in samples for samllest value*/
-		w_session->laps[j]->hr_min = S625Xparse::find_minimum (&buf[prev_index-hr_index-sample_size],hr_index, sample_size);
-	
+		//w_session->laps[j]->hr_min = S625Xparse::find_minimum (&buf[prev_index-hr_index-sample_size],hr_index, sample_size);
+		//FIXME need to repair this
+		w_session->laps[j]->hr_min = 0;
+
 		/* shift to next */
 		prev_index = prev_index-hr_index; 
 
@@ -198,38 +198,38 @@ void S625Xparse::parse_laps(Session *w_session, RawSession *raw_sess ){
 		printf("avg HR = %d\n",w_session->laps[j]->hr_avg);
 		printf("max HR = %d\n",w_session->laps[j]->hr_max);
 
-		/*
-		if (altitude){
+		
+		if (w_session->getHasAltitudeData()){
 
-			buf[i+6];
-			buf[i+7];
-			buf[i+8];
-			buf[i+9];
-			buf[i+10];
+			w_session->laps[j]->alt = buf[i+6]+(buf[i+7]<<8)-512;
+			printf("lap alt %d\n",w_session->laps[j]->alt);
 
+			printf("Running Ascent counter %d\n",buf[i+8] + (buf[i+9]<<8) );
+
+			if (1 == w_session->getSiUnit()) {
+				//SI Units
+				w_session->laps[j]->temperature = (buf[i+10]-10);
+			}
+			printf("Tempreture %d\n",w_session->laps[j]->temperature );
 		}
-		*/
+
 			// runspeed || bike1 || bike2
 		if (w_session->getHasSpeedData()) {
-			// byte 6
-			printf("distance %d\n",buf[i+6]);
-			// byte 7
-			printf("byte 7 %d\n",buf[i+7]);
-			// byte 8
-			printf("start HR %d\n",buf[i+8]);
-			// byte 9
-			printf("byte 9 %d\n",buf[i+9]);
-	
-			//high_nibble(c+3) * 4 + high_nibble(c+2) determine the integer portion
-			//low_nibble(c+2)/16 is the fractional portion. 
+
+			//distance
+			w_session->laps[j]->distance = buf[i+11] + (buf[i+12]<<8);
+			printf("distance %d\n",w_session->laps[j]->distance);
 
 			//speed
-			i=136+(lap_byte_size*j);
-			printf("speed %d\n",(unib(buf[i+3])*4+unib(buf[i+2]))*10+(lnib(buf[i+2])/16));
-
-			w_session->laps[j]->speed_end = (unsigned int)(unib(buf[i+3])*4+unib(buf[i+2])*10+(lnib(buf[i+2])/16));
+			printf("check calculation for higher values!!\n");
+			//w_session->laps[j]->speed_end = (unib(buf[i+14])*4+unib(buf[i+13]))*10+(lnib(buf[i+13])/16);
+			w_session->laps[j]->speed_end = unib(buf[i+13])*10+lnib(buf[i+13]);
 			printf("w_session->lap[j]->speed_end=%i\n",w_session->laps[j]->speed_end);
-		
+			/*
+			printf("speed 1 %X %d\n",buf[i+13], (unib(buf[i+13])*4));
+			printf("speed 2 %d\n", unib(buf[i+12]));
+			printf("speed 3 %d\n", lnib(buf[i+12])/16);
+			*/
 		}
 	}
 
@@ -457,8 +457,11 @@ Session* S625Xparse::parseSession(RawSession *raw_sess){
 	printf("OK Exercise mode 0 basic, 1 interval = %d\n",buf[23]);
 
 //25	bit 1: Units (0 = metric, 1 = english)
-	w_session->setSiUnit(buf[25]); // true = kg/cm/km 
-	printf("OK w_session->si_units=%d (1= metric)\n",w_session->getSiUnit());
+	if(0 == buf[25])
+		w_session->setSiUnit(true); // true = kg/cm/km 
+	else
+		w_session->setSiUnit(false);
+	printf("OK w_session->si_units=%d (1= metric 0=english )\n",w_session->getSiUnit());
 
 
 //85	Exercise distance (LSB)

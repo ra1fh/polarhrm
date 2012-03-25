@@ -24,5 +24,6 @@ class Lap {
 	int speed_avg;
 	int distance;
 	int alt;
+	int temperature;
 };
 #endif

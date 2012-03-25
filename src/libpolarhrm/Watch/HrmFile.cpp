@@ -125,18 +125,18 @@ void HrmFile::save(Session *session) {
             0, /* rec. time */
             0, /* rec. hr */
            // (int)round(lap->pace_end / 25.6), /* momentary speed */
-             lap->speed_end,    
+            lap->speed_end,
             0, /* momentary cadence */
-            0 /* momentary altitude */
+            lap->alt /* momentary altitude */
         );
         fprintf(fd, "%d\t%d\t%d\t%d\t%d\r\n", /* Row 3 */
             0, 0, 0, 0, 0 /* I think these will be empty */
         );
         fprintf(fd, "%d\t%d\t%d\t%d\t%d\t%d\r\n", /* Row 4 */
             0, /* lap type = normal lap. */
-            (int) round(lap->distance / 25.6), /* lap distance */
+            lap->distance*100, /* lap distance */
             0, /* power */
-            0, /* temperature */
+            lap->temperature*10, /* temperature */
             0, /* phaselap */
             0
         );
