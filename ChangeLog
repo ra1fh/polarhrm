@@ -3,6 +3,13 @@ History
 =============
 dd.mm.yyyy
 
+24.03.2012
+	* started with pdd file creation (class files)
+
+22.03.2012
+	* fixed s625x si units
+	* improved speed calcualtion (s625x)
+
 29.02.2012
 	* fixed bug at setting working dir. (define extern value)
 

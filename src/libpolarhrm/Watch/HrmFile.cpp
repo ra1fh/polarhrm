@@ -269,6 +269,8 @@ void HrmFile::save(Session *session) {
 
 		fprintf(fd, "\r\n");
     }
+
+	fclose(fd);
 }
 
 void HrmFile::setPath(string path) {

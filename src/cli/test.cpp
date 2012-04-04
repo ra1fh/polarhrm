@@ -542,7 +542,7 @@ void test_rcx5_support(void){
 
 //XXX just for testing to get only one specific session :-)
 // some additonal source code adapitons required
-	int sess_no = 11;
+	int sess_no = 4;
 
 	// get session raw data including protocoll data and store them in a node list
 	watchcomm->getSessionOverview(buf, len, sess_no);
@@ -622,7 +622,7 @@ int main(void) {
 
 //	test_gps_uncode ();
 
-	test_libpolarhrm_global_settings();
+//	test_libpolarhrm_global_settings();
 
 /* test the gpx file creation with sample data */
 //	test_gpx_file_creation();
@@ -632,7 +632,7 @@ int main(void) {
 
 
 	/* rcx5 inital test */
-//	test_rcx5_support();
+	test_rcx5_support();
 
 return 0;
 }
