@@ -8,7 +8,7 @@
 #include "Lap.h"
 #include "wTime.h"
 #include "wDate.h"
-
+#include "ExercisePddFile.h"
 class wTime;
 class wDate;
 class Lap;
@@ -19,7 +19,7 @@ class HrmFile;
 class Session {
 
 	public:
-
+	friend class ExercisePddFile;
 	/* TODO: object orientation INFORMATION HIDING */
 
 	char id[31];
@@ -128,7 +128,6 @@ class Session {
 
 	wDate *start_date;
 	wTime *duration;
-	int recording_interval;
 
 	wTime *best_laptime;
 
@@ -138,14 +137,9 @@ class Session {
 	string sessPath;
 	string sessFilename;
 	string sessExtention;
+	int recording_interval;
 
 
-
-
-
-
-
- 
 
 //    WatchData * ;
 

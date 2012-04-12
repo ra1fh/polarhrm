@@ -108,7 +108,9 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp   \
 	libpolarhrm/RCX5_watch/RCX5_parse_session.cpp   \
 	libpolarhrm/Watch/PddFile.h   \
-	libpolarhrm/Watch/PddFile.cpp
+	libpolarhrm/Watch/PddFile.cpp   \
+	libpolarhrm/Watch/ExercisePddFile.h   \
+	libpolarhrm/Watch/ExercisePddFile.cpp
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 

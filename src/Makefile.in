@@ -92,7 +92,8 @@ am_libpolarhrm_la_OBJECTS = libpolarhrm_la-file_operations.lo \
 	libpolarhrm_la-RCX5_comm.lo libpolarhrm_la-RCX5.lo \
 	libpolarhrm_la-RCX5_parse.lo \
 	libpolarhrm_la-RCX5_parse_overview.lo \
-	libpolarhrm_la-RCX5_parse_session.lo libpolarhrm_la-PddFile.lo
+	libpolarhrm_la-RCX5_parse_session.lo libpolarhrm_la-PddFile.lo \
+	libpolarhrm_la-ExercisePddFile.lo
 libpolarhrm_la_OBJECTS = $(am_libpolarhrm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -429,7 +430,9 @@ libpolarhrm_la_SOURCES = \
 	libpolarhrm/RCX5_watch/RCX5_parse_overview.cpp   \
 	libpolarhrm/RCX5_watch/RCX5_parse_session.cpp   \
 	libpolarhrm/Watch/PddFile.h   \
-	libpolarhrm/Watch/PddFile.cpp
+	libpolarhrm/Watch/PddFile.cpp   \
+	libpolarhrm/Watch/ExercisePddFile.h   \
+	libpolarhrm/Watch/ExercisePddFile.cpp
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 
@@ -570,6 +573,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpolarhrm_la-Datanode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpolarhrm_la-ExercisePddFile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpolarhrm_la-Gps.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpolarhrm_la-GpxFile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpolarhrm_la-HrmFile.Plo@am__quote@
@@ -929,6 +933,14 @@ libpolarhrm_la-PddFile.lo: libpolarhrm/Watch/PddFile.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='libpolarhrm/Watch/PddFile.cpp' object='libpolarhrm_la-PddFile.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-PddFile.lo `test -f 'libpolarhrm/Watch/PddFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/PddFile.cpp
+
+libpolarhrm_la-ExercisePddFile.lo: libpolarhrm/Watch/ExercisePddFile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -MT libpolarhrm_la-ExercisePddFile.lo -MD -MP -MF $(DEPDIR)/libpolarhrm_la-ExercisePddFile.Tpo -c -o libpolarhrm_la-ExercisePddFile.lo `test -f 'libpolarhrm/Watch/ExercisePddFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/ExercisePddFile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libpolarhrm_la-ExercisePddFile.Tpo $(DEPDIR)/libpolarhrm_la-ExercisePddFile.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='libpolarhrm/Watch/ExercisePddFile.cpp' object='libpolarhrm_la-ExercisePddFile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpolarhrm_la_CXXFLAGS) $(CXXFLAGS) -c -o libpolarhrm_la-ExercisePddFile.lo `test -f 'libpolarhrm/Watch/ExercisePddFile.cpp' || echo '$(srcdir)/'`libpolarhrm/Watch/ExercisePddFile.cpp
 
 polarhrm.o: cli/polarhrm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT polarhrm.o -MD -MP -MF $(DEPDIR)/polarhrm.Tpo -c -o polarhrm.o `test -f 'cli/polarhrm.cpp' || echo '$(srcdir)/'`cli/polarhrm.cpp

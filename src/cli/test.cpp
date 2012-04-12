@@ -41,6 +41,9 @@
 #include "libpolarhrm/RCX5_watch/RCX5_comm.h"
 #include "libpolarhrm/RCX5_watch/RCX5_parse.h"
 
+#include "libpolarhrm/Watch/PddFile.h"
+#include "libpolarhrm/Watch/ExercisePddFile.h"
+
 
 using namespace std;
 
@@ -91,6 +94,11 @@ void test_calc_time_obj(void);
 
 /* rcx5 inital test */
 void test_rcx5_support(void);
+
+
+/* test pdd file creation */
+void test_pdd_file(void);
+
 
 /* inplementation here */
 
@@ -601,7 +609,26 @@ void test_rcx5_support(void){
 
 }
 
+void test_pdd_file(void){
 
+	PddFile pddf;
+	pddf.SessionDate.append("20120130");
+
+
+	ExercisePddFile exe;
+
+	//exe.No_report = 7;
+
+	printf("%s\n",pddf.SessionDate.c_str());
+
+	pddf.addExercise(exe);
+
+	std::string mypath;
+
+	mypath.append("/home/thomas/praw/20120130.pdd");
+	pddf.setPath(mypath);
+	pddf.savePdd();
+}
 
 
 
@@ -632,7 +659,11 @@ int main(void) {
 
 
 	/* rcx5 inital test */
-	test_rcx5_support();
+//	test_rcx5_support();
+
+
+	test_pdd_file();
+
 
 return 0;
 }
