@@ -505,7 +505,7 @@ int RCX5comm::findWatch(int retry){
 
 
 
-//
+// FIXME
 // this fuction is a periodic report that appears quite often in the logs
 // it looks like a some kind of report to stay connected
 //
@@ -548,9 +548,9 @@ void RCX5comm::idle2(void){
 
 
 
-
-
-
+//
+// emty a given buffer with a specific char
+//
 const void RCX5comm::write_buffer(unsigned char* buf, int len, unsigned char filler){
 
 	for (int i=0; i<= len; i++) {
