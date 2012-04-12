@@ -41,8 +41,13 @@ command.
 however, check the src dir if the binaries are built.
 
 Note: the rcx5 uses a driver based on libusb.
-      I didn t find a way to access the usb system without root. 
-      so you have to it run as root
+      to access the device without root privelegs add create a file 
+      /etc/udev/rules.d/99-hid.rules 
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0da4", ATTRS{idProduct}=="0004", MODE="0666"
+
+for details see https://github.com/samop/Polar-Flowlink-linux/tree/master/udev
+
 
 
 processing this will have the following result:
@@ -51,7 +56,8 @@ processing this will have the following result:
 *)transfer all sessions to the computer (s625X / rs800cx / rcx5)
 *)dump raw data to files (s625X / rs800cx / rcx5)
 *)parse all knowen data, and print them to screen (s625X / rs800cx / rcx5)
-*)write HRM file (s625X)
+*)write HRM file (s625X / rs800cx)
+*)write GPX file (rs800cx)
 
 to read an existing dump file run 
 
@@ -128,14 +134,16 @@ your watch is not supported by now and you want to implement it?
 here I wirte some ideas of the concept to add a new device:
 
 	connection type:
-		the watch uses some transfare method to get data out ouf the watch.
+		the watch uses some transfer method to get data out ouf the watch.
 		as far as I know soniclink, IR and IRda connections have allready been 
 		implemented. (various projects)
-		new devices use other connection type such as flowlink. (no implemention yet)
+		new devices use other connection type such as flowlink. 
+		(there is also a project focusing on this)
 
-		polarhrm now to easily bring all the different connection types and devices
-		together.
-		for now I wrote the application driver for irda but the class model of 
+		polarhrm wants to bring all the different connection types and devices
+		together and create a usful libary for gui applications.
+
+		userspace drivers for irda and datalink are avaible but the class model of 
 		polarhrm gives the opportunity to add other application drivers.
 
 		see the apstract driver class
@@ -153,8 +161,8 @@ here I wirte some ideas of the concept to add a new device:
 
 		for saving a hrm file it should use the watch/hrmfile class 
 		if the device requires special output it should be implemented
-		in the same file (if monitor=number) - other devices could also need
-		this implementation
+		in the hrm class with a if cause (if monitor=number) because other 
+		devices could also need this implementation in future
 		
 		getting data out of the watch
 			TODO see wiki
@@ -168,7 +176,7 @@ here I wirte some ideas of the concept to add a new device:
 			 eg. set HR record interval highest value.
 			edit only one setting at once. 
 
-			compare them with tools, and write the session parsing function.
+			compare the dump files with tools, and write the session parsing function.
 
 			tools I use:	meld (gnome),
 					vbindiff (command line), 
@@ -182,4 +190,3 @@ here I wirte some ideas of the concept to add a new device:
 		cat output.txt
 
 		and then call it ./myscript.sh|grep "?? byte 50"
-		

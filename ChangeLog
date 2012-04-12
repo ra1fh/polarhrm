@@ -3,6 +3,9 @@ History
 =============
 dd.mm.yyyy
 
+12.04.2012
+	* fixed datalnk root access -> add a udev rule
+
 24.03.2012
 	* started with pdd file creation (class files)
 
