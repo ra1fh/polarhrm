@@ -1,0 +1,187 @@
+polarhrm  Copyright (C) 2011  Thomas Foyth
+This program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.
+This is free software, and you are welcome to redistribute it under certain conditions;
+
+debug = 
+rawread = /home/thomas/praw/rcx5_session01.dump
+DRIVER = (information now in class definition)
+WATCH_MODEL = RCX5
+verbose printing = 0
+interface = 0
+getWorkingDir = /home/thomas/praw/
+getDumpExtention = .dump
+getHRMExtention = .hrm
+read rawsession file 836
+lines printed with OK seem to be correct parsed
+lines that have one or more questionmarks at the beginning 
+need to be checked - and confirmed
+sesslen 836
+OK Date 20120422
+OK Start Time 12:20:11.0
+OK w_session->duration=140.400000
+OK w_session->duration=00:02:20.4
+OK w_session->hr_avg=93
+OK w_session->hr_max=108
+OK w_session->hr_min=86
+?? w_session->user_hr_max=192
+OK w_session->user_hr_rest=60
+OK w_session->user_vo2_max=50
+OK w_session->calories=8
+?? w_session->number_of_laps=9
+OK w_session->best_laptime=14.600000
+OK w_session->best_laptime=00:00:14.6
+OK            avg_laptime=16.800000
+OK            avg_laptime=00:00:16.8
+?? record HR data 1
+?? record GPS data 0
+?? w_session->recording_interval=5
+?? recording_interval raw buf 2
+
+===== LAP 9 ===== 9 
+823 split time 00:02:20.4
+w_session->lap[9]->lap_end_time=140.400000
+823 lap time 00:00:05.3
+w_session->lap[9]->laptime=5.300000
+5.000000
+end HR = 91
+avg HR = 91
+max HR = 93
+search for lap 8 @ index 771
+next index 769
+How is HR data stored?(end / avg / max HR is well knowen):
+43 F0 DA 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5B 00 5B 00 5D 00 00 00 00 00 00 00 00 00 00 00 00 
+		730
+
+43	67	  1000011
+F0	240	11110000
+
+5D	93	1011101
+5C	92	1011100
+
+===== LAP 8 ===== 8 
+769 split time 00:02:15.1
+w_session->lap[8]->lap_end_time=135.100000
+769 lap time 00:00:14.6
+w_session->lap[8]->laptime=14.600000
+14.000000
+end HR = 93
+avg HR = 92
+max HR = 94
+search for lap 7 @ index 717
+next index 714
+How is HR data stored?(end / avg / max HR is well knowen):
+C1 65 AE A3 02 00 00 10 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5D 00 5C 00 5E 00 00 00 00 00 00 00 00 00 00 00 00 
+		675		784
+===== LAP 7 ===== 7 
+714 split time 00:02:00.5
+w_session->lap[7]->lap_end_time=120.500000
+714 lap time 00:00:19.9
+w_session->lap[7]->laptime=19.900000
+19.000000
+end HR = 89
+avg HR = 92
+max HR = 95
+search for lap 6 @ index 662
+next index 659
+How is HR data stored?(end / avg / max HR is well knowen):
+36 BF EF 6C 02 00 00 DA 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 59 00 5C 00 5F 00 00 00 00 00 00 00 00 00 00 00 00 
+		620		730
+===== LAP 6 ===== 6 
+659 split time 00:01:40.6
+w_session->lap[6]->lap_end_time=100.600000
+659 lap time 00:00:19.8
+w_session->lap[6]->laptime=19.800000
+19.000000
+end HR = 90
+avg HR = 91
+max HR = 93
+search for lap 5 @ index 607
+next index 605
+How is HR data stored?(end / avg / max HR is well knowen):
+F6 08 36 02 00 00 A3 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5A 00 5B 00 5D 00 00 00 00 00 00 00 00 00 00 00 00 
+	566			675
+===== LAP 5 ===== 5 
+605 split time 00:01:20.8
+w_session->lap[5]->lap_end_time=80.800000
+605 lap time 00:00:20.0
+w_session->lap[5]->laptime=20.000000
+20.000000
+end HR = 94
+avg HR = 95
+max HR = 98
+search for lap 4 @ index 553
+next index 550
+How is HR data stored?(end / avg / max HR is well knowen):
+FA 5F BD FF 01 00 00 6C 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5E 00 5F 00 62 00 00 00 00 00 00 00 00 00 00 00 00 
+		511			620
+===== LAP 4 ===== 4 
+550 split time 00:01:00.8
+w_session->lap[4]->lap_end_time=60.800000
+550 lap time 00:00:15.7
+w_session->lap[4]->laptime=15.700000
+15.000000
+end HR = 94
+avg HR = 96
+max HR = 98
+search for lap 3 @ index 498
+next index 495
+How is HR data stored?(end / avg / max HR is well knowen):
+C1 03 5F C8 01 00 00 36 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5E 00 60 00 62 00 00 00 00 00 00 00 00 00 00 00 00 
+		456			566
+===== LAP 3 ===== 3 
+495 split time 00:00:45.1
+w_session->lap[3]->lap_end_time=45.100000
+495 lap time 00:00:15.0
+w_session->lap[3]->laptime=15.000000
+15.000000
+end HR = 96
+avg HR = 95
+max HR = 97
+search for lap 2 @ index 443
+next index 440
+How is HR data stored?(end / avg / max HR is well knowen):
+FD FC 9F 91 01 00 00 FF 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 60 00 5F 00 61 00 00 00 00 00 00 00 00 00 00 00 00 
+		401			511
+253
+252
+159
+===== LAP 2 ===== 2 
+440 split time 00:00:30.1
+w_session->lap[2]->lap_end_time=30.100000
+440 lap time 00:00:14.9
+w_session->lap[2]->laptime=14.900000
+14.000000
+end HR = 94
+avg HR = 93
+max HR = 97
+search for lap 1 @ index 388
+next index 386
+How is HR data stored?(end / avg / max HR is well knowen):
+E4 53 5B 01 00 00 C8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5E 00 5D 00 61 00 00 00 00 00 00 00 00 00 00 00 00 
+	347		456
+
+87
+89
+96
+
+===== LAP 1 ===== 1 
+386 split time 00:00:15.2
+w_session->lap[1]->lap_end_time=15.200000
+386 lap time 00:00:15.2
+w_session->lap[1]->laptime=15.200000
+15.000000
+end HR = 87
+avg HR = 94
+max HR = 108
+search for lap 0 @ index 334
+next index 331
+How is HR data stored?(end / avg / max HR is well knowen):
+6D 9B 73 00 00 00 00 91 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 57 00 5E 00 6C 00 00 00 00 00 00 00 00 00 00 00 00 
+					401
+01101101   10011011  01110011
+
+01101100   01100010  01011011
+108
+98
+91
+
