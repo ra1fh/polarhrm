@@ -212,11 +212,22 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 		}
 		// XXX this is a dirty workaround to parse the laps
 		// the issue is that I cannot calculate correct aumount of data 
-		// that is strored within a lap! :-(
-		if(lap_no > 1) {
+		// that is stored within a lap! :-(
+
+		int actualIndex;
+		actualIndex = i;
+		
+		if(lap_no > 0) {
 			i = i-lap_offset;
 			i = findNextLapOffset (buf,i,lap_no-1);
 		}
+		printf("How is HR data stored?(end / avg / max HR is well knowen):\n");
+		for (int k =i+13; k<actualIndex; k++) {
+
+			printf("%.2X ",buf[k]);
+		}
+		printf("\n");
+
 
 	}
 }

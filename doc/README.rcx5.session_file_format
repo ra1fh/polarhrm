@@ -423,9 +423,16 @@ lap & hr data
 session length - given index
 
 ...
-52	
-51	end sample data ??
-50
+52	end sample data ??
+51	Lower Byte navigation offset ??
+50	Upper Byte
+49
+48
+47	Lower Byte navigation offset 
+46	Upper Byte
+		Some kind of offset value that tell the length of a lap section
+		thinking of how it can be used ...
+
 ..	some other lap related values
 31
 30 Avg heart rate
