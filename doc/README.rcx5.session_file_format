@@ -337,11 +337,12 @@ Byte	Meaning
 320
 321
 322
-323
-324
+323	Lower Byte adress of first lap ?
+324	Upper Byte adress of first lap
 325
-326
-327
+326	Lower Byte adress of last lap 
+327	Upper Byte adress of last lap
+--end of session head ??
 328
 329
 330
@@ -350,7 +351,6 @@ Byte	Meaning
 333
 334
 335
---end of session head ??
 336
 337
 338
@@ -424,11 +424,11 @@ session length - given index
 
 ...
 52	end sample data ??
-51	Lower Byte navigation offset ??
+51	Lower Byte navigation offset (previous Lap adress)
 50	Upper Byte
-49
-48
-47	Lower Byte navigation offset 
+49	0x00
+48	0x00
+47	Lower Byte navigation offset (next Lap adress)
 46	Upper Byte
 		Some kind of offset value that tell the length of a lap section
 		thinking of how it can be used ...
