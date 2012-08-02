@@ -161,13 +161,21 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 	int i = raw_sess->getRawBufferlen();
 	i=i-13;
 
-	for (int lap_no=w_session->getNumberOfLaps(); lap_no>0; lap_no--){
+	int first_lap_adress;
+	int last_lap_adress;
 
+	first_lap_adress = (buf[324]<<8)+buf[323];
+	last_lap_adress  = (buf[327]<<8)+buf[326];
+
+	printf("first lap adress %d +39 %d\n",first_lap_adress,first_lap_adress+39);
+	printf("last lap adress  %d +39 %d\n",last_lap_adress,last_lap_adress+39);
+
+	for (int lap_no=w_session->getNumberOfLaps(); lap_no>0; lap_no--){
 
 		w_session->laps[lap_no]= new Lap;
 
 		w_session->laps[lap_no]->lap_no=lap_no;
-		printf("\n===== LAP %d ===== %d \n",lap_no, buf[i] );
+		printf("\n===== LAP %d ===== %d index %d\n",lap_no, buf[i],i );
 
 		// split time 
 		wTime *laptime_sum = new wTime();
@@ -199,9 +207,9 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 			w_session->laps[lap_no]->hr_avg = (unsigned int) buf[i-15];
 			w_session->laps[lap_no]->hr_max = (unsigned int) buf[i-13];
 
-			printf("end HR = %d\n",w_session->laps[lap_no]->hr_end);
-			printf("avg HR = %d\n",w_session->laps[lap_no]->hr_avg);
-			printf("max HR = %d\n",w_session->laps[lap_no]->hr_max);
+			printf("end HR = %d 0x%.2X\n",w_session->laps[lap_no]->hr_end,w_session->laps[lap_no]->hr_end);
+			printf("avg HR = %d 0x%.2X\n",w_session->laps[lap_no]->hr_avg,w_session->laps[lap_no]->hr_avg);
+			printf("max HR = %d 0x%.2X\n",w_session->laps[lap_no]->hr_max,w_session->laps[lap_no]->hr_max);
 		}
 		if (w_session->getHasGPSData()) {
 			double longitude; 
@@ -217,16 +225,39 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 		int actualIndex;
 		actualIndex = i;
 		
-		if(lap_no > 0) {
+/*		if(lap_no > 0) {
 			i = i-lap_offset;
 			i = findNextLapOffset (buf,i,lap_no-1);
 		}
-		printf("How is HR data stored?(end / avg / max HR is well knowen):\n");
-		for (int k =i+13; k<actualIndex; k++) {
+*/
+		int prev_adress;
+	    int next_adress;
 
+		next_adress =(buf[i-34])<<8;
+		next_adress += buf[i-35]; 	  
+		prev_adress =(buf[i-38])<<8;
+		prev_adress += buf[i-39]; 
+
+		printf("next adress %.2X %.2X\nshifted %d x+39 %dx\n\n ",buf[i-34], buf[i-35],next_adress,next_adress+39 );
+		printf("prev adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[i-38], buf[i-39],prev_adress,prev_adress+39 );
+
+		if(lap_no == 1) {
+			//prev_adress = first_lap_adress-52;
+			prev_adress = 328-52+16;
+		}		
+		
+		printf("How is HR data stored?(end / avg / max HR is well knowen): %d - %d\n",prev_adress+52, actualIndex);
+		for (int k =prev_adress+52; k<actualIndex; k++) {
 			printf("%.2X ",buf[k]);
 		}
+		printf("\n\n");
+		for (int k =prev_adress+52; k<actualIndex; k++) {
+			printf("%d ",buf[k]);
+		}
 		printf("\n");
+
+
+		i=prev_adress+39;
 
 
 	}
@@ -773,3 +804,66 @@ int RCX5parse::findNextLapOffset(unsigned char *buf, int i, int lap_no){
 	printf("next index %d\n",i);
 	return i;
 }
+/*
+		for (int k =i-39; k<actualIndex; k++) {
+
+			if (lap_no == 1) { //first lap
+	
+			if(buf[k+0] == 0x00 && //prev
+ 			   buf[k+1] == 0x00 && //prev
+			   buf[k+2] == 0x00 &&
+			   buf[k+3] == 0x00 &&
+			   buf[k+4] >= 0x00 && //next
+			   buf[k+5] >= 0x00) { //next
+
+				  next_adress =(buf[k+5])<<8;
+				  next_adress += buf[k+4]; 	  
+				  prev_adress =(buf[k+1])<<8;
+				  prev_adress += buf[k+0]; 
+
+				  printf("next adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+5], buf[k+4],next_adress,next_adress+39 );
+				  printf("prev adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+1], buf[k+0],prev_adress,prev_adress+39 );
+				  break;      
+			   }
+			
+			}
+			else if(lap_no == w_session->getNumberOfLaps()) {//last lap
+			if(buf[k+0] >= 0x00 && //prev
+ 			   buf[k+1] >= 0x00 && //prev
+			   buf[k+2] == 0x00 &&
+			   buf[k+3] == 0x00 &&
+			   buf[k+4] == 0x00 && //next
+			   buf[k+5] == 0x00) { //next
+
+				  next_adress =(buf[k+5])<<8;
+				  next_adress += buf[k+4]; 	  
+				  prev_adress =(buf[k+1])<<8;
+				  prev_adress += buf[k+0]; 
+
+				  printf("next adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+5], buf[k+4],next_adress,next_adress+39 );
+				  printf("prev adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+1], buf[k+0],prev_adress,prev_adress+39 );
+				  break;      
+			   }	
+			}
+
+			else {// all other
+			
+			if(buf[k+0] >= 0x00 && //prev
+ 			   buf[k+1] >= 0x00 && //prev
+			   buf[k+2] == 0x00 &&
+			   buf[k+3] == 0x00 &&
+			   buf[k+4] >= 0x00 && //next
+			   buf[k+5] >= 0x00) { //next
+
+				  next_adress =(buf[k+5])<<8;
+				  next_adress += buf[k+4]; 	  
+				  prev_adress =(buf[k+1])<<8;
+				  prev_adress += buf[k+0]; 
+				   
+				  printf("next adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+5], buf[k+4],next_adress,next_adress+39 );
+				  printf("prev adress %.2X %.2X\nshifted %d x+39 %dx\n ",buf[k+1], buf[k+0],prev_adress,prev_adress+39 );
+			      break;
+			   }
+			}
+		}
+*/		
