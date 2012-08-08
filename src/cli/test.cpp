@@ -100,6 +100,10 @@ void test_rcx5_support(void);
 void test_pdd_file(void);
 
 
+/* rcx5 HR Values */
+void test_rcx5_HR_Values(void);
+
+
 /* inplementation here */
 
 
@@ -550,7 +554,7 @@ void test_rcx5_support(void){
 
 //XXX just for testing to get only one specific session :-)
 // some additonal source code adapitons required
-	int sess_no = 4;
+	int sess_no = 0;
 
 	// get session raw data including protocoll data and store them in a node list
 	watchcomm->getSessionOverview(buf, len, sess_no);
@@ -574,7 +578,7 @@ void test_rcx5_support(void){
 
 	std::string raw_path;
 	char filename[40];
-	sprintf(filename, "rcx5_session%02d", sess_no);
+	sprintf(filename, "rcx5_sessionX%02d", sess_no);
 	raw_path = create_filepath(workingDir,filename,dumpExtention);
 
 	raw_session->saveRaw(raw_path);
@@ -631,6 +635,20 @@ void test_pdd_file(void){
 }
 
 
+void test_rcx5_HR_Values(void){
+
+	printf("test rcx5 HR Values\n");
+
+	int tval = 0x73; //shoud be 0x5B int 91 
+
+	tval = tval * 0x100000;
+	tval = tval / 600000;
+
+	printf("shoud be 0x5B int 91  %d\n",tval);
+
+}
+
+
 
 int main(void) {
 
@@ -662,7 +680,9 @@ int main(void) {
 //	test_rcx5_support();
 
 
-	test_pdd_file();
+//	test_pdd_file();
+
+	test_rcx5_HR_Values();
 
 
 return 0;

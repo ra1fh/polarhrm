@@ -2,6 +2,8 @@
 History
 =============
 dd.mm.yyyy
+02.08.2012
+	* got rid of the FindNextLapOffset function (rcx5)
 
 12.04.2012
 	* fixed datalnk root access -> add a udev rule
