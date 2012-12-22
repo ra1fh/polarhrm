@@ -15,6 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+/*
+ * this is a small helper program to simulate an IRDA Watch
+ * You need a second IRDA dongle that simulates a watch (in my case RS800CX)
+ * 
+ * While one dongle is used by a virtal box running polar personal trainer,
+ * the the dongle acts like a watch.
+ * 
+ * With this setup it is possible to send manipulated trainingfiles to analyse 
+ * ppp parsing algohrithms.
+ * 
+ * */
 
 
 #include <iostream>
