@@ -23,7 +23,8 @@
 #include <list>
 #include "../Datanode.h"
 
-#include "../Driver/driver.h"
+
+#include "../Driver/datalnk_driver.h"
 #include "../Watch/Overview.h"
 
 #include "RCX5_comm.h"
@@ -68,14 +69,12 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 
 	int session_size=0;
 	int counter=0;
-	unsigned char sendquery[256];
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	// first query at an open snyc connection
 	// Get overview -> response holds the number of sessions
 	// 												report can hold other    0xAA
 	unsigned char query[] = {0x01, 0x40, 0x02, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0x00};
-
-	RCX5comm::write_buffer(sendquery, 256, 0);
 
 	//response: 04 42 3c
 	unsigned char response[] = {0x04, 0x42, 0x3c};
@@ -95,18 +94,49 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 		&& raw_buffer[1] == response[1]
 		&& raw_buffer[2] == response[2]){
 
-			// moved to parsing
-			//print_bytes ((char*)raw_buffer, len);
-
+			// send success command
+			this->success();
+			
 			return;
 		}
 
 		counter++;
 	}while(counter < 10);
 
-	printf("did not get session size \n");
-	exit(-1);
+	printf("did not get overview\n");
+	exit(EXIT_FAILURE);
 }
+
+// all commands with the same structure
+// purpose is not knowen for all commands
+// I guess these set of commands is used to sync the watchsettings
+// with the syncapp
+// 01 40 02 00 54 4d 34 1e 00 get overview
+// 01 40 02 00 54 4d 34 1e 10 QueryA
+// 01 40 02 00 54 4d 34 1e 1c QueryB
+// 01 40 02 00 54 4d 34 1e 95
+// 01 40 02 00 54 4d 34 1e b0
+// 01 40 02 00 54 4d 34 1e 42
+// 01 40 02 00 54 4d 34 1e 93
+// 01 40 02 00 54 4d 34 1e 2f
+// 01 40 02 00 54 4d 34 1e 33
+// 01 40 02 00 54 4d 34 1e 31
+// 01 40 02 00 54 4d 34 1e 38
+// 01 40 02 00 54 4d 34 1e 3a
+// 01 40 02 00 54 4d 34 1e 35
+// 01 40 02 00 54 4d 34 1e 36
+// 01 40 02 00 54 4d 34 1e 40
+// 01 40 02 00 54 4d 34 1e e2
+// 01 40 02 00 54 4d 34 1e f7
+// 01 40 02 00 54 4d 34 1e 2f (5x serval times)
+// 01 40 02 00 54 4d 34 1e 01
+// 01 40 02 00 54 4d 34 1e c8
+// 01 40 02 00 54 4d 34 1e e7
+// 01 40 02 00 54 4d 34 1e ae
+// 01 40 02 00 54 4d 34 1e 1c
+
+// 01 40 02 00 54 4d 34 1e c9
+// 01 40 02 00 54 4d 34 1e 44
 
 
 
@@ -116,9 +146,8 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 
 	int session_size=0;
 	int counter=0;
-	unsigned char sendquery[256];
-	// FIXME it figured out that the query is not correct
-	// ok this is how it goes 
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
+
 	// this is not a general getOverview requerst , this is a get session size
 	// request to get the session size of a spezific session
 	// with this information the getsession function is calling for the 
@@ -127,9 +156,9 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 	// 																					 0x01
 	unsigned char query[] = {0x01, 0x40, 0x03, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0xb2, 0x00, sess_no };
 
-	RCX5comm::write_buffer(sendquery, 256, 0);
+	RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
 
-	//response: 04 42 06 00 40 b2 00 5d 28 
+	//response data: 04 42 06 00 40 b2 00 5d 28 
 	unsigned char response[] = {0x04, 0x42, 0x06};
 
 	memcpy(sendquery, query, sizeof(query));
@@ -139,10 +168,10 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 
 	do {
 		usleep(1000);
-		// return the length
+		
 		len = this->driver->recvbytes(raw_buffer);
 
-		if( 512 == len 
+		if( DATALNK_RECV_BUFFER_SIZE == len 
 		&& raw_buffer[0] == response[0]
 		&& raw_buffer[1] == response[1]
 		&& raw_buffer[2] == response[2]){
@@ -156,16 +185,20 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 		counter++;
 	}while(counter < 10);
 
-	printf("did not get session size \n");
-	exit(-1);
+	printf("did not get session information\n");
+	exit(EXIT_FAILURE);
 }
 
 
 
 
-/* get the sessiondata out of the watch and store them in a node list. 
- the idea is to have a clear separation and any datamaipulation 
- data are manipulated at the with parse functions */
+/*
+ * get the sessiondata out of the watch and store them in a node list. 
+ * the idea is to have a clear separation and any datamaipulation 
+ * data are manipulated at the with parse functions 
+ *
+ * 
+ */
 std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 
 //get session
@@ -192,7 +225,7 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 	int nodes_left; // counts down - start value set at first packet
 
 	unsigned char buf[RCX5_TRANSFER_BUFFER_SIZE];
-	unsigned char sendquery[256];
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	const int packet_size = RCX5_PACKETS_NO_HEADER;
 
@@ -222,13 +255,11 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 		printf("%d packets each %d bytes (load) \n",nodes_left, packet_size );
 	}
 
-
 	// after sending the init query go ahead a long as all bytes get received
 	//while (checksum < w_o->used_bytes))
 	do {
-
 		// emty buffer
-		RCX5comm::write_buffer(sendquery, 255, 0);
+		RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
 
 		unsigned char query[] = {0x01, 0x40, 0x09, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0xb3, 0x00, 
 								 sess_no,
@@ -258,7 +289,7 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 
 		// this is a bit nasty but makes life much more easy at raw session 
 		// parsing with the existing function
-		// we just cout off the transferbuffer witch is 512 to the packet 
+		// we just cut off the transferbuffer witch is 512 to the packet 
 		// size of 446
 		// and the last packet (nodes left 1) gets cut to its calculated size
 		if (nodes_left == 1) {
@@ -314,72 +345,63 @@ return l;
 
 
 
-int RCX5comm::getReminder(unsigned char data[], unsigned char rem_num){
-/*
-	unsigned char query[1]; 
 
-	query[0]=RCX5_GET_RIMINDER;
-	query[1]=rem_num;
+
+
+/*
+ *  success command??
+ *  
+ * 
+ * 
+ * 
+ * 
+ */
+void RCX5comm::success(void) {
 	
-	this->driver->sendbytes(query, sizeof(query));
-	
-return driver->recvbytes(data);
-*/
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
+	//XXX lets try this escape sequence
+	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0xff};
+	memcpy(sendquery, query, sizeof(query));
+	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
 
 
-int RCX5comm::setReminder(unsigned char data[], unsigned char len){
 
 
-return 0;
-}
+
 
 /*
-   disconnect the watch
-*/
+ *  disconnect the watch
+ * 
+ * 
+ * 01 40 04 00 54 4d 34 1e b7 00 ff  work in progress command (appears quite often)
+ * 01 40 04 00 54 4d 34 1e b7 00 00 01 finish - escape sequence? 
+ * 
+ * 
+ */
 void RCX5comm::disconnect(void) {
-//maybe there is also a command for putting the watch back to watchmode
-	this->closeDriver();
+
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
+	//XXX lets try this escape sequence
+	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0x00,0x01};
+	memcpy(sendquery, query, sizeof(query));
+	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
+
 
 
 /*
-   delete a session file from the watch
-*/
-void RCX5comm::deleteFile(unsigned char bcdyear,
-                           unsigned char month,
-                           unsigned char bcdday,
-                           unsigned char bcdhour,
-                           unsigned char bcdminute,
-                           unsigned char bcdsecond){
-
-
-
-}
-
-
-/*
- delete all sessionfiles from the watch
-*/
-void RCX5comm::deleteAllFiles(void){
-
-
-}
-
-
-
-//
-//
-// try to establish a connection between host and watch
-//
-//
+ *
+ * try to establish a connection between host and watch
+ *
+ */
 int RCX5comm::pairing(void){
 
-	unsigned char sendquery[256];
-	unsigned char rbuf[1024];
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
+	unsigned char rbuf[DATALNK_RECV_BUFFER_SIZE];
 	int rlen=0;
-	RCX5comm::write_buffer(sendquery, 256, 0);
+
 
 	bool pairingSuccess; 
 	int ret;
@@ -394,10 +416,10 @@ int RCX5comm::pairing(void){
 	pairingIDarry[2] -= 0x30;
 	pairingIDarry[3] -= 0x30;
 
-	// handshake call 
-	// asking the watch to accept connections with this the given ID
-	// query[10-13] bcd handshake ID 0x09, 0x0, 0x04, 0x07  -> ID 9047
-	// if handshake id does exists
+	// pairing call 
+	// asking the watch to accept connections with a given ID
+	// query[10-13] bcd pairing ID 0x09, 0x0, 0x04, 0x07  -> ID 9047
+	// if pairing id does exists
 	// 
 	// the following read
 	// response is 1 byte long with 0x00 
@@ -428,7 +450,7 @@ int RCX5comm::pairing(void){
 			usleep(1000);
 			rlen = this->driver->recvbytes(rbuf);
 			rcounter++;
-		}while (rlen != 512); //XXX ignore rcounter for now!
+		}while (rlen != DATALNK_RECV_BUFFER_SIZE); //XXX ignore rcounter for now!
 
 		//response
 		//04 42 03 00 40 b6 00 01 00 00 00 00 00 00 00 00
@@ -455,13 +477,15 @@ int RCX5comm::pairing(void){
 	if(pairingSuccess){
 		return 1;
 	}
-	return -1;
+	else {
+		return -1;
+	}
 }
 
 
 
 //
-// once the datalnk device is setup, it is looking for HRM watches 
+// once the datalnk device is setup, it is looking for HRM 
 // next to it. the function is periodic reading form the usb 
 // waiting to receive data with a protocol format that includes 
 // information with the avaible watch.
@@ -470,7 +494,7 @@ int RCX5comm::findWatch(int retry){
 
 	int counter=0;
 	int IDNumber=0;
-	unsigned char rbuf[512];
+	unsigned char rbuf[DATALNK_RECV_BUFFER_SIZE];
 	int rlen=0;
 	unsigned char report[] = {0x04, 0x42, 0x20 };
 
@@ -483,7 +507,7 @@ int RCX5comm::findWatch(int retry){
 		printf("...");
 
 	// (0 == memcmp(rbuf,report, sizeof(report)*3 ))
-		if( 512 == rlen 
+		if( DATALNK_RECV_BUFFER_SIZE == rlen 
 		&& rbuf[0] == report[0]
 		&& rbuf[1] == report[1]
 		&& rbuf[2] == report[2]){
@@ -511,15 +535,16 @@ int RCX5comm::findWatch(int retry){
 //
 void RCX5comm::idle(void){
 
-	unsigned char sendquery[256];
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
-	// there is also a command sending 0x55 
-	// witch could have a similar purpose
-	// unsigned char y[] = {0x01,0x40,0x01,0x00,0x55};
-	unsigned char y[] = {0x01,0x40,0x01,0x00,0x51};
+	unsigned char y[] = {0x01,0x40,0x01,0x00,0x51}; //send the command down
 	memcpy(sendquery, y, sizeof(y));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
+
+// data coming back                          XX
+// 05 07 00 00 03 81 13 70 04 00 00 e9 d1 02 32
+
 
 
 
@@ -530,18 +555,16 @@ void RCX5comm::idle(void){
 //
 void RCX5comm::idle2(void){
 
-	unsigned char sendquery[256];
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
-	// there is also a command sending 0x55 
-	// witch could have a similar purpose
-	// unsigned char y[] = {0x01,0x40,0x01,0x00,0x51};
 	unsigned char y[] = {0x01,0x40,0x01,0x00,0x55};
 	memcpy(sendquery, y, sizeof(y));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
-
-
+// data coming back
+// 05 07 00 00 03 80 13 70 04 00 00 e9 d1 02 XX
+// XX data changes
 
 
 

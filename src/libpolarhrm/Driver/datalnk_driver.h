@@ -26,6 +26,9 @@ polarhrm is free software: you can redistribute it and/or modify it
 #define DATALNK_USB_ENDPOINT_IN 0x81
 #define DATALNK_USB_ENDPOINT_OUT 0x03
 
+#define DATALNK_SEND_BUFFER_SIZE 0x100
+#define DATALNK_RECV_BUFFER_SIZE 0x200
+
 #include <usb.h>
 
 #include "driver.h"

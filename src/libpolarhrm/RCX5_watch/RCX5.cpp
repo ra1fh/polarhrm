@@ -81,18 +81,13 @@ void RCX5::saveHRM(void){
 
 		w_overview = this->parser->parseOverview(buf, len);
 
-
-
-		 std::list<Datanode> nodelist;
+		std::list<Datanode> nodelist;
 
 		RawSessions *allraw_sessions = new RawSessions();
 		allraw_sessions->setSessionNumber(w_overview->getSessionNumber());
 
 		RawSession *raw_session;
 
-//XXX just for testing to get only one specific session :-)
-// some additonal source code adapitons required
-//	int sess_no = 7;
 		if (0 < w_overview->getSessionNumber()) {
 
 			// get session raw data including protocoll data and store them in a node list
@@ -103,8 +98,6 @@ void RCX5::saveHRM(void){
 
 				printf ("sess %d bytes %d \n", sess_no, used_bytes);
 				nodelist = this->watchcomm->getSession(sess_no, used_bytes);
-
-
 
 				raw_session = new RawSession();
 				raw_session = RCX5parse::parseRawSession(&nodelist);
@@ -143,6 +136,8 @@ void RCX5::saveHRM(void){
 				raw_path = create_filepath(workingDir,filename,dumpExtention);
 
 				raw_session->saveRaw(raw_path);
+				std::cout<< "saved dump session number " << sess_no << " @ " << raw_path << std::endl;
+
 				//#endif
 
 /*

@@ -67,22 +67,24 @@ class RCX5comm {
 	void getOverview(unsigned char *raw_buffer, int &len);
 
 	std::list<Datanode> getSession(int, int);
-	void deleteFile(unsigned char year,unsigned char month,unsigned char day,unsigned char hour,unsigned char minute,unsigned char second);
-	void deleteAllFiles(void);
 
 	int pairing(void);
 	void getUser(unsigned char &raw_user_data, int &len);
 
-	int getReminder(unsigned char data[], unsigned char rem_num);	
-	int setReminder(unsigned char data[], unsigned char len);
-
 	int findWatch(int retry);
 	void getSessionOverview(unsigned char *raw_buffer, int &len, int sess_no);
 
+	void success(void);
 	// send the disconnect command to the watch
 	// explecid closing of the driver required 
 	void disconnect(void);
 
+	//dont let people call this
+	// only the object knows when to call idle but for testing we allow it :-)
+	void idle(void);
+	void idle2(void);
+
+		
   protected:
 
 
@@ -92,9 +94,6 @@ class RCX5comm {
 	const void write_buffer(unsigned char* buf, int len, unsigned char filler);
 		
 
-	//dont let people call this
-	// only the object knows when to call idle
-	void idle(void);
-	void idle2(void);
+
 };
 #endif
