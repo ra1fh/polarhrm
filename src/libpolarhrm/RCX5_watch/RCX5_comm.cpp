@@ -79,7 +79,7 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	//response: 04 42 3c
 	unsigned char response[] = {0x04, 0x42, 0x3c};
 
-	memcpy(sendquery, query, sizeof(query));
+	memmove(sendquery, query, sizeof(query));
 
 	printf("get overview\n");
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
@@ -161,7 +161,7 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 	//response data: 04 42 06 00 40 b2 00 5d 28 
 	unsigned char response[] = {0x04, 0x42, 0x06};
 
-	memcpy(sendquery, query, sizeof(query));
+	memmove(sendquery, query, sizeof(query));
 
 	printf("get session information\n");
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
@@ -269,7 +269,7 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 								 packet.uchar[0],
 								 packet.uchar[1]};
 
-		memcpy(sendquery, query, sizeof(query));
+		memmove(sendquery, query, sizeof(query));
 
 		printf("command:");
 		for (int z=0; z < sizeof(query); z++)
@@ -361,7 +361,7 @@ void RCX5comm::success(void) {
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 	//XXX lets try this escape sequence
 	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0xff};
-	memcpy(sendquery, query, sizeof(query));
+	memmove(sendquery, query, sizeof(query));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
@@ -385,7 +385,7 @@ void RCX5comm::disconnect(void) {
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 	//XXX lets try this escape sequence
 	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0x00,0x01};
-	memcpy(sendquery, query, sizeof(query));
+	memmove(sendquery, query, sizeof(query));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
@@ -437,7 +437,7 @@ int RCX5comm::pairing(void){
 	// 04 40 03 00 40 b6 00 02 
 	// 04 42 03 00 40 b6 00 02
 	// 04 42 03 00 40 b6 00 02 
-	memcpy(sendquery, q, sizeof(q));
+	memmove(sendquery, q, sizeof(q));
 
 	int counter  = 0;
 	int rcounter = 0;
@@ -538,7 +538,7 @@ void RCX5comm::idle(void){
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	unsigned char y[] = {0x01,0x40,0x01,0x00,0x51}; //send the command down
-	memcpy(sendquery, y, sizeof(y));
+	memmove(sendquery, y, sizeof(y));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
@@ -558,7 +558,7 @@ void RCX5comm::idle2(void){
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	unsigned char y[] = {0x01,0x40,0x01,0x00,0x55};
-	memcpy(sendquery, y, sizeof(y));
+	memmove(sendquery, y, sizeof(y));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
 
