@@ -65,49 +65,49 @@ using namespace std;
 
 /* read out two raw sessions from file, stick them together 
    and process them like they come directly out of the watch */
-void test_run_two_sess_parsing (void);
+void run_two_sess_parsing (void);
 
 /* test the date and time object behaviour */
-void test_date_and_time_obj(void);
+void date_and_time_obj(void);
 
 /* test the object behaviour */
-void test_session_obj(void);
+void session_obj(void);
 
 /* code for deleting a single session */
-void test_delete_single_session(void); 
+void delete_single_session(void); 
 
 /* test my datanode object to replace the raw_data node structure and stl list instead */
-std::list<Datanode> test_my_datanode_obj(void);
+std::list<Datanode> my_datanode_obj(void);
 
 
 /* test a the unencoding of gps data */
-void test_gps_uncode(void);
+void gps_uncode(void);
 
 /* test the init setup for the libpolarhrm */
-void test_libpolarhrm_global_settings(void);
+void libpolarhrm_global_settings(void);
 
 /* test the gpx file creation with sample data */
-void test_gpx_file_creation(void);
+void gpx_file_creation(void);
 
 /* test calculate with time objects */
-void test_calc_time_obj(void);
+void calc_time_obj(void);
 
 /* rcx5 inital test */
-void test_rcx5_support(void);
+void rcx5_support(void);
 
 
 /* test pdd file creation */
-void test_pdd_file(void);
+void pdd_file(void);
 
 
 /* rcx5 HR Values */
-void test_rcx5_HR_Values(void);
+void rcx5_HR_Values(void);
 
 
 /* inplementation here */
 
 
-void test_run_two_sess_parsing (void){
+void run_two_sess_parsing (void){
 
 	cout << "Test: test_run_two_sess_parsing\n";
 
@@ -204,7 +204,7 @@ void test_run_two_sess_parsing (void){
 
 }
 
-void test_date_and_time_obj(void){
+void date_and_time_obj(void){
 
 	cout << "Test: test_date_and_time_obj\n";
 
@@ -221,7 +221,7 @@ void test_date_and_time_obj(void){
 }
 
 
-void test_session_obj(void){
+void session_obj(void){
 
 	cout << "Test: test_session_obj\n";
 
@@ -239,7 +239,7 @@ void test_session_obj(void){
 }
 
 
-void test_delete_single_session(void) {
+void delete_single_session(void) {
 
 	cout << "Test: test_delete_single_session\n";
 
@@ -274,7 +274,7 @@ void test_delete_single_session(void) {
 }
 
 
-std::list<Datanode> test_my_datanode_obj(void){
+std::list<Datanode> my_datanode_obj(void){
 
 	cout << "Test: test_my_datanode_obj\n";
 
@@ -338,7 +338,7 @@ std::list<Datanode> test_my_datanode_obj(void){
 }
 
 
-void test_gps_uncode(void) {
+void gps_uncode(void) {
 
 	cout << "Test: test_gps_uncode\n";
 
@@ -443,7 +443,7 @@ union UStuff
 
 
 
-void test_libpolarhrm_global_settings(void){
+void libpolarhrm_global_settings(void){
 
 	cout << "Test: test_libpolarhrm_global_settings\n";
 
@@ -456,7 +456,7 @@ printf("getHRMExtention %s\n", getHRMExtention());
 
 
 
-void test_gpx_file_creation(void){
+void gpx_file_creation(void){
 
 	cout << "Test: test_gpx_file_creation\n";
 
@@ -480,7 +480,7 @@ void test_gpx_file_creation(void){
 
 }
 
-void test_calc_time_obj(void){
+void calc_time_obj(void){
 
 	wTime time1(21,50,4,7);
 	wTime time2(1,0,0,3);
@@ -503,7 +503,7 @@ void test_calc_time_obj(void){
 
 
 /* rcx5 inital test */
-void test_rcx5_support(void){
+void rcx5_support(void){
 
 	printf("rcx5 inital test\n");
 
@@ -540,8 +540,11 @@ void test_rcx5_support(void){
 		exit(EXIT_FAILURE);
 	}
 
+	
 	Overview *w_overview = new Overview;
 	watchcomm->getOverview(buf, len);
+
+
 
 	w_overview = parser->parseOverview(buf, len);
 
@@ -570,12 +573,16 @@ void test_rcx5_support(void){
 	allraw_sessions->setRawSession(raw_session, sess_no);
 
 
-
+	watchcomm->success();
+	watchcomm->idle();
+	watchcomm->idle2();
+	printf("send disconnect command\n");
 	// once all raw data is transfered just close the connection to the watch 
 	watchcomm->disconnect();
 	//watchcomm->closeDriver();
 
 
+/*	
 	std::string raw_path;
 	char filename[40];
 	sprintf(filename, "rcx5_sessionX%02d", sess_no);
@@ -583,7 +590,7 @@ void test_rcx5_support(void){
 
 	raw_session->saveRaw(raw_path);
 
-/*
+
 				Session *session;
 				session = this->parser->parseSession(raw_session);
 
@@ -607,13 +614,14 @@ void test_rcx5_support(void){
 
 				// emty memory
 				delete raw_session;
-				delete session; */
+				delete session;  */
 //			} // end for 
 //		} //end if 
 
+	exit(0);
 }
 
-void test_pdd_file(void){
+void pdd_file(void){
 
 	PddFile pddf;
 	pddf.SessionDate.append("20120130");
@@ -635,55 +643,97 @@ void test_pdd_file(void){
 }
 
 
-void test_rcx5_HR_Values(void){
+void rcx5_HR_Values(void){
 
 	printf("test rcx5 HR Values\n");
 
-	int tval = 0x73; //shoud be 0x5B int 91 
 
-	tval = tval * 0x100000;
-	tval = tval / 600000;
+	/* values form the hrm file */
+	unsigned char hrm_int_values[] = {108, 98, 91, 87, 89, 96, 94, 93, 97, 96, 96, 96, 95, 93, 98, 96, 93, 90, 90, 90, 90, 90, 95, 92, 90, 89, 92, 93};
 
-	printf("shoud be 0x5B int 91  %d\n",tval);
+	/* raw data from session file see sample dir rcx5_session01.dump 
+	   adress space is correctly removed */
+	unsigned char raw_value[]     = {0x6D,0x9B ,0x73 ,0xE4 ,0x53, 0xFD ,0xFC ,0x9F, 0xC1 ,0x03 ,0x5F,0xFA ,0x5F ,0xBD,0xF6 ,0x08 ,0x36 ,0xBF ,0xEF,0xC1 ,0x65 ,0xAE ,0x43 ,0xF0 };
+	
+	unsigned char indx = 1;
+
+	printf("%d\t %d\n",hrm_int_values[indx],(raw_value[indx] ^ 0b00000001));
 
 }
 
 
 
-int main(void) {
+int main(int argc, char **argv) {
 
-	/* read out two raw sessions from file, stick them together 
-	   and process them like they come directly out of the watch */
-//	test_run_two_sess_parsing();
-
-	/* test the date and time object behaviour */
-//	test_date_and_time_obj();
-
-	/* test the object behaviour */
-//	test_session_obj();
+	if(argc > 0) {
 
 
-//	test_my_datanode_obj();
+		for (int i=0; i<argc; i++) {
 
-//	test_gps_uncode ();
+			// read out two raw sessions from file, stick them together 
+	   		// and process them like they come directly out of the watch
+			if(0 == strcmp(argv[i],"run_two_sess_parsing")){
+				run_two_sess_parsing();
+			}
 
-//	test_libpolarhrm_global_settings();
+			// test the date and time object behaviour
+			if(0 == strcmp(argv[i],"date_and_time_obj")){
+				date_and_time_obj();
+			}
 
-/* test the gpx file creation with sample data */
-//	test_gpx_file_creation();
-
-
-//	test_calc_time_obj();
-
-
-	/* rcx5 inital test */
-//	test_rcx5_support();
-
-
-//	test_pdd_file();
-
-	test_rcx5_HR_Values();
+			// test the object behaviour
+			if(0 == strcmp(argv[i],"session_obj")){
+				session_obj();
+			}
 
 
-return 0;
+			
+			if(0 == strcmp(argv[i],"my_datanode_obj")){
+				my_datanode_obj();
+			}
+
+
+
+			if(0 == strcmp(argv[i],"gps_uncode")){
+				gps_uncode();
+			}
+
+
+			if(0 == strcmp(argv[i],"libpolarhrm_global_settings")){
+				libpolarhrm_global_settings();
+			}
+
+			// test the gpx file creation with sample data
+			if(0 == strcmp(argv[i],"gpx_file_creation")){
+				gpx_file_creation();
+			}
+
+
+			if(0 == strcmp(argv[i],"calc_time_obj")){
+				calc_time_obj();
+			}
+
+
+			// rcx5 inital test
+			if(0 == strcmp(argv[i],"rcx5_support")){
+				rcx5_support();
+			}
+
+			
+			if(0 == strcmp(argv[i],"pdd_file")){
+				pdd_file();
+			}
+
+			
+			if(0 == strcmp(argv[i],"rcx5_hr_values")){
+				rcx5_HR_Values();
+			}
+
+			
+		}
+	}
+
+
+
+return EXIT_SUCCESS;
 }
