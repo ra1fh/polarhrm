@@ -422,8 +422,9 @@ parsing data from the end of file has the last lap stored first.
 lap & hr data
 session length - given index
 
+...HR & GPS data??? encoded somehow!
 ...
-52	end sample data ??
+52	end sample data ?? last hr value??
 51	Lower Byte navigation offset (previous Lap adress)
 50	Upper Byte
 49	0x00
