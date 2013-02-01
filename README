@@ -1,3 +1,10 @@
+requirements
+==================
+
+libarys installed:
+	#apt-get install libxml2
+	#apt-get install "libusb-0.1-4"
+
 
 getting started (IRDA)
 ==================
@@ -34,14 +41,14 @@ or
 	$./polarhrm rs800cx
 
 NEW:
-	#./polarhrm rcx5
+	$./polarhrm rcx5
 
 note: you may get an error when building "no route to target" at the end of make 
 command.
 however, check the src dir if the binaries are built.
 
 Note: the rcx5 uses a driver based on libusb.
-      to access the device without root privelegs add create a file 
+      to access the device without root privelegs create a udev rule
       /etc/udev/rules.d/99-hid.rules 
 
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0da4", ATTRS{idProduct}=="0004", MODE="0666"
@@ -50,7 +57,7 @@ for details see https://github.com/samop/Polar-Flowlink-linux/tree/master/udev
 
 
 
-processing this will have the following result:
+supported functions:
 
 *)connect the watch (s625X / rs800cx / rcx5)
 *)transfer all sessions to the computer (s625X / rs800cx / rcx5)
