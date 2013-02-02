@@ -173,7 +173,7 @@ int main (int argc, char **argv){
 
 
 	if(false == arguments.interface) {
-		std::cout<<"polarhrm  Copyright (C) 2011  Thomas Foyth\nThis program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.\n"
+		std::cout<<"polarhrm  Copyright (C) 2013  Thomas Foyth\nThis program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.\n"
 					"This is free software, and you are welcome to redistribute it under certain conditions;\n\n";
 
 		//print out a list

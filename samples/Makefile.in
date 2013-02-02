@@ -217,7 +217,8 @@ samples_DATA = \
 	11073101.hrm \
 	2011-5-15_12_1.dump \
 	11052801.hrm \
-	11051501.hrm
+	11051501.hrm \
+	rcx5_sample_log.txt
 
 samplesdir = \
 	$(pkgdatadir)

@@ -439,18 +439,21 @@ int RCX5comm::pairing(void){
 	// 04 42 03 00 40 b6 00 02 
 	memmove(sendquery, q, sizeof(q));
 
-	int counter  = 0;
-	int rcounter = 0;
+	int counter  = 1;
 
 	printf("send pairing command ...\nlook at your watch to accept the request %d\n",pairingID);
 	do{
+		printf("debug: send pairing command %d\n",counter);
 		this->driver->sendbytes(sendquery, sizeof(sendquery));
 
+		int rcounter = 1;
 		do {
 			usleep(1000);
+			printf("debug: read %d\n",rcounter);
 			rlen = this->driver->recvbytes(rbuf);
+			print_bytes ((char*)rbuf,rlen);
 			rcounter++;
-		}while (rlen != DATALNK_RECV_BUFFER_SIZE); //XXX ignore rcounter for now!
+		}while (rcounter <= 3 && rlen != DATALNK_RECV_BUFFER_SIZE); // try it X times
 
 		//response
 		//04 42 03 00 40 b6 00 01 00 00 00 00 00 00 00 00
@@ -468,8 +471,9 @@ int RCX5comm::pairing(void){
 			pairingSuccess=false;
 		}
 
+		usleep(1000000); // XXX: think about this!
 		counter++;
-	}while(counter < 100 && !pairingSuccess);
+	}while(counter <= 10 && !pairingSuccess);
 
 	this->idle();
 	this->idle2();

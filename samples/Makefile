@@ -143,10 +143,10 @@ OTOOL64 =
 PACKAGE = polarhrm
 PACKAGE_BUGREPORT = mailto:thomas.foyth@gmail.com
 PACKAGE_NAME = polarhrm
-PACKAGE_STRING = polarhrm 2012-08-08
+PACKAGE_STRING = polarhrm 2013-02-02
 PACKAGE_TARNAME = polarhrm
 PACKAGE_URL = 
-PACKAGE_VERSION = 2012-08-08
+PACKAGE_VERSION = 2013-02-02
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -156,7 +156,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 2012-08-08
+VERSION = 2013-02-02
 abs_builddir = /home/thomas/projects/polarhrm/samples
 abs_srcdir = /home/thomas/projects/polarhrm/samples
 abs_top_builddir = /home/thomas/projects/polarhrm
@@ -217,7 +217,8 @@ samples_DATA = \
 	11073101.hrm \
 	2011-5-15_12_1.dump \
 	11052801.hrm \
-	11051501.hrm
+	11051501.hrm \
+	rcx5_sample_log.txt
 
 samplesdir = \
 	$(pkgdatadir)
