@@ -448,12 +448,12 @@ int RCX5comm::pairing(void){
 
 		int rcounter = 1;
 		do {
-			usleep(1000);
+			usleep(10*1000);
 			printf("debug: read %d\n",rcounter);
 			rlen = this->driver->recvbytes(rbuf);
 			print_bytes ((char*)rbuf,rlen);
 			rcounter++;
-		}while (rcounter <= 3 && rlen != DATALNK_RECV_BUFFER_SIZE); // try it X times
+		}while (rcounter <= 5 && rlen != DATALNK_RECV_BUFFER_SIZE); // try it X times
 
 		//response
 		//04 42 03 00 40 b6 00 01 00 00 00 00 00 00 00 00
@@ -467,11 +467,11 @@ int RCX5comm::pairing(void){
 		//response
 		//04 42 03 00 40 b6 00 02 00 00 00 00 00 00 00 00
 		else if(rbuf[7] == 2) {
-			usleep(100000);
+			//usleep(100000);
 			pairingSuccess=false;
 		}
-
-		usleep(1000000); // XXX: think about this!
+		
+		usleep(1000*1000); // XXX: think about this!
 		counter++;
 	}while(counter <= 10 && !pairingSuccess);
 
