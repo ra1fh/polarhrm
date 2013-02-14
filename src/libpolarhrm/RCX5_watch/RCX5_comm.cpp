@@ -74,7 +74,11 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	// first query at an open snyc connection
 	// Get overview -> response holds the number of sessions
 	// 												report can hold other    0xAA
-	unsigned char query[] = {0x01, 0x40, 0x02, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0x00};
+	unsigned char query[] = {0x01, 0x40, 0x02, 0x00, 0x54, 
+							 hardwareID[0], 
+							 hardwareID[1], 
+							 hardwareID[2], 
+							 0x00};
 
 	//response: 04 42 3c
 	unsigned char response[] = {0x04, 0x42, 0x3c};
@@ -154,7 +158,11 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 	// itemized packets
 	// 																					 0x00
 	// 																					 0x01
-	unsigned char query[] = {0x01, 0x40, 0x03, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0xb2, 0x00, sess_no };
+	unsigned char query[] = {0x01, 0x40, 0x03, 0x00, 0x54,
+							 hardwareID[0],
+							 hardwareID[1],
+							 hardwareID[2],
+							 0xb2, 0x00, sess_no };
 
 	RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
 
@@ -261,7 +269,11 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 		// emty buffer
 		RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
 
-		unsigned char query[] = {0x01, 0x40, 0x09, 0x00, 0x54, 0x4d, 0x34, 0x1e, 0xb3, 0x00, 
+		unsigned char query[] = {0x01, 0x40, 0x09, 0x00, 0x54, 
+								 hardwareID[0],
+								 hardwareID[1], 
+								 hardwareID[2], 
+								 0xb3, 0x00, 
 								 sess_no,
 								 accumulate.uchar[0], //LSB least significant byte
 								 accumulate.uchar[1], //MSB most significant byte 
@@ -360,7 +372,11 @@ void RCX5comm::success(void) {
 	
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 	//XXX lets try this escape sequence
-	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0xff};
+	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,
+							 hardwareID[0],
+							 hardwareID[1],
+							 hardwareID[2],
+							 0xb7,0x00,0xff};
 	memmove(sendquery, query, sizeof(query));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
@@ -384,7 +400,11 @@ void RCX5comm::disconnect(void) {
 
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 	//XXX lets try this escape sequence
-	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,0x4d,0x34,0x1e,0xb7,0x00,0x00,0x01};
+	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,
+							 hardwareID[0],
+							 hardwareID[1],
+							 hardwareID[2],
+							 0xb7,0x00,0x00,0x01};
 	memmove(sendquery, query, sizeof(query));
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 }
@@ -423,10 +443,14 @@ int RCX5comm::pairing(void){
 	// 
 	// the following read
 	// response is 1 byte long with 0x00 
-	// 
+	//                      01  40   06   00   54   1a   4e   35   b6     00 00 04 08 03
 	// the read request is sent up to 4 times
-//	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,0x09,0x00,0x04,0x07};
-	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54,0x4d,0x34,0x1e,0xb6,0x00,
+//	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54, 0x4d,0x34,0x1e, 0xb6,0x00,0x09,0x00,0x04,0x07};
+	unsigned char q[] = {0x01,0x40,0x06,0x00,0x54, 
+							hardwareID[0], //hardwareID
+							hardwareID[1],
+							hardwareID[2], 
+							0xb6,0x00,
 							pairingIDarry[0],
 							pairingIDarry[1],
 							pairingIDarry[2],
@@ -516,6 +540,17 @@ int RCX5comm::findWatch(int retry){
 		&& rbuf[1] == report[1]
 		&& rbuf[2] == report[2]){
 
+			//FIXME this is a dirty hack to save the 
+			// hardwareID for further communication
+			// there are much more nicer ways of implementation
+			// but lets see if it works out!
+			if (rbuf[4]==0x10 && rbuf[8]==0x10) {
+				//sort the hardwareID for better usage
+				hardwareID[0]=rbuf[7];
+				hardwareID[1]=rbuf[6];
+				hardwareID[2]=rbuf[5];
+			}
+				
 			IDNumber  = unbcd(rbuf[21])*100000;
 			IDNumber += unbcd(rbuf[22])*10000;
 			IDNumber += unbcd(rbuf[23])*1000;

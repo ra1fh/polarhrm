@@ -90,7 +90,8 @@ class RCX5comm {
 
   private:
 	Driver * driver;
-
+	char hardwareID[3];
+		
 	const void write_buffer(unsigned char* buf, int len, unsigned char filler);
 		
 

@@ -2,6 +2,9 @@
 History
 =============
 dd.mm.yyyy
+14.02.2013
+	* change queries with hardwareID
+
 02.08.2012
 	* got rid of the FindNextLapOffset function (rcx5)
 
