@@ -108,6 +108,7 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	}while(counter < 10);
 
 	printf("did not get overview\n");
+	this->disconnect();
 	exit(EXIT_FAILURE);
 }
 
@@ -156,13 +157,12 @@ void RCX5comm::getSessionOverview(unsigned char *raw_buffer, int &len, int sess_
 	// request to get the session size of a spezific session
 	// with this information the getsession function is calling for the 
 	// itemized packets
-	// 																					 0x00
-	// 																					 0x01
 	unsigned char query[] = {0x01, 0x40, 0x03, 0x00, 0x54,
 							 hardwareID[0],
 							 hardwareID[1],
 							 hardwareID[2],
-							 0xb2, 0x00, sess_no };
+							 0xb2, 0x00, 
+							 sess_no };
 
 	RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
 
