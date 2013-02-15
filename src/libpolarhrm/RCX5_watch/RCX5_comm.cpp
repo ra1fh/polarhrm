@@ -371,7 +371,7 @@ return l;
 void RCX5comm::success(void) {
 	
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
-	//XXX lets try this escape sequence
+	
 	unsigned char query[] = {0x01,0x40,0x04,0x00,0x54,
 							 hardwareID[0],
 							 hardwareID[1],
