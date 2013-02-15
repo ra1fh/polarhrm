@@ -27,8 +27,7 @@ polarhrm is free software: you can redistribute it and/or modify it
 
 #include "../util_functions.h"
 
-// lsusb output 
-// 0da4:0004 Polar Electro OY 
+
 
 
 //
@@ -41,6 +40,7 @@ void DataLnk_driver::init(void){
 	char buf[1024];
 	int buflen = 1024;
 
+	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	this->dev = find_device();
 
@@ -49,18 +49,17 @@ void DataLnk_driver::init(void){
 		dev_handle = usb_open(this->dev);
 
 
-/*
+
 		// http://www.linuxforums.org/forum/linux-tutorials-howtos-reference-material/10865-developing-usb-device-drivers-userspace-using-libusb.html
 		// http://libusb.6.n5.nabble.com/Fwd-usb-get-string-simple-always-returns-1-td3316956.html
-		printf("! display the usb device string\n"
-		       "! this seems to require root!!\n");
+		printf("display the usb device string\n");
 		ret=usb_get_string_simple(dev_handle, 1, buf, buflen);
 		if (ret > 0)
-			printf("str -->%s <--\n", buf);
+			printf("Found: -->%s <--\n", buf);
 		ret=usb_get_string_simple(dev_handle, 2, buf, buflen);
 		if (ret > 0)
-			printf("str -->%s <--\n", buf);
-*/
+			printf("Found: -->%s <--\n", buf);
+
 
 //		signal(SIGTERM, release_usb_device);
 
@@ -129,63 +128,23 @@ void DataLnk_driver::init(void){
 
 */
 
-/*
-	//	usleep(5*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("7 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
+		usleep(401*1000);
+		unsigned char query0[] = {0x01, 0x07};
+		memmove(sendquery, query0, sizeof(query0));
+		this->sendbytes(sendquery,sizeof(sendquery) );
+		
 
+		usleep(2*1000);
 
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("8 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-*/
-
-//usleep(401*1000);
-	memcpy(buf, "\x01\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0x0000100);
-	ret = usb_interrupt_write(dev_handle, 0x00000003, buf, 0x0000100, 1000);
-//	printf("9 interrupt write returned %d, bytes: \n", ret);
-//	print_bytes(buf, ret);
-
-/*
-	//	usleep(2*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("11 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-
-	//	usleep(4*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("12 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-
-	//	usleep(1*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("13 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-
-	//	usleep(3*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("14 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-*/
 
 		//FIXME dont know if we need to send the idle? at this time.
-		memcpy(buf, "\x01\x40\x01\x00\x51\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0x0000100);
-		ret = usb_interrupt_write(dev_handle, 0x00000003, buf, 0x0000100, 1000);
-		//printf("15 interrupt write returned %d, bytes: \n", ret);
-		//print_bytes(buf, ret);
-
-/*
-		//FIXME from this point the deamon of the windows software is periodic
+		unsigned char query1[] = {0x01, 0x40, 0x01, 0x00, 0x51};
+		memmove(sendquery, query1, sizeof(query1));
+		this->sendbytes(sendquery,sizeof(sendquery) );
+		
+		//from this point the deamon of the windows software is periodic
 		// polling for data
-		usleep(5*1000);
-		ret = usb_interrupt_read(dev_handle, 0x00000081, buf, 0x0000200, 1000);
-		printf("16 interrupt read returned %d, bytes: \n", ret);
-		print_bytes(buf, ret);
-
-
-*/
-		printf("\nHID device set up. (Led starts flashing)\n");
+		printf("\ndevice is set up. (Led starts flashing)\n");
 	}
 
 }
@@ -204,7 +163,7 @@ struct usb_device * DataLnk_driver::find_device(void){
 
 	// init the libiary according doc
 	usb_init();
-	usb_set_debug(255);
+	usb_set_debug(0);
 	usb_find_busses();
 	usb_find_devices();
 
@@ -218,13 +177,11 @@ struct usb_device * DataLnk_driver::find_device(void){
 	for (bus = busses; bus; bus = bus->next) {
 
 		for (dev = bus->devices; dev; dev = dev->next) {
-			/* Check if this device is a printer */
 
-			//if (dev->descriptor.bDeviceClass == 7) {
-				/* Open the device, claim the interface and do your processing */
-			//}
-			if (dev->descriptor.idVendor == VENDOR_ID) {
+			if (dev->descriptor.idVendor == VENDOR_ID && 
+			    dev->descriptor.idProduct == PRODUCT_ID) {
 				printf("found DataLnk usb device!\n");
+				/*
 				printf("dev->descriptor.bLength %X\n", dev->descriptor.bLength);
 				printf("dev->descriptor.bDescriptorType %X\n", dev->descriptor.bDescriptorType);
 				printf("dev->descriptor.bcdUSB %X\n", dev->descriptor.bcdUSB);
@@ -239,12 +196,12 @@ struct usb_device * DataLnk_driver::find_device(void){
 				printf("dev->descriptor.iProduct %X\n", dev->descriptor.iProduct);
 				printf("dev->descriptor.iSerialNumber %X\n", dev->descriptor.iSerialNumber);
 				printf("dev->descriptor.bNumConfigurations %X\n", dev->descriptor.bNumConfigurations);
-
-				//FIXME I think we could end up here!
+				*/
+				
 				// only 1 configuration
 				 
 				// Loop through all of the configurations 
-				for (c = 0; c < dev->descriptor.bNumConfigurations; c++) {
+			/*	for (c = 0; c < dev->descriptor.bNumConfigurations; c++) {
 
 					printf("dev->config[%d].bLength %X\n",c,dev->config[c].bLength);
 					printf("dev->config[%d].bDescriptorType %X\n",c,dev->config[c].bDescriptorType);
@@ -288,9 +245,9 @@ struct usb_device * DataLnk_driver::find_device(void){
 								printf("endpoint[%d].bSynchAddress %X\n",e, dev->config[c].interface[i].altsetting[a].endpoint[e].bSynchAddress);
 							} //end for
 						} //end for
-					} //end for
-				} //end for
-
+					} //end for 
+				} //end for 
+			*/
 			return dev;
 
 			}//end if
@@ -308,8 +265,8 @@ struct usb_device * DataLnk_driver::find_device(void){
 void DataLnk_driver::close(void){
 
 	int ret;
-	printf("hello from close\n");
 
+	
 	if (dev_handle != NULL) {
 		ret = usb_release_interface(dev_handle, 0);
 		usb_close(dev_handle);

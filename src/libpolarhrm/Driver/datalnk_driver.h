@@ -20,7 +20,10 @@ polarhrm is free software: you can redistribute it and/or modify it
 #ifndef _DATALNK_DRIVER_H_
 #define _DATALNK_DRIVER_H_
 
+// lsusb output 
+// 0da4:0004 Polar Electro OY 
 #define VENDOR_ID 0x0da4
+#define PRODUCT_ID 0x0004
 
 #define DATALNK_USB_TIMEOUT 1000
 #define DATALNK_USB_ENDPOINT_IN 0x81
