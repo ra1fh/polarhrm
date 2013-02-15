@@ -263,8 +263,8 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 		printf("%d packets each %d bytes (load) \n",nodes_left, packet_size );
 	}
 
-	// after sending the init query go ahead a long as all bytes get received
-	//while (checksum < w_o->used_bytes))
+
+	
 	do {
 		// emty buffer
 		RCX5comm::write_buffer(sendquery, DATALNK_SEND_BUFFER_SIZE, 0);
@@ -316,17 +316,6 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 		}
 		//add header
 		len += RCX5_ALL_OTHER_PACKETS_CORRECTION_HEAD;
-
-		// need to subtract the protocol specific bytes
-		// but ONLY for checksum.
-		//will be managed in parse function
-		//checksum += len; //FIXME this is not working because len gives the 
-						   // complete buffer len of 512 and not only the 
-						   // protocol sprecific len
-		//XXX the protocol specific bytes also count??
-		//checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_HEAD;
-		//checksum -= RCX5_ALL_OTHER_PACKETS_CORRECTION_TAIL;
-
 
 		//put the received data into a node list
 		Datanode node(buf, len);
