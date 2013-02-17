@@ -110,7 +110,9 @@ libpolarhrm_la_SOURCES =  \
 	libpolarhrm/Watch/PddFile.h   \
 	libpolarhrm/Watch/PddFile.cpp   \
 	libpolarhrm/Watch/ExercisePddFile.h   \
-	libpolarhrm/Watch/ExercisePddFile.cpp
+	libpolarhrm/Watch/ExercisePddFile.cpp   \
+	libpolarhrm/libpolarhrm_debug.h   \
+	libpolarhrm/libpolarhrm_debug.cpp
 
 libpolarhrm_la_CXXFLAGS = -I \
 	/usr/include/libxml2 

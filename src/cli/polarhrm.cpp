@@ -29,6 +29,7 @@
 #include <argp.h>
 
 #include "libpolarhrm/libpolarhrm.h"
+#include "libpolarhrm/libpolarhrm_debug.h"
 #include "libpolarhrm/S625X_watch/S625X.h"
 #include "libpolarhrm/RS800CX_watch/RS800CX.h"
 #include "libpolarhrm/RCX5_watch/RCX5.h"
@@ -51,13 +52,12 @@ const char *argp_program_bug_address =
 /* This structure is used by main to communicate with parse_opt. */
 struct appoptions {
 	char *args[1];			/* WATCH_MODEL */
-	bool verbose;			/* the -v flag */
 	bool interface;			/* the -i flag */
 	bool deleteSession;		/* the -e flag */
 	bool overwriteHrmFiles; /* the -o flag */
 	bool listDevices;	    /* the -l flag */
-	std::string debuglevel;
-	std::string rawfilepath;	/* Arguments for -d and -r */
+	int debuglevel;			/* Argument -d  */
+	std::string rawfilepath;	/* Argument -r */
 };
 
 /*
@@ -65,12 +65,11 @@ struct appoptions {
 	Order of fields: {NAME, KEY, ARG, FLAGS, DOC}.
 */
 static struct argp_option options[] = {
-	{"verbose",    'v', 0, 0, "Produce verbose output (not implemented yet)"},
 	{"interface",  'i', 0, 0, "be an interface for apps (not implemented yet)"},
 	{"erase",      'e', 0, 0, "erase all sessions"},
 	{"overwrite",  'o', 0, 0, "overwrite existing hrm & dump files (not implemented yet)"},
 	{"rawfile",    'r', "PATH", 0, "read a raw session file and parse it"},
-	{"debug",      'd', "DEBUGLEVEL", 0,"Debuglevel from 0 to 3 (not implemented yet)"},
+	{"debug",      'd', "DEBUGLEVEL", 0,"Debuglevel from 0 to 3 (implementation started 17.02.2013)"},
 	{"list",       'l', 0, 0, "list the supported Devices"},
 	{0}
 };
@@ -85,11 +84,8 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state) {
 	appoptions *arguments =static_cast<appoptions *>(state->input);
 
 	switch (key) {
-		case 'v':
-			arguments->verbose = true;
-			break;
 		case 'd':
-			arguments->debuglevel = arg;
+			arguments->debuglevel =  *arg - 48; // fix ASCII to int
 			break;
 		case 'r':
 			arguments->rawfilepath = arg;
@@ -151,12 +147,11 @@ int main (int argc, char **argv){
 	appoptions arguments;
 
 	/* Set argument defaults */
-	arguments.debuglevel = "";
+	arguments.debuglevel = 0;
 	arguments.rawfilepath = "";
 	arguments.overwriteHrmFiles = false;
 	arguments.deleteSession = false;
 	arguments.interface = false;
-	arguments.verbose = false;
 	arguments.listDevices = false;
 
 
@@ -189,21 +184,19 @@ int main (int argc, char **argv){
 		std::cout<< "DRIVER = (information now in class definition)" << std::endl;
 		if (NULL != arguments.args[0])
 			std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
-		std::cout<< "verbose printing = " << arguments.verbose << std::endl;
 		std::cout<< "interface = " << arguments.interface << std::endl;
 
 		/* setup parameters of libpolarhrm */
 		setWorkingDir(MYPATH);
+		libpolarhrm_setDebuglevel(arguments.debuglevel);
 		std::cout << "getWorkingDir = " << getWorkingDir() << std::endl;
 		std::cout << "getDumpExtention = " << getDumpExtention() << std::endl;
 		std::cout << "getHRMExtention = " << getHRMExtention() << std::endl;
 
 
 
-		/* If in verbose mode, print some more details */
-		if (true == arguments.verbose) {//FIXME think on verbose printing and debug printing
-			std::cout<< "some verbose text\nnot implemented\n" << std::endl;
-		}
+
+		
 	}
 
 	dev connected_device;
