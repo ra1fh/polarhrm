@@ -89,7 +89,9 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 
 	do {
-		usleep(1000);
+		// changed from 1000 -> 3*1000 otherwise success of
+		// getOverview is coincidental because of timing problem
+		usleep(3*1000);
 		// return the length
 		len = this->driver->recvbytes(raw_buffer);
 
