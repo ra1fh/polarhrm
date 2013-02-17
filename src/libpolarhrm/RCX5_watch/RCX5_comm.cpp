@@ -452,6 +452,13 @@ int RCX5comm::pairing(void){
 	// 04 40 03 00 40 b6 00 02 
 	// 04 42 03 00 40 b6 00 02
 	// 04 42 03 00 40 b6 00 02 
+
+	// FIXME looks like the response when the user clicks
+	//       no when he gets asked for pairing
+	//       dont handle this for now 15.02.2013
+	// 05 07 b6 22 03 80 13 70 04 00 00 e9 d1 02 3a
+	// 05 07 b6 02 03 00 13 70 04 00 00 e9 d1 02 6a
+
 	memmove(sendquery, q, sizeof(q));
 
 	int counter  = 1;
@@ -482,11 +489,11 @@ int RCX5comm::pairing(void){
 		//response
 		//04 42 03 00 40 b6 00 02 00 00 00 00 00 00 00 00
 		else if(rbuf[7] == 2) {
-			//usleep(100000);
+			usleep(1000);
 			pairingSuccess=false;
 		}
 		
-		usleep(1000*1000); // XXX: think about this!
+		sleep(5); // XXX: think about the timing 
 		counter++;
 	}while(counter <= 10 && !pairingSuccess);
 
