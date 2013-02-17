@@ -89,9 +89,10 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 
 	do {
-		// changed from 1000 -> 3*1000 otherwise success of
-		// getOverview is coincidental because of timing problem
-		usleep(3*1000);
+                // FIXME: changed from 1*1000 -> 100*1000 to avoid getOverview
+                // error in case of delayed press on 'yes' to confirm id
+		// even pressing 'yes' to fast causes a problem
+                usleep(100*1000);
 		// return the length
 		len = this->driver->recvbytes(raw_buffer);
 
@@ -145,7 +146,11 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 // 01 40 02 00 54 4d 34 1e c9
 // 01 40 02 00 54 4d 34 1e 44
 
-
+// 04 40 f4 = logo command containing standard logo data
+// Contains bits 8 & 9 = 40 1e = 64 x 30 which is logo size
+// First two lines of logo are stored at the end of the line
+// 00 01 00 88 06 00 00 00
+// 80 00 00 00 88 00 80 00
 
 // get session information
 //
