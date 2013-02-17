@@ -325,9 +325,9 @@ std::list<Datanode> RCX5comm::getSession(int sess_no, int sess_len) {
 		nodecount++;
 		nodes_left--;
 
-		#if defined(DEBUGPRINT)
-			printf("get sessiondata bytes: %d / %d\n\n\n",checksum, sesschecksum);
-		#endif
+
+		printf("get sessiondata bytes: %d / %d\n\n\n",checksum, sesschecksum);
+
 
 
 

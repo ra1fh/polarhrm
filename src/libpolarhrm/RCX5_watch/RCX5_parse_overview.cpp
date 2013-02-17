@@ -38,10 +38,10 @@ Overview* RCX5parse::parseOverview(unsigned char buf[], int len) {
 
 	print_bytes((char*)buf,len);
 
-	#if defined(DEBUGPRINT)
+
 	printf("w_overview->getSessionNumber() %d\n",w_overview->getSessionNumber());
 	printf("? w_overview->getUsedBytes() %X (int %d) not confirmed\n",w_overview->getUsedBytes(),w_overview->getUsedBytes());
-	#endif
+
 
 return w_overview;
 }

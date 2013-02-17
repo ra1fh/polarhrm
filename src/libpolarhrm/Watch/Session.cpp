@@ -56,9 +56,9 @@ void Session::createFilename(string basepath){
 
 		filename = create_filepath(basepath.c_str(), tmp.c_str(), this->getFileExtention().c_str() );
 
-		#ifdef DEBUGPRINT
+
 		cout << "check if file " << filename << " exists? " << does_file_exist(filename) << "\n";
-		#endif
+
 
 		counter++;
 

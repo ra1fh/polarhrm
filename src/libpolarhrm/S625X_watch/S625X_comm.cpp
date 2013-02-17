@@ -123,9 +123,9 @@ std::list<Datanode> S625Xcomm::getFiles(Overview* w_o) {
 				//will be managed in parse function
 				checksum=checksum+len-3;
 						
-				#if defined(DEBUGPRINT)
+
 				printf("get sessiondata bytes: %d / %d\n",checksum, w_o->used_bytes);
-				#endif
+
 
 //				fwrite(buf,sizeof(unsigned char), len,fp_org);
 				
@@ -137,9 +137,9 @@ std::list<Datanode> S625Xcomm::getFiles(Overview* w_o) {
 	
 	} //end if
 
-    #if defined(DEBUGPRINT)
-      printf("\nsession raw data received %d / %d\n",checksum,w_o->used_bytes);
-    #endif
+
+    printf("\nsession raw data received %d / %d\n",checksum,w_o->used_bytes);
+
 
 //fclose(fp_org);
 
@@ -225,13 +225,13 @@ delete session 2 (File 20110913_20:56:28.0.dump)
 	query[6] = bcdyear; // year last 2 digits
 	query[7] = month; // month
 
-	#ifdef DEBUGPRINT
+
 	std::cout<< "delete command: ";
 	for (int i=0; i<=7; i++) {
 		printf("%02x ", query[i]);
 	} 
 	std::cout<<"\n";
-	#endif
+
 	this->driver->sendbytes(confirm_query, sizeof(confirm_query));
 
 
@@ -269,13 +269,13 @@ void S625Xcomm::deleteAllFiles(void){
 	query[6] = bcd(00); // year last 2 digits
 	query[7] = bcd(00); // month
 
-	#ifdef DEBUGPRINT
+
 	std::cout<< "delete command: ";
 	for (int i=0; i<=7; i++) {
 		std::cout<< hex <<(int) query[i]<<" ";
 	} 
 	std::cout<<"\n";
-	#endif
+
 
 	this->driver->sendbytes(query, sizeof(query));
 

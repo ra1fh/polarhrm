@@ -163,36 +163,36 @@ int Irda_driver::irscanf_discover_devices(void) {
 
 	if (len > 0) {
 
-		#if defined(DEBUGPRINT)
-			printf("Discovered: (list len=%d)\n", list->len);
-		#endif
+
+		printf("Discovered: (list len=%d)\n", list->len);
+
 
 		for (int i=0;i<list->len;i++) {
 
-			#if defined(DEBUGPRINT)
-				printf("name:  %s\n", list->dev[i].info);
-				printf("daddr: %08x\n", list->dev[i].daddr);
-				printf("saddr: %08x\n", list->dev[i].saddr);
-				printf("hint0: %08x\n",list->dev[i].hints[0]);
-				printf("hint1: %08x\n",list->dev[i].hints[1]);
-				printf("\n");
-			#endif
+
+			printf("name:  %s\n", list->dev[i].info);
+			printf("daddr: %08x\n", list->dev[i].daddr);
+			printf("saddr: %08x\n", list->dev[i].saddr);
+			printf("hint0: %08x\n",list->dev[i].hints[0]);
+			printf("hint1: %08x\n",list->dev[i].hints[1]);
+			printf("\n");
+
 
 			/* do we have a supported watch ?
 			here we can do a switch case to automaticly choose some function 
 			but for now we return the adress */
 			if (list->dev[i].hints[0] & HINT_POLAR) {
-				#if defined(DEBUGPRINT)
-					printf("YESS POLAR Watch\n");
-				#endif
+
+				printf("YESS POLAR Watch\n");
+
 				return list->dev[i].daddr;
 			}
 
 		}
 	}
 
-	#if defined(DEBUGPRINT)
-		printf("Didn't find any devices!\n");
-	#endif
+
+	printf("Didn't find any devices!\n");
+
 return -1;
 }

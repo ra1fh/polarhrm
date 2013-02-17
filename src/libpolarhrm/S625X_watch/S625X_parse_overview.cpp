@@ -42,11 +42,11 @@ Overview* S625Xparse::parseOverview(unsigned char buf[], int len) {
 
 	Overview *w_overview = new Overview(number_of_sessions, used_bytes);
 
-	// DEBUG print 
-	#if defined(DEBUGPRINT)
+ 
+
 	printf("w_overview->getSessionNumber() %d\n",w_overview->getSessionNumber());
 	printf("w_overview->getUsedBytes() %X\n",w_overview->getUsedBytes());
-	#endif
+
 
 return w_overview;
 }

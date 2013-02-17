@@ -57,7 +57,8 @@ const char* getHRMExtention(void);
 
 /* just prepared to get a more silent output
    but maybe I will do this with a command line switch */
-#define DEBUGPRINT
+// deprecated see libpolarhrm_debug.h
+//#define DEBUGPRINT
 
 
 /* Buffer size for many buffers used in the application */

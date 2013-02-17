@@ -160,9 +160,9 @@ std::list<Datanode> RS800CXcomm::getSession(int sess_no) {
 		nodes_left = buf[4];
 
 
-		#if defined(DEBUGPRINT)
-			printf("get sessiondata bytes: %d / %d\n\n\n",checksum, sesschecksum);
-		#endif
+
+		printf("get sessiondata bytes: %d / %d\n\n\n",checksum, sesschecksum);
+
 	} // end while
 
 return l;
@@ -244,13 +244,13 @@ delete session 2 (File 20110913_20:56:28.0.dump)
 	query[6] = bcdyear; // year last 2 digits
 	query[7] = month; // month
 
-	#ifdef DEBUGPRINT
+
 	std::cout<< "delete command: ";
 	for (int i=0; i<=7; i++) {
 		printf("%02x ", query[i]);
 	} 
 	std::cout<<"\n";
-	#endif
+
 	this->driver->sendbytes(confirm_query, sizeof(confirm_query));
 
 
@@ -285,13 +285,13 @@ void RS800CXcomm::deleteAllFiles(void){
 	query[6] = bcd(00); // year last 2 digits
 	query[7] = bcd(00); // month
 
-	#ifdef DEBUGPRINT
+
 	std::cout<< "delete command: ";
 	for (int i=0; i<=7; i++) {
 		std::cout<< hex <<(int) query[i]<<" ";
 	} 
 	std::cout<<"\n";
-	#endif
+
 
 	this->driver->sendbytes(query, sizeof(query));
 }

@@ -34,10 +34,10 @@ Overview* RS800CXparse::parseOverview(unsigned char buf[], int len) {
 	Overview *w_overview = new Overview(number_of_sessions, used_bytes);
 
 
-	#if defined(DEBUGPRINT)
+
 	printf("w_overview->getSessionNumber() %d\n",w_overview->getSessionNumber());
 	printf("? w_overview->getUsedBytes() %X (int %d) not confirmed\n",w_overview->getUsedBytes(),w_overview->getUsedBytes());
-	#endif
+
 
 return w_overview;
 }
