@@ -136,7 +136,7 @@ void RCX5::saveHRM(void){
 				raw_path = create_filepath(workingDir,filename,dumpExtention);
 
 				raw_session->saveRaw(raw_path);
-				std::cout<< "saved dump session number " << sess_no << " @ " << raw_path << std::endl;
+				std::cout<< "saved dump session number " << sess_no << ". now run ./polarhrm rcx5 -r " << raw_path << std::endl;
 
 				//#endif
 
