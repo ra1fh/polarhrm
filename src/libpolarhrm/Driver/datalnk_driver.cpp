@@ -26,7 +26,7 @@ polarhrm is free software: you can redistribute it and/or modify it
 #include <assert.h>
 
 #include "../util_functions.h"
-
+#include "../libpolarhrm_debug.h"
 
 
 
@@ -52,23 +52,25 @@ void DataLnk_driver::init(void){
 
 		// http://www.linuxforums.org/forum/linux-tutorials-howtos-reference-material/10865-developing-usb-device-drivers-userspace-using-libusb.html
 		// http://libusb.6.n5.nabble.com/Fwd-usb-get-string-simple-always-returns-1-td3316956.html
-		printf("display the usb device string\n");
+
+		/* dont show this string
 		ret=usb_get_string_simple(dev_handle, 1, buf, buflen);
 		if (ret > 0)
-			printf("Found: -->%s <--\n", buf);
+			printf("%s found on usb bus\n", buf);
+		*/
 		ret=usb_get_string_simple(dev_handle, 2, buf, buflen);
 		if (ret > 0)
-			printf("Found: -->%s <--\n", buf);
+			printf("%s found on usb bus.\n", buf);
 
 
 //		signal(SIGTERM, release_usb_device);
 
 		ret = usb_get_driver_np(dev_handle, 0, buf, sizeof(buf));
-		printf("usb_get_driver_np returned %d\n", ret);
+		dprint_info("usb_get_driver_np returned %d\n", ret);
 		if (ret == 0) {
-			printf("interface 0 already claimed by driver \"%s\", attempting to detach it\n", buf);
+			dprint_info("interface 0 already claimed by driver \"%s\", attempting to detach it\n", buf);
 			ret = usb_detach_kernel_driver_np(dev_handle, 0);
-			printf("usb_detach_kernel_driver_np returned %d\n", ret);
+			dprint_info("usb_detach_kernel_driver_np returned %d\n", ret);
 		}
 
 /*
@@ -105,11 +107,11 @@ void DataLnk_driver::init(void){
 		printf("failed to release interface before set_configuration: %d\n", ret);
 */
 		ret = usb_set_configuration(dev_handle, 0x0000001);
-		printf("4 set configuration returned %d\n", ret);
+		dprint_info("set configuration returned %d\n", ret);
 
 		ret = usb_claim_interface(dev_handle, 0);
 		if (ret != 0) 
-			printf("claim after set_configuration failed with error %d\n", ret);
+			dprint_info("claim after set_configuration failed with error %d\n", ret);
 
 /*
 		ret = usb_set_altinterface(dev_handle, 0);
@@ -118,7 +120,7 @@ void DataLnk_driver::init(void){
 */
 
 		ret = usb_control_msg(dev_handle, USB_TYPE_CLASS + USB_RECIP_INTERFACE, 0x000000a, 0x0000000, 0x0000000, buf, 0x0000000, 1000);
-		printf("5 control msg returned %d", ret);
+		dprint_info("control msg returned %d", ret);
 
 		//  usleep(6*1000);
 /*
@@ -163,7 +165,13 @@ struct usb_device * DataLnk_driver::find_device(void){
 
 	// init the libiary according doc
 	usb_init();
-	usb_set_debug(0);
+
+	if (libpolarhrm_getDebuglevel() == DEBUG_CRITICAL){
+		usb_set_debug(255);
+	}
+	else {
+		usb_set_debug(0);
+	}
 	usb_find_busses();
 	usb_find_devices();
 
@@ -180,23 +188,25 @@ struct usb_device * DataLnk_driver::find_device(void){
 
 			if (dev->descriptor.idVendor == VENDOR_ID && 
 			    dev->descriptor.idProduct == PRODUCT_ID) {
-				printf("found DataLnk usb device!\n");
-				/*
-				printf("dev->descriptor.bLength %X\n", dev->descriptor.bLength);
-				printf("dev->descriptor.bDescriptorType %X\n", dev->descriptor.bDescriptorType);
-				printf("dev->descriptor.bcdUSB %X\n", dev->descriptor.bcdUSB);
-				printf("dev->descriptor.bDeviceClass %X\n", dev->descriptor.bDeviceClass);
-				printf("dev->descriptor.bDeviceSubClass %X\n", dev->descriptor.bDeviceSubClass);
-				printf("dev->descriptor.bDeviceProtocol %X\n", dev->descriptor.bDeviceProtocol);
-				printf("dev->descriptor.bMaxPacketSize0 %X\n", dev->descriptor.bMaxPacketSize0);
-				printf("dev->descriptor.idVendor %X\n", dev->descriptor.idVendor);
-				printf("dev->descriptor.idProduct %X\n", dev->descriptor.idProduct);
-				printf("dev->descriptor.bcdDevice %X\n", dev->descriptor.bcdDevice);
-				printf("dev->descriptor.iManufacturer %X\n", dev->descriptor.iManufacturer);
-				printf("dev->descriptor.iProduct %X\n", dev->descriptor.iProduct);
-				printf("dev->descriptor.iSerialNumber %X\n", dev->descriptor.iSerialNumber);
-				printf("dev->descriptor.bNumConfigurations %X\n", dev->descriptor.bNumConfigurations);
-				*/
+
+					//printf("found DataLnk usb device!\n");
+					
+				if (libpolarhrm_getDebuglevel() == DEBUG_CRITICAL){
+					printf("dev->descriptor.bLength %X\n", dev->descriptor.bLength);
+					printf("dev->descriptor.bDescriptorType %X\n", dev->descriptor.bDescriptorType);
+					printf("dev->descriptor.bcdUSB %X\n", dev->descriptor.bcdUSB);
+					printf("dev->descriptor.bDeviceClass %X\n", dev->descriptor.bDeviceClass);
+					printf("dev->descriptor.bDeviceSubClass %X\n", dev->descriptor.bDeviceSubClass);
+					printf("dev->descriptor.bDeviceProtocol %X\n", dev->descriptor.bDeviceProtocol);
+					printf("dev->descriptor.bMaxPacketSize0 %X\n", dev->descriptor.bMaxPacketSize0);
+					printf("dev->descriptor.idVendor %X\n", dev->descriptor.idVendor);
+					printf("dev->descriptor.idProduct %X\n", dev->descriptor.idProduct);
+					printf("dev->descriptor.bcdDevice %X\n", dev->descriptor.bcdDevice);
+					printf("dev->descriptor.iManufacturer %X\n", dev->descriptor.iManufacturer);
+					printf("dev->descriptor.iProduct %X\n", dev->descriptor.iProduct);
+					printf("dev->descriptor.iSerialNumber %X\n", dev->descriptor.iSerialNumber);
+					printf("dev->descriptor.bNumConfigurations %X\n", dev->descriptor.bNumConfigurations);
+				}
 				
 				// only 1 configuration
 				 
