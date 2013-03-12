@@ -73,14 +73,14 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 
 	// first query at an open snyc connection
 	// Get overview -> response holds the number of sessions
-	// 												report can hold other    0xAA
+	//
 	unsigned char query[] = {0x01, 0x40, 0x02, 0x00, 0x54, 
 							 hardwareID[0], 
 							 hardwareID[1], 
 							 hardwareID[2], 
 							 0x00};
 
-	//response: 04 42 3c
+
 	unsigned char response[] = {0x04, 0x42, 0x3c};
 
 	memmove(sendquery, query, sizeof(query));
@@ -96,7 +96,7 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 		// return the length
 		len = this->driver->recvbytes(raw_buffer);
 
-		if( 512 == len 
+		if( DATALNK_RECV_BUFFER_SIZE == len 
 		&& raw_buffer[0] == response[0]
 		&& raw_buffer[1] == response[1]
 		&& raw_buffer[2] == response[2]){
