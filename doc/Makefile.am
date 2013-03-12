@@ -5,7 +5,8 @@ EXTRA_DIST = \
 
 doc_DATA = \
 	README.625X.file_format\
-	README.rs800cx.file_format
+	README.rs800cx.file_format\
+	README.rcx5.session_file_format
 
 docdir = \
 	$(pkgdatadir)
