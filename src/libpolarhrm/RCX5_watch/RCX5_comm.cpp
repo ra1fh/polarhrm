@@ -89,10 +89,10 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 	this->driver->sendbytes(sendquery, sizeof(sendquery));
 
 	do {
-        // FIXME: changed from 1*1000 -> 100*1000 to avoid getOverview
-        // error in case of delayed press on 'yes' to confirm id
+		// FIXME: changed from 1*1000 -> 100*1000 to avoid getOverview
+		// error in case of delayed press on 'yes' to confirm id
 		// even pressing 'yes' to fast causes a problem
-        usleep(100*1000);
+		usleep(100*1000);
 		// return the length
 		len = this->driver->recvbytes(raw_buffer);
 
