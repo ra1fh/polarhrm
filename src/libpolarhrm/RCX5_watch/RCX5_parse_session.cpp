@@ -410,6 +410,9 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	printf("OK w_session->calories=%d\n",w_session->calories);
 
 
+	printf("?? user_wight=%d need to handle it\n",buf[122]);
+
+
 	//FIXME figure out the number of stored laps
 	// this is a first approach.
 	if(buf[292] > 99) {
