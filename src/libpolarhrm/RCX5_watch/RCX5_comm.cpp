@@ -69,6 +69,7 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 
 	int session_size=0;
 	int counter=0;
+	int command_counter=0;
 	unsigned char sendquery[DATALNK_SEND_BUFFER_SIZE];
 
 	// first query at an open snyc connection
@@ -83,32 +84,51 @@ void RCX5comm::getOverview(unsigned char *raw_buffer, int &len) {
 
 	unsigned char response[] = {0x04, 0x42, 0x3c};
 
+	// response syncronisation faild ?
+	// 05 07 00 00 03 80 13 70 04 00 00 e9 d1 02 9e
+
+	write_buffer (sendquery,sizeof(sendquery),0);
 	memmove(sendquery, query, sizeof(query));
 
-	printf("get overview\n");
-	this->driver->sendbytes(sendquery, sizeof(sendquery));
-
 	do {
-		// FIXME: changed from 1*1000 -> 100*1000 to avoid getOverview
-		// error in case of delayed press on 'yes' to confirm id
-		// even pressing 'yes' to fast causes a problem
-		usleep(100*1000);
-		// return the length
-		len = this->driver->recvbytes(raw_buffer);
+		printf("get overview %d\n",command_counter);
 
-		if( DATALNK_RECV_BUFFER_SIZE == len 
-		&& raw_buffer[0] == response[0]
-		&& raw_buffer[1] == response[1]
-		&& raw_buffer[2] == response[2]){
+		print_bytes ((char*)sendquery,sizeof(sendquery));
+		printf("gonig down \n\n");
 
-			// send success command
-			this->success();
+		//usleep(100*1000);
+		this->driver->sendbytes(sendquery, sizeof(sendquery));
+
+		counter=0;
+		do {
+			// FIXME: changed from 1*1000 -> 100*1000 to avoid getOverview
+			// error in case of delayed press on 'yes' to confirm id
+			// even pressing 'yes' to fast causes a problem
+			// XXX 15.06.2013 enhancing function by outlining the sleep!!
+			//usleep(1*1000);
+
+			// return the length
+			len = this->driver->recvbytes(raw_buffer);
+
+			print_bytes((char*)raw_buffer,len);
+
+			if( DATALNK_RECV_BUFFER_SIZE == len 
+			&& raw_buffer[0] == response[0]
+			&& raw_buffer[1] == response[1]
+			&& raw_buffer[2] == response[2]){
+				// XXX don t send commands for now
+				// send success command
+				//this->success();
+				//this->idle2();
 			
-			return;
-		}
+				return;
+			}
 
-		counter++;
-	}while(counter < 10);
+			counter++;
+		}while(counter < 20); //XXX 20 times might be reduced
+
+		command_counter++;
+	}while(command_counter < 1); //XXX looks that there is no loop required
 
 	printf("did not get overview\n");
 	this->disconnect();
