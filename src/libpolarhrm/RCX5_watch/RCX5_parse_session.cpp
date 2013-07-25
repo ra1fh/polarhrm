@@ -409,8 +409,9 @@ Session* RCX5parse::parseSession(RawSession *raw_sess){
 	w_session->calories = toshort(&buf[192]);
 	printf("OK w_session->calories=%d\n",w_session->calories);
 
-
-	printf("?? user_wight=%d need to handle it\n",buf[122]);
+	int lbs = buf[40];
+	int kg = lbs*0.453592 + 0.5;
+	printf("OK user_weight=%d need to handle it\n",kg);
 
 
 	//FIXME figure out the number of stored laps

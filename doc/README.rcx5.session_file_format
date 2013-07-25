@@ -54,9 +54,9 @@ Byte	Meaning
 	LNIP Startdate Year + 2000 
 38
 39
-40	allways 0xAA
+40	User weight in lbs
 41
-42	User hight ???
+42	User height in cm
 43	User VO2 MAX
 44
 45	show ??
