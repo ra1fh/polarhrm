@@ -52,7 +52,6 @@ const char *argp_program_bug_address =
 /* This structure is used by main to communicate with parse_opt. */
 struct appoptions {
 	char *args[1];			/* WATCH_MODEL */
-	bool interface;			/* the -i flag */
 	bool deleteSession;		/* the -e flag */
 	bool overwriteHrmFiles; /* the -o flag */
 	bool listDevices;	    /* the -l flag */
@@ -65,7 +64,6 @@ struct appoptions {
 	Order of fields: {NAME, KEY, ARG, FLAGS, DOC}.
 */
 static struct argp_option options[] = {
-	{"interface",  'i', 0, 0, "be an interface for apps (not implemented yet)"},
 	{"erase",      'e', 0, 0, "erase all sessions"},
 	{"overwrite",  'o', 0, 0, "overwrite existing hrm & dump files (not implemented yet)"},
 	{"rawfile",    'r', "PATH", 0, "read a raw session file and parse it"},
@@ -90,8 +88,6 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state) {
 		case 'r':
 			arguments->rawfilepath = arg;
 			break;
-		case 'i':
-			arguments->interface = true;
 		case 'e':
 			arguments->deleteSession = true;
 			break;
@@ -151,7 +147,6 @@ int main (int argc, char **argv){
 	arguments.rawfilepath = "";
 	arguments.overwriteHrmFiles = false;
 	arguments.deleteSession = false;
-	arguments.interface = false;
 	arguments.listDevices = false;
 
 
@@ -167,7 +162,7 @@ int main (int argc, char **argv){
 	argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
 
-	if(false == arguments.interface) {
+
 		std::cout<<"polarhrm  Copyright (C) 2013  Thomas Foyth\nThis program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.\n"
 					"This is free software, and you are welcome to redistribute it under certain conditions;\n\n";
 
@@ -184,7 +179,7 @@ int main (int argc, char **argv){
 		std::cout<< "DRIVER = (information now in class definition)" << std::endl;
 		if (NULL != arguments.args[0])
 			std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
-		std::cout<< "interface = " << arguments.interface << std::endl;
+
 
 		/* setup parameters of libpolarhrm */
 		setWorkingDir(MYPATH);
@@ -196,8 +191,8 @@ int main (int argc, char **argv){
 
 
 
-		
-	}
+
+
 
 	dev connected_device;
 	connected_device = createEnumDeviceNum(arguments.args[0]);
@@ -227,7 +222,6 @@ int main (int argc, char **argv){
 
 	// option save hrm
 	if ( 0 == arguments.rawfilepath.length()
-		 && false == arguments.interface
 		 && false == arguments.deleteSession) {
 
 		watch->saveHRM();
@@ -249,15 +243,6 @@ int main (int argc, char **argv){
 			return EXIT_SUCCESS;
 		}
 	}
-
-
-	// implementation for the interface
-	if (true == arguments.interface) {
-		std::cout<< "not implemented yet!\nI have some ideas for this in my mind\n";
-		std::cout<< "pipes, or local sockets, or just use stdin/stdout.\n";
-		std::cout<< "language could be xml ...\n";
-	}
-
 
 return EXIT_SUCCESS;
 }
