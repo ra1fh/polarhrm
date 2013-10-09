@@ -1,7 +1,8 @@
 
 
 libpolarhrm_la_LIBADD = -lxml2 \
-	-lusb 
+	-lusb \
+	$(GLIB_LIBS) 
 
 SUBDIRS = \
 	libpolarhrm
@@ -14,7 +15,8 @@ bin_PROGRAMS =  \
 simulate_SOURCES =  \
 	cli/simulate_watch.cpp
 
-simulate_LDADD = libpolarhrm.la 
+simulate_LDADD = libpolarhrm.la \
+	$(GLIB_LIBS) 
 
 test_SOURCES =  \
 	cli/test.cpp
@@ -32,7 +34,8 @@ polarhrm_SOURCES =  \
 	cli/polarhrm.h \
 	cli/polarhrm_config.h
 
-polarhrm_LDADD = libpolarhrm.la 
+polarhrm_LDADD = libpolarhrm.la \
+	$(GLIB_LIBS) 
 
 lib_LTLIBRARIES =  \
 	libpolarhrm.la
@@ -123,8 +126,5 @@ libpolarhrm_la_CXXFLAGS = -I \
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
-	-DPACKAGE_DATA_DIR=\""$(datadir)"\" 
-
-AM_CFLAGS =\
-	 -Wall\
-	 -g
+	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
+	$(GLIB_CFLAGS)

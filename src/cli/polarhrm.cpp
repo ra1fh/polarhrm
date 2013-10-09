@@ -17,12 +17,16 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
 
+#include <glib.h>
+#include <glib/gfileutils.h>
+#include <sys/stat.h>
 
 #include "polarhrm.h"
 #include "polarhrm_config.h"
@@ -57,6 +61,7 @@ struct appoptions {
 	bool listDevices;	    /* the -l flag */
 	int debuglevel;			/* Argument -d  */
 	std::string rawfilepath;	/* Argument -r */
+	std::string directory; /* Argument -t */
 };
 
 /*
@@ -64,9 +69,10 @@ struct appoptions {
 	Order of fields: {NAME, KEY, ARG, FLAGS, DOC}.
 */
 static struct argp_option options[] = {
+	{"target-directory", 't', "DIRECTORY", 0, "working directory"},
 	{"erase",      'e', 0, 0, "erase all sessions"},
 	{"overwrite",  'o', 0, 0, "overwrite existing hrm & dump files (not implemented yet)"},
-	{"rawfile",    'r', "PATH", 0, "read a raw session file and parse it"},
+	{"rawfile",    'r', "RAWFILE", 0, "read a raw session file and parse it"},
 	{"debug",      'd', "DEBUGLEVEL", 0,"Debuglevel from 0 to 3 (implementation started 17.02.2013)"},
 	{"list",       'l', 0, 0, "list the supported Devices"},
 	{0}
@@ -82,6 +88,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state) {
 	appoptions *arguments =static_cast<appoptions *>(state->input);
 
 	switch (key) {
+		case 't':
+			arguments->directory = arg;
+			break;
 		case 'd':
 			arguments->debuglevel =  *arg - 48; // fix ASCII to int
 			break;
@@ -148,6 +157,7 @@ int main (int argc, char **argv){
 	arguments.overwriteHrmFiles = false;
 	arguments.deleteSession = false;
 	arguments.listDevices = false;
+	arguments.directory = ""; //default dir if not set will be $HOME/.polarhrm
 
 
 	/* if someone calls the program without any parameter 
@@ -163,35 +173,43 @@ int main (int argc, char **argv){
 
 
 
-		std::cout<<"polarhrm  Copyright (C) 2013  Thomas Foyth\nThis program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.\n"
-					"This is free software, and you are welcome to redistribute it under certain conditions;\n\n";
+	std::cout<<"polarhrm  Copyright (C) 2013  Thomas Foyth\nThis program comes with ABSOLUTELY NO WARRANTY; for details see COPYING file in source.\n"
+				"This is free software, and you are welcome to redistribute it under certain conditions;\n\n";
 
-		//print out a list
-		if (true == arguments.listDevices) {
-				printSupportedDevices();
-				return EXIT_SUCCESS;
-			}
+	/* Print out a list */
+	if (true == arguments.listDevices) {
+			printSupportedDevices();
+			return EXIT_SUCCESS;
+		}
 
+	/* set the default working dir */
+	gchar *polarhrm_path = NULL;
 
-		/* Print argument values */
-		std::cout<< "debug = " << arguments.debuglevel << std::endl;
-		std::cout<< "rawread = " << arguments.rawfilepath << std::endl;
-		std::cout<< "DRIVER = (information now in class definition)" << std::endl;
-		if (NULL != arguments.args[0])
-			std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
+	if (arguments.directory.length()==0)
+		polarhrm_path = g_build_path(G_DIR_SEPARATOR_S, g_get_home_dir(), ".polarhrm", NULL);
 
+	else {
+		polarhrm_path = g_build_path(G_DIR_SEPARATOR_S, arguments.directory.c_str(), NULL);
+	}
 
-		/* setup parameters of libpolarhrm */
-		setWorkingDir(MYPATH);
-		libpolarhrm_setDebuglevel(arguments.debuglevel);
-		std::cout << "getWorkingDir = " << getWorkingDir() << std::endl;
-		std::cout << "getDumpExtention = " << getDumpExtention() << std::endl;
-		std::cout << "getHRMExtention = " << getHRMExtention() << std::endl;
+	if(g_mkdir_with_parents(polarhrm_path, S_IRUSR|S_IWUSR|S_IXUSR) == -1) {
+		perror("couldn't create directory");
+		return EXIT_FAILURE;
+	}
 
+	/* setup parameters of libpolarhrm */
+	setWorkingDir(polarhrm_path);
+	libpolarhrm_setDebuglevel(arguments.debuglevel);
 
-
-
-
+	/* Print argument values */
+	std::cout<< "version = " << PACKAGE_STRING << std::endl;
+	std::cout<< "debug = " << arguments.debuglevel << std::endl;
+	std::cout<< "rawread = " << arguments.rawfilepath << std::endl;
+	if (NULL != arguments.args[0])
+		std::cout<< "WATCH_MODEL = " <<toUpperCase(arguments.args[0]) << std::endl;
+	std::cout << "getWorkingDir = " << getWorkingDir() << std::endl;
+	std::cout << "getDumpExtention = " << getDumpExtention() << std::endl;
+	std::cout << "getHRMExtention = " << getHRMExtention() << std::endl;
 
 
 	dev connected_device;
@@ -223,7 +241,6 @@ int main (int argc, char **argv){
 	// option save hrm
 	if ( 0 == arguments.rawfilepath.length()
 		 && false == arguments.deleteSession) {
-
 		watch->saveHRM();
 	}
 

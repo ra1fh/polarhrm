@@ -10,16 +10,6 @@
  *
  */
 
-/* set up a wirtable dir to store files. 
-   raw data and hrm are stored in this dir
-   don t forget the last slash!!! 
-   software does not check if dir exists or is wirtable
-   (usabillity comes later)  */  
-static const char *MYPATH = "/home/thomas/praw/";
-
-
-
-
 /* the data are stored in PPP software and are used to wirte the HRM file */
 static unsigned char USER_HR_MAX = 195;
 static unsigned char USER_HR_REST = 86;
