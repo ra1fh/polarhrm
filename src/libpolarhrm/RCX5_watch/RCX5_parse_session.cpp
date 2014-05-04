@@ -231,10 +231,10 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 		}
 */
 		int prev_adress;
-	    int next_adress;
+		int next_adress;
 
 		next_adress =(buf[i-34])<<8;
-		next_adress += buf[i-35]; 	  
+		next_adress += buf[i-35];
 		prev_adress =(buf[i-38])<<8;
 		prev_adress += buf[i-39]; 
 
@@ -250,9 +250,13 @@ void RCX5parse::parse_laps(Session *w_session, RawSession *raw_sess){
 		for (int k =prev_adress+52; k<actualIndex; k++) {
 			printf("%.2X ",buf[k]);
 		}
-		printf("\n\n");
+		//FIXME Helps to deploy HR encoding. 
+		// looks like Delta + length encoding
+		// thanks to Manuel Ruß for figuring it out :-))
+		printf("\nbinary\n");
 		for (int k =prev_adress+52; k<actualIndex; k++) {
-			printf("%d ",buf[k]);
+			//printf("%d ",buf[k]);
+			 cout<<std::bitset<8>(buf[k])<<" ";
 		}
 		printf("\n");
 
